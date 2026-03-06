@@ -19,18 +19,18 @@ async function startServer() {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
+    // Use 'service: gmail' which is more reliable on cloud providers like Render
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: parseInt(process.env.SMTP_PORT || "587"),
-      secure: process.env.SMTP_SECURE === "true",
+      service: 'gmail',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
 
+    const fromAddress = process.env.SMTP_FROM || `"Church Giving" <${process.env.SMTP_USER}>`;
     const mailOptions = {
-      from: process.env.SMTP_FROM || `"Church Giving" <${process.env.SMTP_USER}>`,
+      from: fromAddress,
       to: "thegospelpower777@gmail.com",
       subject: "Tithes & Offerings",
       text: `
@@ -65,11 +65,13 @@ Submitted at: ${new Date().toLocaleString()}
         return res.json({ success: true, message: "Form received (Email not sent - SMTP not configured)" });
       }
 
+      console.log(`Attempting to send email from ${fromAddress} to thegospelpower777@gmail.com`);
       await transporter.sendMail(mailOptions);
+      console.log("Email sent successfully");
       res.json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending email:", error);
-      res.status(500).json({ error: "Failed to send email" });
+      res.status(500).json({ error: "Failed to send email", details: error.message });
     }
   });
 
@@ -81,18 +83,18 @@ Submitted at: ${new Date().toLocaleString()}
       return res.status(400).json({ error: "Missing required fields" });
     }
 
+    // Use 'service: gmail' which is more reliable on cloud providers like Render
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: parseInt(process.env.SMTP_PORT || "587"),
-      secure: process.env.SMTP_SECURE === "true",
+      service: 'gmail',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
 
+    const fromAddress = process.env.SMTP_FROM || `"Church Contact" <${process.env.SMTP_USER}>`;
     const mailOptions = {
-      from: process.env.SMTP_FROM || `"Church Contact" <${process.env.SMTP_USER}>`,
+      from: fromAddress,
       to: "thegospelpower777@gmail.com",
       subject: "Message",
       text: `
@@ -127,11 +129,13 @@ Submitted at: ${new Date().toLocaleString()}
         return res.json({ success: true, message: "Form received (Email not sent - SMTP not configured)" });
       }
 
+      console.log(`Attempting to send contact email from ${fromAddress} to thegospelpower777@gmail.com`);
       await transporter.sendMail(mailOptions);
+      console.log("Contact email sent successfully");
       res.json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending email:", error);
-      res.status(500).json({ error: "Failed to send email" });
+      res.status(500).json({ error: "Failed to send email", details: error.message });
     }
   });
 
