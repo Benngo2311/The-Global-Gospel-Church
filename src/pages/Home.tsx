@@ -88,7 +88,7 @@ export const Home: React.FC = () => {
 
                 <div className="aspect-video rounded-2xl overflow-hidden mb-8 bg-slate-100">
                   <img 
-                    src="file:///D:/Download/5E0DCA19-8208-4D97-846F-ACCE88B80112.jpg" 
+                    src="https://tggpc.org/wp-content/uploads/2025/12/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg" 
                     alt="Event" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
