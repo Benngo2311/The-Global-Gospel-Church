@@ -11,6 +11,36 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Helper to create transporter
+  const getTransporter = () => {
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
+      },
+    });
+  };
+
+  // Test route for SMTP
+  app.get("/api/test-email", async (req, res) => {
+    console.log("Testing SMTP connection...");
+    console.log("SMTP_USER:", process.env.SMTP_USER ? "Set" : "Not Set");
+    console.log("SMTP_PASS:", process.env.SMTP_PASS ? "Set" : "Not Set");
+    console.log("SMTP_FROM:", process.env.SMTP_FROM || "Not Set (using default)");
+
+    const transporter = getTransporter();
+
+    try {
+      await transporter.verify();
+      console.log("SMTP connection verified successfully");
+      res.json({ success: true, message: "SMTP connection verified" });
+    } catch (error: any) {
+      console.error("SMTP verification failed:", error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
   // API route for giving form
   app.post("/api/give", async (req, res) => {
     const { name, email, phone, amount, message } = req.body;
@@ -19,14 +49,7 @@ async function startServer() {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Use 'service: gmail' which is more reliable on cloud providers like Render
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+    const transporter = getTransporter();
 
     const fromAddress = process.env.SMTP_FROM || `"Church Giving" <${process.env.SMTP_USER}>`;
     const mailOptions = {
@@ -83,14 +106,7 @@ Submitted at: ${new Date().toLocaleString()}
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Use 'service: gmail' which is more reliable on cloud providers like Render
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+    const transporter = getTransporter();
 
     const fromAddress = process.env.SMTP_FROM || `"Church Contact" <${process.env.SMTP_USER}>`;
     const mailOptions = {
