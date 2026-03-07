@@ -2,8 +2,13 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
@@ -169,9 +174,10 @@ Submitted at: ${new Date().toLocaleString()}
     app.use(vite.middlewares);
   } else {
     // Serve static files in production
-    app.use(express.static("dist"));
+    const distPath = path.resolve(__dirname, "dist");
+    app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile("dist/index.html", { root: "." });
+      res.sendFile(path.resolve(distPath, "index.html"));
     });
   }
 
