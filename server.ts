@@ -11,6 +11,11 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Health check route
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // Helper to create transporter
   const getTransporter = () => {
     return nodemailer.createTransport({
