@@ -26,9 +26,17 @@ async function startServer() {
   });
 
   // Helper to create transporter
-  const getTransporter = () => {
+  const getTransporter = async () => {
+    let ipv4 = 'smtp.gmail.com';
+    try {
+      const dnsResult = await lookup('smtp.gmail.com', { family: 4 });
+      ipv4 = dnsResult.address;
+    } catch (e) {
+      console.warn("DNS IPv4 lookup failed, falling back to hostname:", e);
+    }
+
     return nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+      host: ipv4,
       port: 587,
       secure: false, // use STARTTLS
       auth: {
@@ -38,8 +46,6 @@ async function startServer() {
       connectionTimeout: 10000, // 10 seconds
       greetingTimeout: 10000,
       socketTimeout: 10000,
-      // Force IPv4
-      family: 4,
     });
   };
 
@@ -50,20 +56,33 @@ async function startServer() {
     console.log("SMTP_PASS:", process.env.SMTP_PASS ? "Set" : "Not Set");
     console.log("SMTP_FROM:", process.env.SMTP_FROM || "Not Set (using default)");
 
+    let ipv4: string | undefined;
     try {
-      const dnsResult = await lookup('smtp.gmail.com');
-      console.log("DNS Lookup for smtp.gmail.com:", dnsResult);
+      const dnsResult = await lookup('smtp.gmail.com', { family: 4 });
+      ipv4 = dnsResult.address;
+      console.log("DNS Lookup (IPv4) for smtp.gmail.com:", dnsResult);
     } catch (dnsError: any) {
       console.error("DNS Lookup failed:", dnsError);
       return res.status(500).json({ success: false, error: "DNS Lookup failed: " + dnsError.message });
     }
 
-    const transporter = getTransporter();
+    const transporter = nodemailer.createTransport({
+      host: ipv4 || 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+    });
 
     try {
       await transporter.verify();
       console.log("SMTP connection verified successfully");
-      res.json({ success: true, message: "SMTP connection verified" });
+      res.json({ success: true, message: "SMTP connection verified using IP: " + ipv4 });
     } catch (error: any) {
       console.error("SMTP verification failed:", error);
       res.status(500).json({ success: false, error: error.message });
@@ -78,7 +97,7 @@ async function startServer() {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const transporter = getTransporter();
+    const transporter = await getTransporter();
 
     const fromAddress = process.env.SMTP_FROM || `"Church Giving" <${process.env.SMTP_USER}>`;
     const mailOptions = {
@@ -135,7 +154,7 @@ Submitted at: ${new Date().toLocaleString()}
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const transporter = getTransporter();
+    const transporter = await getTransporter();
 
     const fromAddress = process.env.SMTP_FROM || `"Church Contact" <${process.env.SMTP_USER}>`;
     const mailOptions = {
