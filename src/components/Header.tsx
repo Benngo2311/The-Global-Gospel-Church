@@ -29,7 +29,7 @@ export const Header: React.FC = () => {
         <Link to="/" className="flex items-center gap-3">
           <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full p-1 shadow-sm border border-slate-100">
             <img 
-              src="https://tggpc.org/wp-content/uploads/2025/11/567021062_1145536060893753_8766263536070332617_n-1-1-edited.jpg" 
+              src="/images/logo-edited.jpg" 
               alt="TGGPC Logo" 
               className="w-full h-full object-contain"
               referrerPolicy="no-referrer"

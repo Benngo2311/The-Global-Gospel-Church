@@ -65,7 +65,7 @@ export const CouncilOfPrayers: React.FC = () => {
             >
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-white p-12 flex items-center justify-center">
                 <img 
-                  src="https://tggpc.org/wp-content/uploads/2025/11/logo-hoi-dong-1024x1020.png" 
+                  src="/images/logo-hoi-dong.png" 
                   alt="Council of Prayers Logo" 
                   className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"

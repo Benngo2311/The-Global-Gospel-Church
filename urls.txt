@@ -1,0 +1,10 @@
+            src="https://tggpc.org/wp-content/uploads/2025/12/IMG_6495.webp"
+                    src="https://tggpc.org/wp-content/uploads/2025/12/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg" 
+                      src="https://tggpc.org/wp-content/uploads/2025/12/IMG_3825-1024x768.webp" 
+                      src="https://tggpc.org/wp-content/uploads/2025/12/24A0B688-5AA4-4DE8-AD92-336671EEE727-1024x768.webp" 
+                      src="https://tggpc.org/wp-content/uploads/2025/12/Photo-30-3-25-09-32-50-1024x768.webp" 
+              <img src="https://tggpc.org/wp-content/uploads/2025/12/IMG_6495.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+              <img src="https://tggpc.org/wp-content/uploads/2025/12/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+              <img src="https://tggpc.org/wp-content/uploads/2025/12/IMG_3825-1024x768.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+              <img src="https://tggpc.org/wp-content/uploads/2025/12/24A0B688-5AA4-4DE8-AD92-336671EEE727-1024x768.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+              src="https://tggpc.org/wp-content/uploads/2025/12/IMG_6495.webp"

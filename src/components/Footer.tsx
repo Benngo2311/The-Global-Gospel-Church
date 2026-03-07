@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
           <Link to="/" className="flex items-center gap-3 mb-6">
             <div className="w-14 h-14 flex items-center justify-center bg-white rounded-full p-1 shadow-sm border border-slate-100">
               <img 
-                src="https://tggpc.org/wp-content/uploads/2024/05/cropped-TGGPC-Logo-1.png" 
+                src="/images/cropped-TGGPC-Logo-1.png" 
                 alt="TGGPC Logo" 
                 className="w-full h-full object-contain"
                 referrerPolicy="no-referrer"

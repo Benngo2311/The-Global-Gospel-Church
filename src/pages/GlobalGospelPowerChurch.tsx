@@ -76,7 +76,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
             >
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-church-cream p-12 flex items-center justify-center">
                 <img 
-                  src="https://tggpc.org/wp-content/uploads/2025/10/Untitled_design-removebg-preview.webp" 
+                  src="/images/Untitled_design-removebg-preview.webp" 
                   alt="TGGPC Logo" 
                   className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"

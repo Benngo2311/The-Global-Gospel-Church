@@ -16,7 +16,7 @@ export const Home: React.FC = () => {
       <section className="relative min-h-screen flex items-center pt-20 px-6">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://tggpc.org/wp-content/uploads/2025/12/IMG_6495.webp"
+            src="/images/IMG_6495.webp"
             alt="Worship"
             className="w-full h-full object-cover opacity-20"
             referrerPolicy="no-referrer"
@@ -88,7 +88,7 @@ export const Home: React.FC = () => {
 
                 <div className="aspect-video rounded-2xl overflow-hidden mb-8 bg-slate-100">
                   <img 
-                    src="https://tggpc.org/wp-content/uploads/2025/12/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg" 
+                    src="/images/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg" 
                     alt="Event" 
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     referrerPolicy="no-referrer"
@@ -149,7 +149,7 @@ export const Home: React.FC = () => {
                 <div className="space-y-4">
                   <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-lg">
                     <img 
-                      src="https://tggpc.org/wp-content/uploads/2025/12/IMG_3825-1024x768.webp" 
+                      src="/images/IMG_3825-1024x768.webp" 
                       alt="Ministry" 
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" 
                       referrerPolicy="no-referrer" 
@@ -157,7 +157,7 @@ export const Home: React.FC = () => {
                   </div>
                   <div className="aspect-square rounded-3xl overflow-hidden shadow-lg">
                     <img 
-                      src="https://tggpc.org/wp-content/uploads/2025/12/24A0B688-5AA4-4DE8-AD92-336671EEE727-1024x768.webp" 
+                      src="/images/24A0B688-5AA4-4DE8-AD92-336671EEE727-1024x768.webp" 
                       alt="Ministry" 
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" 
                       referrerPolicy="no-referrer" 
@@ -167,7 +167,7 @@ export const Home: React.FC = () => {
                 <div className="pt-12">
                   <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-lg">
                     <img 
-                      src="https://tggpc.org/wp-content/uploads/2025/12/Photo-30-3-25-09-32-50-1024x768.webp" 
+                      src="/images/Photo-30-3-25-09-32-50-1024x768.webp" 
                       alt="Commission" 
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" 
                       referrerPolicy="no-referrer" 
@@ -192,16 +192,16 @@ export const Home: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2 aspect-video rounded-[2rem] overflow-hidden shadow-xl">
-              <img src="https://tggpc.org/wp-content/uploads/2025/12/IMG_6495.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+              <img src="/images/IMG_6495.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
             </div>
             <div className="aspect-square rounded-[2rem] overflow-hidden shadow-xl">
-              <img src="https://tggpc.org/wp-content/uploads/2025/12/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+              <img src="/images/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
             </div>
             <div className="aspect-square rounded-[2rem] overflow-hidden shadow-xl">
-              <img src="https://tggpc.org/wp-content/uploads/2025/12/IMG_3825-1024x768.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+              <img src="/images/IMG_3825-1024x768.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
             </div>
             <div className="md:col-span-2 aspect-video rounded-[2rem] overflow-hidden shadow-xl">
-              <img src="https://tggpc.org/wp-content/uploads/2025/12/24A0B688-5AA4-4DE8-AD92-336671EEE727-1024x768.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+              <img src="/images/24A0B688-5AA4-4DE8-AD92-336671EEE727-1024x768.webp" alt="Gallery" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
             </div>
           </div>
         </div>
@@ -214,7 +214,7 @@ export const Home: React.FC = () => {
         <div className="max-w-5xl mx-auto bg-slate-900 rounded-[4rem] p-12 md:p-24 text-center relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
             <img
-              src="https://tggpc.org/wp-content/uploads/2025/12/IMG_6495.webp"
+              src="/images/IMG_6495.webp"
               alt="Background"
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"

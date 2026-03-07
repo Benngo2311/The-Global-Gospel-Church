@@ -99,7 +99,7 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
             >
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-white p-8 flex items-center justify-center">
                 <img 
-                  src="https://tggpc.org/wp-content/uploads/2025/11/nay-scaled.png" 
+                  src="/images/nay-scaled.png" 
                   alt="Bible School Logo" 
                   className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"

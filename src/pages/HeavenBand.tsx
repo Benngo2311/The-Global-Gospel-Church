@@ -79,7 +79,7 @@ export const HeavenBand: React.FC = () => {
             >
               <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white">
                 <img 
-                  src="https://tggpc.org/wp-content/uploads/2025/11/heaven-band-1024x801.jpeg" 
+                  src="/images/heaven-band.jpeg" 
                   alt="Heaven Band" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"

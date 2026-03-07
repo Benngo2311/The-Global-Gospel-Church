@@ -90,7 +90,7 @@ export const HeavenAcademy: React.FC = () => {
             >
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-church-cream p-12 flex items-center justify-center">
                 <img 
-                  src="https://tggpc.org/wp-content/uploads/2025/11/585197804_3025645327638354_8937443752275451811_n-1024x1024.png" 
+                  src="/images/heaven-academy.png" 
                   alt="Heaven Academy" 
                   className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"
