@@ -67,16 +67,16 @@ async function startServer() {
     }
 
     const transporter = nodemailer.createTransport({
-      host: ipv4 || 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      host: 'smtp-relay.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
       },
-      connectionTimeout: 20000,
-      greetingTimeout: 20000,
-      socketTimeout: 20000,
+      connectionTimeout: 30000,
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
     });
 
     try {
