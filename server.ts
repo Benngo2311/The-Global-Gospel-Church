@@ -37,15 +37,15 @@ async function startServer() {
 
     return nodemailer.createTransport({
       host: ipv4,
-      port: 587,
-      secure: false, // use STARTTLS
+      port: 465,
+      secure: true, // use SSL
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
       },
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
+      connectionTimeout: 20000, // Increase to 20 seconds
+      greetingTimeout: 20000,
+      socketTimeout: 20000,
     });
   };
 
@@ -68,15 +68,15 @@ async function startServer() {
 
     const transporter = nodemailer.createTransport({
       host: ipv4 || 'smtp.gmail.com',
-      port: 587,
-      secure: false,
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
       },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
+      connectionTimeout: 20000,
+      greetingTimeout: 20000,
+      socketTimeout: 20000,
     });
 
     try {
