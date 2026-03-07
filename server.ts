@@ -4,6 +4,10 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import dns from "dns";
+import { promisify } from "util";
+
+const lookup = promisify(dns.lookup);
 
 dotenv.config();
 
@@ -31,6 +35,11 @@ async function startServer() {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
       },
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+      // Force IPv4
+      family: 4,
     });
   };
 
@@ -40,6 +49,14 @@ async function startServer() {
     console.log("SMTP_USER:", process.env.SMTP_USER ? "Set" : "Not Set");
     console.log("SMTP_PASS:", process.env.SMTP_PASS ? "Set" : "Not Set");
     console.log("SMTP_FROM:", process.env.SMTP_FROM || "Not Set (using default)");
+
+    try {
+      const dnsResult = await lookup('smtp.gmail.com');
+      console.log("DNS Lookup for smtp.gmail.com:", dnsResult);
+    } catch (dnsError: any) {
+      console.error("DNS Lookup failed:", dnsError);
+      return res.status(500).json({ success: false, error: "DNS Lookup failed: " + dnsError.message });
+    }
 
     const transporter = getTransporter();
 
