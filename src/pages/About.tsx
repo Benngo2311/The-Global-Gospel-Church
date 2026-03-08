@@ -61,13 +61,13 @@ export const About: React.FC = () => {
           >
             <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl">
               <img 
-                src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&auto=format&fit=crop&q=80&w=800" 
+                src="/images/IMG_3825-1024x768.webp" 
                 alt="Church Mission" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
             </div>
-            <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-church-red rounded-[3rem] -z-10 flex items-center justify-center p-8 text-white">
+            <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-church-red rounded-[3rem] z-10 flex items-center justify-center p-8 text-white shadow-2xl">
               <p className="text-xl font-serif italic text-center">
                 "{t({ en: 'Go into all the world and preach the gospel to all creation.', vi: 'Hãy đi khắp thế gian, giảng Tin Lành cho mọi người.' })}"
               </p>
