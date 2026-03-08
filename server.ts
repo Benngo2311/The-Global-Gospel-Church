@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -29,7 +30,7 @@ async function startServer() {
   const getTransporter = async () => {
     const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
     const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
-    const smtpSecure = process.env.SMTP_SECURE === 'true'; // Explicitly check for 'true'
+    const smtpSecure = process.env.SMTP_SECURE === 'true';
 
     console.log(`SMTP Config: Host=${smtpHost}, Port=${smtpPort}, Secure=${smtpSecure}, User=${process.env.SMTP_USER}`);
     
@@ -55,41 +56,64 @@ async function startServer() {
       logger: true,
       debug: true,
       tls: {
-        // Do not fail on invalid certs (helps with some proxy/firewall issues)
         rejectUnauthorized: false
       }
     } as any);
   };
 
-  // Test route for SMTP
+  // Helper to send email (supports Resend API or Nodemailer SMTP)
+  const sendEmail = async (options: { from: string, to: string, subject: string, text: string, html: string }) => {
+    const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+    
+    // If using Resend, use their API (HTTP) instead of SMTP to bypass port blocking
+    if (smtpHost.includes('resend.com') && process.env.SMTP_PASS?.startsWith('re_')) {
+      console.log("Using Resend API (HTTP) for delivery...");
+      const resend = new Resend(process.env.SMTP_PASS.replace(/\s/g, ""));
+      const { data, error } = await resend.emails.send({
+        from: options.from,
+        to: options.to,
+        subject: options.subject,
+        text: options.text,
+        html: options.html,
+      });
+
+      if (error) {
+        throw new Error(`Resend API Error: ${error.message}`);
+      }
+      return data;
+    }
+
+    // Fallback to Nodemailer SMTP
+    const transporter = await getTransporter();
+    return await transporter.sendMail(options);
+  };
+
+  // Test route for SMTP / API
   app.get("/api/test-email", async (req, res) => {
-    console.log("--- SMTP TEST START ---");
-    console.log("User:", process.env.SMTP_USER);
-    console.log("Pass length:", process.env.SMTP_PASS?.length || 0);
+    console.log("--- EMAIL TEST START ---");
+    const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
     
     try {
-      const transporter = await getTransporter();
-      console.log("Transporter created, verifying...");
-      
-      await transporter.verify();
-      console.log("Verification successful!");
-      
-      res.json({ 
-        success: true, 
-        message: "SMTP connection verified successfully",
-        user: process.env.SMTP_USER 
-      });
+      if (smtpHost.includes('resend.com')) {
+        console.log("Testing Resend API...");
+        const result = await sendEmail({
+          from: process.env.SMTP_FROM || "onboarding@resend.dev",
+          to: "thegospelpower777@gmail.com",
+          subject: "Test Email from TGGPC",
+          text: "This is a test email to verify the connection.",
+          html: "<p>This is a test email to verify the connection.</p>"
+        });
+        res.json({ success: true, message: "Resend API test successful", result });
+      } else {
+        const transporter = await getTransporter();
+        await transporter.verify();
+        res.json({ success: true, message: "SMTP connection verified successfully" });
+      }
     } catch (error: any) {
-      console.error("SMTP TEST FAILED:", error);
-      res.status(500).json({ 
-        success: false, 
-        error: error.message,
-        code: error.code,
-        command: error.command,
-        stack: error.stack
-      });
+      console.error("EMAIL TEST FAILED:", error);
+      res.status(500).json({ success: false, error: error.message });
     } finally {
-      console.log("--- SMTP TEST END ---");
+      console.log("--- EMAIL TEST END ---");
     }
   });
 
@@ -100,8 +124,6 @@ async function startServer() {
     if (!name || !email || !phone || !amount) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-
-    const transporter = await getTransporter();
 
     const fromAddress = process.env.SMTP_FROM || `"Church Giving" <${process.env.SMTP_USER}>`;
     const mailOptions = {
@@ -135,13 +157,13 @@ Submitted at: ${new Date().toLocaleString()}
     };
 
     try {
-      if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      if (!process.env.SMTP_PASS) {
         console.warn("SMTP credentials not set. Logging form data instead:", req.body);
         return res.json({ success: true, message: "Form received (Email not sent - SMTP not configured)" });
       }
 
       console.log(`Attempting to send email from ${fromAddress} to thegospelpower777@gmail.com`);
-      await transporter.sendMail(mailOptions);
+      await sendEmail(mailOptions);
       console.log("Email sent successfully");
       res.json({ success: true });
     } catch (error: any) {
@@ -157,8 +179,6 @@ Submitted at: ${new Date().toLocaleString()}
     if (!name || !email || !message) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-
-    const transporter = await getTransporter();
 
     const fromAddress = process.env.SMTP_FROM || `"Church Contact" <${process.env.SMTP_USER}>`;
     const mailOptions = {
@@ -192,13 +212,13 @@ Submitted at: ${new Date().toLocaleString()}
     };
 
     try {
-      if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      if (!process.env.SMTP_PASS) {
         console.warn("SMTP credentials not set. Logging form data instead:", req.body);
         return res.json({ success: true, message: "Form received (Email not sent - SMTP not configured)" });
       }
 
       console.log(`Attempting to send contact email from ${fromAddress} to thegospelpower777@gmail.com`);
-      await transporter.sendMail(mailOptions);
+      await sendEmail(mailOptions);
       console.log("Contact email sent successfully");
       res.json({ success: true });
     } catch (error: any) {
