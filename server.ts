@@ -27,25 +27,15 @@ async function startServer() {
 
   // Helper to create transporter
   const getTransporter = async () => {
-    let ipv4 = 'smtp.gmail.com';
-    try {
-      const dnsResult = await lookup('smtp.gmail.com', { family: 4 });
-      ipv4 = dnsResult.address;
-    } catch (e) {
-      console.warn("DNS IPv4 lookup failed, falling back to hostname:", e);
-    }
-
     return nodemailer.createTransport({
-      host: ipv4,
-      port: 465,
-      secure: true, // use SSL
+      service: 'gmail',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
       },
-      connectionTimeout: 20000, // Increase to 20 seconds
-      greetingTimeout: 20000,
-      socketTimeout: 20000,
+      connectionTimeout: 30000, // 30 seconds
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
     });
   };
 
@@ -56,33 +46,12 @@ async function startServer() {
     console.log("SMTP_PASS:", process.env.SMTP_PASS ? "Set" : "Not Set");
     console.log("SMTP_FROM:", process.env.SMTP_FROM || "Not Set (using default)");
 
-    let ipv4: string | undefined;
-    try {
-      const dnsResult = await lookup('smtp.gmail.com', { family: 4 });
-      ipv4 = dnsResult.address;
-      console.log("DNS Lookup (IPv4) for smtp.gmail.com:", dnsResult);
-    } catch (dnsError: any) {
-      console.error("DNS Lookup failed:", dnsError);
-      return res.status(500).json({ success: false, error: "DNS Lookup failed: " + dnsError.message });
-    }
-
-    const transporter = nodemailer.createTransport({
-      host: 'smtp-relay.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
-      },
-      connectionTimeout: 30000,
-      greetingTimeout: 30000,
-      socketTimeout: 30000,
-    });
+    const transporter = await getTransporter();
 
     try {
       await transporter.verify();
       console.log("SMTP connection verified successfully");
-      res.json({ success: true, message: "SMTP connection verified using IP: " + ipv4 });
+      res.json({ success: true, message: "SMTP connection verified" });
     } catch (error: any) {
       console.error("SMTP verification failed:", error);
       res.status(500).json({ success: false, error: error.message });
