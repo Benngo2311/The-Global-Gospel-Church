@@ -20,7 +20,9 @@ export const Classes: React.FC = () => {
       title: { en: 'Women of Global Gospel Power', vi: 'Phụ Nữ Quyền Năng Tin Lành Toàn Cầu' },
       desc: { en: 'Worship, intercession & Bible study.', vi: 'Thờ phượng, cầu thay & học Kinh Thánh.' },
       time: '5AM-7AM CALIFORNIA',
-      link: 'https://us02web.zoom.us/j/4837007000 (Passcode: 7777)'
+      link: 'https://us02web.zoom.us/j/4837007000',
+      isZoom: true,
+      zoomDetails: 'Passcode: 7777'
     },
     {
       day: { en: 'Tue, Thur, Fri', vi: 'Thứ 3, 5, 6' },
@@ -125,14 +127,21 @@ export const Classes: React.FC = () => {
                     {t({ en: 'View More', vi: 'Xem Thêm' })}
                   </Link>
                 ) : (
-                  <a 
-                    href={cls.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-church-red transition-all shadow-lg hover:-translate-y-1"
-                  >
-                    {cls.link === '#' ? t({ en: 'Join Zoom', vi: 'Tham Gia Zoom' }) : t({ en: 'View More', vi: 'Xem Thêm' })}
-                  </a>
+                  <div className="flex flex-col items-center md:items-end gap-2">
+                    <a 
+                      href={cls.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-8 py-3 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-church-red transition-all shadow-lg hover:-translate-y-1"
+                    >
+                      {(cls as any).isZoom ? t({ en: 'Join Zoom', vi: 'Tham Gia Zoom' }) : t({ en: 'View More', vi: 'Xem Thêm' })}
+                    </a>
+                    {(cls as any).zoomDetails && (
+                      <span className="text-[10px] text-slate-400 font-medium text-center md:text-right">
+                        {cls.link} ({(cls as any).zoomDetails})
+                      </span>
+                    )}
+                  </div>
                 )}
               </div>
             </motion.div>
