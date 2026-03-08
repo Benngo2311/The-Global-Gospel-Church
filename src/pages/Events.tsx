@@ -1,10 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Calendar as CalendarIcon, Clock, MapPin, ExternalLink } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, ExternalLink, Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 export const Events: React.FC = () => {
   const { t } = useLanguage();
+  const [detectedLocation, setDetectedLocation] = useState<string | null>(null);
+  const [userTimezone, setUserTimezone] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+  useEffect(() => {
+    const detectLocation = async () => {
+      try {
+        // Try getting location from browser
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+              const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+              const data = await response.json();
+              if (data.city || data.locality) {
+                setDetectedLocation(`${data.city || data.locality}, ${data.countryName}`);
+              }
+            } catch (e) {
+              console.error("Reverse geocoding failed", e);
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Location detection failed", error);
+      }
+    };
+
+    detectLocation();
+  }, []);
 
   const events = [
     {
@@ -60,10 +88,6 @@ export const Events: React.FC = () => {
     });
   };
 
-  const getTimezoneName = () => {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
-  };
-
   return (
     <div className="pt-32 pb-20 px-6 bg-church-cream min-h-screen">
       <div className="max-w-7xl mx-auto">
@@ -94,10 +118,27 @@ export const Events: React.FC = () => {
               vi: 'Luôn kết nối với cộng đồng toàn cầu của chúng tôi thông qua các buổi họp mặt và hội nghị sắp tới này.' 
             })}
           </motion.p>
-          <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-full text-xs font-bold text-slate-500 uppercase tracking-wider">
-            <Clock size={14} />
-            {t({ en: 'Times adjusted to your timezone:', vi: 'Thời gian đã điều chỉnh theo múi giờ của bạn:' })} {getTimezoneName()}
-          </div>
+          
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-8 inline-flex flex-col items-center gap-3 px-8 py-4 bg-white rounded-[2rem] shadow-sm border border-slate-100"
+          >
+            <div className="flex items-center gap-3 text-church-red">
+              <Globe size={20} className="animate-pulse" />
+              <span className="text-sm font-bold uppercase tracking-widest">
+                {t({ en: 'Location Detected', vi: 'Đã Nhận Diện Vị Trí' })}
+              </span>
+            </div>
+            <div className="text-slate-900 font-serif font-bold text-lg">
+              {detectedLocation || t({ en: 'Detecting...', vi: 'Đang nhận diện...' })}
+            </div>
+            <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+              <Clock size={14} />
+              {t({ en: 'Adjusted to:', vi: 'Đã điều chỉnh theo:' })} {userTimezone}
+            </div>
+          </motion.div>
         </div>
 
         <div className="space-y-12">
@@ -208,3 +249,4 @@ export const Events: React.FC = () => {
     </div>
   );
 };
+
