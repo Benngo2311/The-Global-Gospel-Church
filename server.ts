@@ -27,22 +27,26 @@ async function startServer() {
 
   // Helper to create transporter
   const getTransporter = async () => {
-    console.log("Creating transporter with user:", process.env.SMTP_USER);
+    const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+    const smtpPort = parseInt(process.env.SMTP_PORT || '465', 10);
+    const smtpSecure = process.env.SMTP_SECURE !== 'false'; // Default to true for 465
+
+    console.log(`Creating transporter for ${smtpHost}:${smtpPort} (Secure: ${smtpSecure})`);
     
-    let targetHost = 'smtp.gmail.com';
+    let targetHost = smtpHost;
     try {
       // Force DNS resolution to IPv4
-      const dnsResult = await lookup('smtp.gmail.com', { family: 4 });
+      const dnsResult = await lookup(smtpHost, { family: 4 });
       targetHost = dnsResult.address;
-      console.log("Resolved smtp.gmail.com to IPv4:", targetHost);
+      console.log(`Resolved ${smtpHost} to IPv4:`, targetHost);
     } catch (dnsErr) {
-      console.warn("DNS IPv4 lookup failed, using hostname:", dnsErr);
+      console.warn(`DNS IPv4 lookup failed for ${smtpHost}, using hostname:`, dnsErr);
     }
     
     return nodemailer.createTransport({
       host: targetHost,
-      port: 465,
-      secure: true,
+      port: smtpPort,
+      secure: smtpSecure,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
@@ -50,7 +54,6 @@ async function startServer() {
       connectionTimeout: 30000,
       greetingTimeout: 30000,
       socketTimeout: 30000,
-      // Force IPv4 in the socket connection as well
       family: 4,
       logger: true,
       debug: true,
