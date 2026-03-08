@@ -27,34 +27,65 @@ async function startServer() {
 
   // Helper to create transporter
   const getTransporter = async () => {
+    console.log("Creating transporter with user:", process.env.SMTP_USER);
+    
+    let targetHost = 'smtp.gmail.com';
+    try {
+      // Force DNS resolution to IPv4
+      const dnsResult = await lookup('smtp.gmail.com', { family: 4 });
+      targetHost = dnsResult.address;
+      console.log("Resolved smtp.gmail.com to IPv4:", targetHost);
+    } catch (dnsErr) {
+      console.warn("DNS IPv4 lookup failed, using hostname:", dnsErr);
+    }
+    
     return nodemailer.createTransport({
-      service: 'gmail',
+      host: targetHost,
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS?.replace(/\s/g, ""),
       },
-      connectionTimeout: 30000, // 30 seconds
+      connectionTimeout: 30000,
       greetingTimeout: 30000,
       socketTimeout: 30000,
-    });
+      // Force IPv4 in the socket connection as well
+      family: 4,
+      logger: true,
+      debug: true,
+    } as any);
   };
 
   // Test route for SMTP
   app.get("/api/test-email", async (req, res) => {
-    console.log("Testing SMTP connection...");
-    console.log("SMTP_USER:", process.env.SMTP_USER ? "Set" : "Not Set");
-    console.log("SMTP_PASS:", process.env.SMTP_PASS ? "Set" : "Not Set");
-    console.log("SMTP_FROM:", process.env.SMTP_FROM || "Not Set (using default)");
-
-    const transporter = await getTransporter();
-
+    console.log("--- SMTP TEST START ---");
+    console.log("User:", process.env.SMTP_USER);
+    console.log("Pass length:", process.env.SMTP_PASS?.length || 0);
+    
     try {
+      const transporter = await getTransporter();
+      console.log("Transporter created, verifying...");
+      
       await transporter.verify();
-      console.log("SMTP connection verified successfully");
-      res.json({ success: true, message: "SMTP connection verified" });
+      console.log("Verification successful!");
+      
+      res.json({ 
+        success: true, 
+        message: "SMTP connection verified successfully",
+        user: process.env.SMTP_USER 
+      });
     } catch (error: any) {
-      console.error("SMTP verification failed:", error);
-      res.status(500).json({ success: false, error: error.message });
+      console.error("SMTP TEST FAILED:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message,
+        code: error.code,
+        command: error.command,
+        stack: error.stack
+      });
+    } finally {
+      console.log("--- SMTP TEST END ---");
     }
   });
 
