@@ -8,6 +8,7 @@ import { cn } from '../lib/utils';
 
 export const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const location = useLocation();
@@ -15,7 +16,20 @@ export const Header: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    // Close dropdowns on click outside
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.lang-switcher')) {
+        setIsLangOpen(false);
+      }
+    };
+    window.addEventListener('click', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('click', handleClickOutside);
+    };
   }, []);
 
   return (
@@ -108,32 +122,53 @@ export const Header: React.FC = () => {
           </button>
 
           {/* Language Switcher */}
-          <div className="relative group">
-            <button className="flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-church-red transition-colors">
+          <div className="relative lang-switcher">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsLangOpen(!isLangOpen);
+              }}
+              className="flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-church-red transition-colors"
+            >
               <Globe size={16} />
               <span className="uppercase">{language}</span>
-              <ChevronDown size={14} />
+              <ChevronDown size={14} className={cn('transition-transform', isLangOpen && 'rotate-180')} />
             </button>
-            <div className="absolute right-0 top-full mt-2 w-32 glass rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-xl">
-              <button
-                onClick={() => setLanguage('en')}
-                className={cn(
-                  'w-full px-4 py-2 text-left text-sm hover:bg-church-red/10 transition-colors',
-                  language === 'en' && 'text-church-red font-bold'
-                )}
-              >
-                English
-              </button>
-              <button
-                onClick={() => setLanguage('vi')}
-                className={cn(
-                  'w-full px-4 py-2 text-left text-sm hover:bg-church-red/10 transition-colors',
-                  language === 'vi' && 'text-church-red font-bold'
-                )}
-              >
-                Tiếng Việt
-              </button>
-            </div>
+            <AnimatePresence>
+              {isLangOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute right-0 top-full mt-2 w-32 glass rounded-xl overflow-hidden shadow-xl z-[60]"
+                >
+                  <button
+                    onClick={() => {
+                      setLanguage('en');
+                      setIsLangOpen(false);
+                    }}
+                    className={cn(
+                      'w-full px-4 py-2 text-left text-sm hover:bg-church-red/10 transition-colors',
+                      language === 'en' && 'text-church-red font-bold'
+                    )}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLanguage('vi');
+                      setIsLangOpen(false);
+                    }}
+                    className={cn(
+                      'w-full px-4 py-2 text-left text-sm hover:bg-church-red/10 transition-colors',
+                      language === 'vi' && 'text-church-red font-bold'
+                    )}
+                  >
+                    Tiếng Việt
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -187,6 +222,38 @@ export const Header: React.FC = () => {
                   )}
                 </div>
               ))}
+              {/* Mobile Language Options */}
+              <div className="mt-4 pt-4 border-t border-slate-100">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+                  {t({ en: 'Language', vi: 'Ngôn Ngữ' })}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => {
+                      setLanguage('en');
+                      setIsOpen(false);
+                    }}
+                    className={cn(
+                      'px-4 py-2 rounded-xl text-sm font-medium transition-all',
+                      language === 'en' ? 'bg-church-red text-white' : 'bg-slate-50 text-slate-600'
+                    )}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLanguage('vi');
+                      setIsOpen(false);
+                    }}
+                    className={cn(
+                      'px-4 py-2 rounded-xl text-sm font-medium transition-all',
+                      language === 'vi' ? 'bg-church-red text-white' : 'bg-slate-50 text-slate-600'
+                    )}
+                  >
+                    Tiếng Việt
+                  </button>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
