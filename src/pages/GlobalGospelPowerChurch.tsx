@@ -99,8 +99,11 @@ export const GlobalGospelPowerChurch: React.FC = () => {
               <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-8">
                 {t({ en: 'Scriptural Basis', vi: 'Cơ Sở Kinh Thánh' })} — Matthew 28:18–20
               </p>
-              <p className="text-2xl md:text-3xl font-serif italic text-slate-800 leading-relaxed mb-8">
-                "And Jesus came and spoke to them, saying, 'All authority has been given to Me in heaven and on earth. Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, teaching them to observe all things that I have commanded you; and lo, I am with you always, even to the end of the age.' Amen."
+              <p className="text-xl md:text-2xl font-serif italic text-slate-800 leading-relaxed mb-8 whitespace-pre-line">
+                {t({ 
+                  en: '18 And Jesus came and spoke to them, saying, “All authority has been given to Me in heaven and on earth. 19 Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, 20 teaching them to observe all things that I have commanded you; and l o, I am with you always, even to the end of the age.” Amen.',
+                  vi: '18 Đức Chúa Jêsus đến gần, phán cùng môn đồ như vầy: Hết cả quyền phép ở trên trời và dưới đất đã giao cho ta. 19 Vậy, hãy đi dạy dỗ muôn dân, hãy nhân danh Đức Cha, Đức Con, và Đức Thánh Linh mà làm phép báp-têm cho họ, 20 và dạy họ giữ hết cả mọi điều mà ta đã truyền cho các ngươi. Và nầy, ta thường ở cùng các ngươi luôn cho đến tận thế.'
+                })}
               </p>
               <div className="w-20 h-1 bg-church-red rounded-full" />
             </div>
@@ -126,12 +129,37 @@ export const GlobalGospelPowerChurch: React.FC = () => {
               <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-8">
                 {t({ en: 'Our Activities', vi: 'Các Hoạt Động Của Chúng Tôi' })}
               </h2>
-              <p className="text-xl text-slate-600 leading-relaxed mb-8 italic">
-                {t({ 
-                  en: 'Organize worship gatherings that foster a sense of community and spiritual growth, including Bible teaching sessions that help deepen understanding of scripture; water baptism as a public declaration of faith; Communion as a sacred ritual that commemorates Christ\'s sacrifice; regular prayer and intercession for both personal needs and collective concerns; deliverance from spiritual bondage; healing sessions where individuals can seek physical and emotional restoration; and evangelism initiatives that reach out to the community, sharing the love and message of Christ with all.', 
-                  vi: 'Tổ chức các buổi nhóm thờ phượng nhằm thúc đẩy tinh thần cộng đồng và sự phát triển tâm linh, bao gồm các buổi dạy Kinh Thánh giúp hiểu sâu hơn về lời Chúa; báp-têm bằng nước như một sự tuyên xưng đức tin công khai; Tiệc Thánh như một nghi lễ thiêng liêng kỷ niệm sự hy sinh của Chúa Kitô; cầu nguyện và thay cho thường xuyên cho các nhu cầu cá nhân và tập thể; giải cứu khỏi sự trói buộc tâm linh; các buổi chữa lằnh nơi các cá nhân có thể tìm kiếm sự phục hồi về thể chất và cảm xúc; và các sáng kiến truyền giáo vươn tới cộng đồng, chia sẻ tình yêu và thông điệp của Chúa Kitô với tất cả mọi người.' 
-                })}
-              </p>
+              <div className="text-xl text-slate-600 leading-relaxed mb-8">
+                <p className="mb-4">
+                  {t({ 
+                    en: 'Organize worship gatherings that foster a sense of community and spiritual growth, including:', 
+                    vi: 'Tổ chức các buổi nhóm thờ phượng nhằm thúc đẩy tinh thần cộng đồng và sự phát triển thuộc linh, bao gồm:' 
+                  })}
+                </p>
+                <ul className="space-y-4 list-disc pl-6">
+                  <li>
+                    {t({ en: 'Bible teaching sessions.', vi: 'Các buổi dạy Kinh Thánh.' })}
+                  </li>
+                  <li>
+                    {t({ 
+                      en: 'Regular prayer, intercession, deliverance, and healing for both personal and collective needs.', 
+                      vi: 'Cầu nguyện cầu thay, giải cứu chữa lành thường xuyên cho các nhu cầu cá nhân và tập thể.' 
+                    })}
+                  </li>
+                  <li>
+                    {t({ 
+                      en: 'Building together and sharing the vision of evangelism towards the community.', 
+                      vi: 'Cùng nhau gây dựng và chia sẻ khải tượng truyền giáo hướng đến cộng đồng.' 
+                    })}
+                  </li>
+                  <li>
+                    {t({ 
+                      en: 'Sharing the love and message of Jesus Christ with everyone.', 
+                      vi: 'Chia sẻ tình yêu và thông điệp của Đức Chúa Jêsus Christ với tất cả mọi người.' 
+                    })}
+                  </li>
+                </ul>
+              </div>
               <div className="flex items-center gap-4 p-6 bg-church-cream rounded-3xl border border-church-red/10">
                 <Heart className="text-church-red shrink-0" size={32} />
                 <div>

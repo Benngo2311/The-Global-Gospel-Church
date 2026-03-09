@@ -20,10 +20,10 @@ export const About: React.FC = () => {
           <h1 className="text-5xl md:text-8xl font-serif font-bold mb-8 text-slate-900">
             {t({ en: 'About Us', vi: 'Về Chúng Tôi' })}
           </h1>
-          <p className="text-2xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-light">
+          <p className="text-2xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-light whitespace-pre-line">
             {t({ 
               en: 'Discover the history, mission, and heart behind The Global Gospel Power Church.', 
-              vi: 'Khám phá lịch sử, sứ mệnh và trái tim đằng sau Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' 
+              vi: 'Khám phá lịch sử, sứ mệnh và trái tim đằng sau \n Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' 
             })}
           </p>
         </motion.div>
