@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Shield, Users, Globe, Video, Calendar, Clock, Quote, ArrowRight, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TimeRange } from '../components/TimeRange';
 
 export const CouncilOfPrayers: React.FC = () => {
   const { t } = useLanguage();
@@ -150,6 +151,7 @@ export const CouncilOfPrayers: React.FC = () => {
                         <p className="text-lg font-bold">
                           <span className="text-church-red">To:</span> Nov 15, 6:00 PM (California)
                         </p>
+                        <TimeRange ptStart="18:00" ptEnd="18:00" className="mt-2" />
                       </div>
                     </div>
                   </div>

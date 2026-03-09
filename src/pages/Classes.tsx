@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Book, Video, Clock, Users } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TimeRange } from '../components/TimeRange';
 
 export const Classes: React.FC = () => {
   const { t } = useLanguage();
@@ -13,6 +14,8 @@ export const Classes: React.FC = () => {
       title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' },
       desc: { en: 'Bilingual Bible study (EN–VN)', vi: 'Học Kinh Thánh song ngữ (Anh-Việt)' },
       time: '5AM-7AM CALIFORNIA',
+      ptStart: '05:00',
+      ptEnd: '07:00',
       link: '/ministries/heaven-academy'
     },
     {
@@ -20,6 +23,8 @@ export const Classes: React.FC = () => {
       title: { en: 'Women of Global Gospel Power', vi: 'Phụ Nữ Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Worship, intercession & Bible study.', vi: 'Thờ phượng, cầu thay & học Kinh Thánh.' },
       time: '5AM-7AM CALIFORNIA',
+      ptStart: '05:00',
+      ptEnd: '07:00',
       link: 'https://us02web.zoom.us/j/4837007000',
       isZoom: true,
       zoomDetails: 'Passcode: 7777'
@@ -29,6 +34,8 @@ export const Classes: React.FC = () => {
       title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Practical ministry & theological training.', vi: 'Đào tạo mục vụ thực hành & thần học.' },
       time: '5AM-8AM CALIFORNIA',
+      ptStart: '05:00',
+      ptEnd: '08:00',
       link: '/ministries/bible-school'
     },
     {
@@ -36,6 +43,8 @@ export const Classes: React.FC = () => {
       title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Practical ministry & theological training.', vi: 'Đào tạo mục vụ thực hành & thần học.' },
       time: '2:30PM-3:30PM CALIFORNIA',
+      ptStart: '14:30',
+      ptEnd: '15:30',
       link: '/ministries/bible-school'
     },
     {
@@ -43,6 +52,8 @@ export const Classes: React.FC = () => {
       title: { en: 'Heaven Academy (Youth)', vi: 'Học Viện Thiên Đàng (Giới Trẻ)' },
       desc: { en: 'Bible English for youth (ages 6–17)', vi: 'Kinh Thánh tiếng Anh cho giới trẻ (6–17 tuổi)' },
       time: '4AM - 5:30AM CALIFORNIA',
+      ptStart: '04:00',
+      ptEnd: '05:30',
       link: '/ministries/heaven-academy'
     },
     {
@@ -50,6 +61,8 @@ export const Classes: React.FC = () => {
       title: { en: 'Men\'s Global Power Gospel Council', vi: 'Hội Đồng Tin Lành Quyền Phép Nam Giới Toàn Cầu' },
       desc: { en: 'Bilingual Bible Study For Men (EN–VN)', vi: 'Học Kinh Thánh song ngữ cho nam giới (Anh-Việt)' },
       time: '6PM - 9PM CALIFORNIA',
+      ptStart: '18:00',
+      ptEnd: '21:00',
       link: '/ministries/mens-ministry'
     }
   ];
@@ -115,9 +128,18 @@ export const Classes: React.FC = () => {
               </div>
 
               <div className="flex flex-col items-center md:items-end gap-4 min-w-[200px]">
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  <Clock size={14} className="text-church-red" />
-                  {cls.time}
+                <div className="flex flex-col items-center md:items-end gap-1">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    <Clock size={14} className="text-church-red" />
+                    {cls.time}
+                  </div>
+                  {(cls as any).ptStart && (cls as any).ptEnd && (
+                    <TimeRange 
+                      ptStart={(cls as any).ptStart} 
+                      ptEnd={(cls as any).ptEnd} 
+                      className="text-right"
+                    />
+                  )}
                 </div>
                 {cls.link.startsWith('/') ? (
                   <Link 

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Users, BookOpen, Video, Calendar, Clock, Shield, Heart, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TimeRange } from '../components/TimeRange';
 
 export const MensMinistry: React.FC = () => {
   const { t } = useLanguage();
@@ -159,6 +160,7 @@ export const MensMinistry: React.FC = () => {
                         {t({ en: 'Time', vi: 'Giờ Giấc' })}
                       </p>
                       <p className="text-xl font-bold">6:00 PM to 9:00 PM (California)</p>
+                      <TimeRange ptStart="18:00" ptEnd="21:00" className="mt-2" />
                     </div>
                   </div>
 

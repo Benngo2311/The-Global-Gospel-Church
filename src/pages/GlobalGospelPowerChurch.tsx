@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Church, Users, Heart, Video, Calendar, Clock, Quote, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TimeRange } from '../components/TimeRange';
 
 export const GlobalGospelPowerChurch: React.FC = () => {
   const { t } = useLanguage();
@@ -191,6 +192,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
                         {t({ en: 'Time', vi: 'Giờ Giấc' })}
                       </p>
                       <p className="text-lg font-bold">5:00 AM to 10:00 AM (California)</p>
+                      <TimeRange ptStart="05:00" ptEnd="10:00" className="mt-2" />
                     </div>
                   </div>
 

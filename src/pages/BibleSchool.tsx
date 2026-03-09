@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Book, GraduationCap, CheckCircle2, ArrowRight, Video, Calendar, Clock, ShieldCheck, Globe, Users } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TimeRange } from '../components/TimeRange';
 
 export const GlobalGospelPowerBibleSchool: React.FC = () => {
   const { t } = useLanguage();
@@ -20,6 +21,8 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
       title: { en: 'Theology & Practical Ministry Training', vi: 'Đào Tạo Thần Học & Mục Vụ Thực Tiễn' },
       schedule: { en: 'Every Tuesday, Thursday, and Friday', vi: 'Thứ Ba, Thứ Năm và Thứ Sáu hàng tuần' },
       time: { en: '5:00 AM to 8:00 AM (California time)', vi: '5:00 AM đến 8:00 AM (Giờ California)' },
+      ptStart: '05:00',
+      ptEnd: '08:00',
       zoom: '483 700 7000',
       password: '7777',
       link: 'https://us02web.zoom.us/j/4837007000'
@@ -28,6 +31,8 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
       title: { en: 'Theology & Practical Ministry Training', vi: 'Đào Tạo Thần Học & Mục Vụ Thực Tiễn' },
       schedule: { en: 'Monday to Friday', vi: 'Thứ Hai đến Thứ Sáu' },
       time: { en: '3:00 PM to 4:00 PM (California time)', vi: '3:00 PM đến 4:00 PM (Giờ California)' },
+      ptStart: '15:00',
+      ptEnd: '16:00',
       zoom: '483 700 7000',
       password: '7777',
       link: 'https://us02web.zoom.us/j/4837007000'
@@ -179,6 +184,13 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                         {t({ en: 'Time (PT)', vi: 'Giờ Giấc (PT)' })}
                       </p>
                       <p className="text-lg font-medium">{t(cls.time)}</p>
+                      {(cls as any).ptStart && (cls as any).ptEnd && (
+                        <TimeRange 
+                          ptStart={(cls as any).ptStart} 
+                          ptEnd={(cls as any).ptEnd} 
+                          className="mt-2"
+                        />
+                      )}
                     </div>
                   </div>
 

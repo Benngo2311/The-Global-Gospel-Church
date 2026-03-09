@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { BookOpen, GraduationCap, Languages, Calendar, Video, CheckCircle2, ArrowRight, Clock, Play } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { TimeRange } from '../components/TimeRange';
 
 export const HeavenAcademy: React.FC = () => {
   const { t } = useLanguage();
@@ -12,6 +13,8 @@ export const HeavenAcademy: React.FC = () => {
       subtitle: { en: '(English–Vietnamese)', vi: '(Anh–Việt)' },
       schedule: { en: 'Every Monday and Wednesday', vi: 'Thứ Hai và Thứ Tư hàng tuần' },
       time: { en: '5:00 AM to 7:00 AM (California time)', vi: '5:00 AM đến 7:00 AM (Giờ California)' },
+      ptStart: '05:00',
+      ptEnd: '07:00',
       zoom: '484 700 7000',
       link: 'https://us02web.zoom.us/j/4847007000?pwd=aEQ3QWNCRUtsVldkaWxSRWtGZmMxdz09'
     },
@@ -20,6 +23,8 @@ export const HeavenAcademy: React.FC = () => {
       subtitle: { en: 'For Youth (ages 6–17)', vi: 'Cho Thanh Thiếu Niên (6–17 tuổi)' },
       schedule: { en: 'Every Friday', vi: 'Thứ Sáu hàng tuần' },
       time: { en: '4:00 PM to 5:30 PM (California time)', vi: '4:00 PM đến 5:30 PM (Giờ California)' },
+      ptStart: '16:00',
+      ptEnd: '17:30',
       zoom: '487 700 7000',
       link: 'https://us02web.zoom.us/j/4877007000'
     }
@@ -159,6 +164,13 @@ export const HeavenAcademy: React.FC = () => {
                         {t({ en: 'Time', vi: 'Giờ Giấc' })}
                       </p>
                       <p className="text-slate-700 font-medium">{t(cls.time)}</p>
+                      {(cls as any).ptStart && (cls as any).ptEnd && (
+                        <TimeRange 
+                          ptStart={(cls as any).ptStart} 
+                          ptEnd={(cls as any).ptEnd} 
+                          className="mt-2"
+                        />
+                      )}
                     </div>
                   </div>
 
