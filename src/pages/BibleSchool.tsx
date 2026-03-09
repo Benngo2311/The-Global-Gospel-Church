@@ -10,7 +10,7 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
     { en: 'Old Testament', vi: 'Cựu Ước' },
     { en: 'New Testament', vi: 'Tân Ước' },
     { en: 'Fundamental & Advanced Theology', vi: 'Thần Học Cơ Bản & Nâng Cao' },
-    { en: 'Spiritual Warfare', vi: 'Chiến Trận Tâm Linh' },
+    { en: 'Spiritual Warfare', vi: 'Chiến Trận Thuộc Linh' },
     { en: 'Evangelism', vi: 'Truyền Giáo' },
     { en: 'Church Planting & Development', vi: 'Gây Dựng & Phát Triển Hội Thánh' }
   ];

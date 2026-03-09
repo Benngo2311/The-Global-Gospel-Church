@@ -17,7 +17,7 @@ export const Classes: React.FC = () => {
     },
     {
       day: { en: 'MON, WED, SAT', vi: 'Thứ 2, 4, 7' },
-      title: { en: 'Women of Global Gospel Power', vi: 'Phụ Nữ Quyền Năng Tin Lành Toàn Cầu' },
+      title: { en: 'Women of Global Gospel Power', vi: 'Phụ Nữ Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Worship, intercession & Bible study.', vi: 'Thờ phượng, cầu thay & học Kinh Thánh.' },
       time: '5AM-7AM CALIFORNIA',
       link: 'https://us02web.zoom.us/j/4837007000',
@@ -26,14 +26,14 @@ export const Classes: React.FC = () => {
     },
     {
       day: { en: 'Tue, Thur, Fri', vi: 'Thứ 3, 5, 6' },
-      title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Quyền Năng Tin Lành Toàn Cầu' },
+      title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Practical ministry & theological training.', vi: 'Đào tạo mục vụ thực hành & thần học.' },
       time: '5AM-8AM CALIFORNIA',
       link: '/ministries/bible-school'
     },
     {
       day: { en: 'Weekdays', vi: 'Ngày Trong Tuần' },
-      title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Quyền Năng Tin Lành Toàn Cầu' },
+      title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Practical ministry & theological training.', vi: 'Đào tạo mục vụ thực hành & thần học.' },
       time: '2:30PM-3:30PM CALIFORNIA',
       link: '/ministries/bible-school'
@@ -47,7 +47,7 @@ export const Classes: React.FC = () => {
     },
     {
       day: { en: 'Friday', vi: 'Thứ 6' },
-      title: { en: 'Men\'s Global Power Gospel Council', vi: 'Hội Đồng Tin Lành Quyền Năng Nam Giới Toàn Cầu' },
+      title: { en: 'Men\'s Global Power Gospel Council', vi: 'Hội Đồng Tin Lành Quyền Phép Nam Giới Toàn Cầu' },
       desc: { en: 'Bilingual Bible Study For Men (EN–VN)', vi: 'Học Kinh Thánh song ngữ cho nam giới (Anh-Việt)' },
       time: '6PM - 9PM CALIFORNIA',
       link: '/ministries/mens-ministry'
@@ -63,7 +63,7 @@ export const Classes: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-church-red text-xs font-bold uppercase tracking-[0.2em] mb-4 block"
           >
-            {t({ en: 'SPIRITUAL GROWTH & EDUCATION', vi: 'SỰ PHÁT TRIỂN TÂM LINH & GIÁO DỤC' })}
+            {t({ en: 'SPIRITUAL GROWTH & EDUCATION', vi: 'SỰ PHÁT TRIỂN THUỘC LINH & GIÁO DỤC' })}
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}

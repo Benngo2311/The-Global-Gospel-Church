@@ -10,7 +10,7 @@ export const Ministries: React.FC = () => {
   const ministries = [
     {
       icon: <Globe size={40} />,
-      title: { en: 'The Global Gospel Power Church', vi: 'Hội Thánh Quyền Năng Tin Lành Toàn Cầu' },
+      title: { en: 'The Global Gospel Power Church', vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Organizing Worship Services, Bible Teachings, Water Baptisms, Baptism of the Holy Spirit, Holy Communion, Prayer, Intercession, Deliverance, Healing, and Evangelism for the Community.', vi: 'Tổ chức các buổi thờ phượng, dạy Kinh Thánh, báp-têm bằng nước, báp-têm bằng Thánh Linh, tiệc thánh, cầu nguyện, cầu thay, giải cứu, chữa lành và truyền giáo cho cộng đồng.' },
       link: '/ministries/church',
       external: false
@@ -24,7 +24,7 @@ export const Ministries: React.FC = () => {
     },
     {
       icon: <Book size={40} />,
-      title: { en: 'The Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Quyền Năng Tin Lành Toàn Cầu' },
+      title: { en: 'The Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'By the guidance of the Holy Spirit, teaching, training, and equipping believers with Basic and Advanced Biblical Studies, for Christians who are called by God to become His servants.', vi: 'Dưới sự dẫn dắt của Thánh Linh, giảng dạy, đào tạo và trang bị cho các tín hữu các nghiên cứu Kinh Thánh cơ bản và nâng cao cho những người được Chúa gọi.' },
       link: '/ministries/bible-school',
       external: false
@@ -38,14 +38,14 @@ export const Ministries: React.FC = () => {
     },
     {
       icon: <Users size={40} />,
-      title: { en: 'Council Of Prayers For The Global Spiritual Battle', vi: 'Hội Đồng Cầu Nguyện Cho Chiến Trận Tâm Linh Toàn Cầu' },
+      title: { en: 'Council Of Prayers For The Global Spiritual Battle', vi: 'Hội Đồng Hiệp Nguyện Chiến Trận Thuộc Linh Toàn Cầu' },
       desc: { en: 'By the guidance of the Holy Spirit, organizing periods of fasting and prayer, night watches for spiritual warfare, and prayer walks as led by the Holy Spirit.', vi: 'Dưới sự dẫn dắt của Thánh Linh, tổ chức các giai đoạn kiêng ăn và cầu nguyện, canh đêm cho chiến trận tâm linh và đi bộ cầu nguyện.' },
       link: '/ministries/council-of-prayers',
       external: false
     },
     {
       icon: <Users size={40} />,
-      title: { en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' },
+      title: { en: "Men's Global Power Gospel Council", vi: 'Ban Nam Giới Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Empowering men to grow in faith, lead their families, and serve the community through bilingual Bible studies and fellowship.', vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình và phục vụ cộng đồng thông qua các buổi học Kinh Thánh song ngữ và thông công.' },
       link: '/ministries/mens-ministry',
       external: false

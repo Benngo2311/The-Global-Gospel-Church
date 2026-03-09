@@ -23,7 +23,7 @@ export const About: React.FC = () => {
           <p className="text-2xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-light">
             {t({ 
               en: 'Discover the history, mission, and heart behind The Global Gospel Power Church.', 
-              vi: 'Khám phá lịch sử, sứ mệnh và trái tim đằng sau Hội Thánh Quyền Năng Tin Lành Toàn Cầu.' 
+              vi: 'Khám phá lịch sử, sứ mệnh và trái tim đằng sau Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' 
             })}
           </p>
         </motion.div>
@@ -48,7 +48,7 @@ export const About: React.FC = () => {
               <p>
                 {t({
                   en: 'We are committed to reaching the unreached and building a global family of believers who are equipped to spread the Gospel of Jesus Christ.',
-                  vi: 'Chúng tôi cam kết tiếp cận những người chưa được tiếp cận và xây dựng một gia đình tín hữu toàn cầu được trang bị để truyền bá Tin Lành của Chúa Giê-su Ki-tô.'
+                  vi: 'Chúng tôi cam kết tiếp cận những người chưa được tiếp cận và xây dựng một gia đình tín hữu toàn cầu được trang bị để truyền bá Tin Lành của Đức Chúa Jêsus Christ.'
                 })}
               </p>
             </div>
@@ -79,7 +79,7 @@ export const About: React.FC = () => {
           {[
             {
               title: { en: 'Our Vision', vi: 'Tầm Nhìn' },
-              desc: { en: 'To see a world transformed by the power of the Gospel and the love of Christ.', vi: 'Thấy một thế giới được biến đổi bởi quyền năng của Tin Lành và tình yêu của Chúa Kitô.' },
+              desc: { en: 'To see a world transformed by the power of the Gospel and the love of Christ.', vi: 'Thấy một thế giới được biến đổi bởi quyền năng của Tin Lành và tình yêu của Đức Chúa Jêsus Christ.' },
               icon: '🌟'
             },
             {
@@ -122,7 +122,7 @@ export const About: React.FC = () => {
             <p className="text-xl text-slate-300 leading-relaxed mb-12">
               {t({
                 en: 'Founded in 2020, Global Gospel Power Church emerged from a desire to create a welcoming online space for Christians seeking connection and spiritual growth. Since then, we have grown into a global family, reaching thousands with the message of hope.',
-                vi: 'Được thành lập vào năm 2020, Hội Thánh Quyền Năng Tin Lành Toàn Cầu nảy sinh từ mong muốn tạo ra một không gian trực tuyến chào đón cho những người Kitô hữu đang tìm kiếm sự kết nối và phát triển tâm linh. Kể từ đó, chúng tôi đã phát triển thành một gia đình toàn cầu, tiếp cận hàng ngàn người với thông điệp hy vọng.'
+                vi: 'Được thành lập vào năm 2020, Hội Thánh Quyền Năng Tin Lành Toàn Cầu nảy sinh từ mong muốn tạo ra một không gian trực tuyến chào đón cho những Cơ Đốc nhân đang tìm kiếm sự kết nối và phát triển tâm linh. Kể từ đó, chúng tôi đã phát triển thành một gia đình toàn cầu, tiếp cận hàng ngàn người với thông điệp hy vọng.'
               })}
             </p>
             <div className="flex flex-wrap justify-center gap-12">
