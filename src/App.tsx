@@ -15,6 +15,7 @@ import { CouncilOfPrayers } from './pages/CouncilOfPrayers';
 import { MensMinistry } from './pages/MensMinistry';
 import { Giving } from './pages/Giving';
 import { Contact } from './pages/Contact';
+import { Live } from './pages/Live';
 import { SpiritualAssistant } from './components/SpiritualAssistant';
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="ministries/mens-ministry" element={<MensMinistry />} />
             <Route path="giving" element={<Giving />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="live" element={<Live />} />
           </Route>
         </Routes>
         <SpiritualAssistant />

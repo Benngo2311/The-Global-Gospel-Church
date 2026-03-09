@@ -1,11 +1,12 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, BookOpen, Users, Calendar, Heart, Globe, MessageSquare } from 'lucide-react';
+import { ArrowRight, BookOpen, Users, Calendar, Heart, Globe, MessageSquare, Radio } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SITE_CONTENT } from '../constants/content';
 import { Link } from 'react-router-dom';
 import { PrayerWall } from '../components/PrayerWall';
 import { DailyVerse } from '../components/DailyVerse';
+import { LiveBroadcast } from '../components/LiveBroadcast';
 
 export const Home: React.FC = () => {
   const { t } = useLanguage();
@@ -104,6 +105,38 @@ export const Home: React.FC = () => {
                 </Link>
               </div>
             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Live Stream Section */}
+      <section className="py-20 px-6 bg-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-500 text-[10px] font-bold uppercase tracking-widest mb-4">
+                <Radio size={12} className="animate-pulse" />
+                {t({ en: 'Live Broadcast', vi: 'Phát Trực Tiếp' })}
+              </div>
+              <h2 className="text-4xl font-serif font-bold text-slate-900">
+                {t({ en: 'Join Our Livestream', vi: 'Tham Gia Buổi Trực Tiếp' })}
+              </h2>
+            </div>
+            <Link
+              to="/live"
+              className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-church-red transition-all flex items-center gap-2 shadow-lg"
+            >
+              {t({ en: 'Watch Now', vi: 'Xem Ngay' })}
+              <Radio size={20} />
+            </Link>
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+          >
+            <LiveBroadcast isLive={true} />
           </motion.div>
         </div>
       </section>

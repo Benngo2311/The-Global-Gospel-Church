@@ -18,6 +18,7 @@ export const NAV_ITEMS: NavItem[] = [
     ]
   },
   { title: { en: 'Giving', vi: 'Dâng Hiến' }, href: '/giving' },
+  { title: { en: 'Live', vi: 'Trực Tiếp' }, href: '/live' },
   { title: { en: 'Contact', vi: 'Liên Hệ' }, href: '/contact' },
 ];
 
