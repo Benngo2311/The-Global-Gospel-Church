@@ -2,6 +2,7 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
+import Database from "better-sqlite3";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -20,6 +21,18 @@ async function startServer() {
   const PORT = parseInt(process.env.PORT || "3000", 10);
 
   app.use(express.json());
+
+  // Database setup
+  const db = new Database("church.db");
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS prayers (
+      id TEXT PRIMARY KEY,
+      text TEXT NOT NULL,
+      author TEXT NOT NULL,
+      prayedCount INTEGER DEFAULT 0,
+      timestamp INTEGER NOT NULL
+    )
+  `);
 
   // Health check route
   app.get("/api/health", (req, res) => {
@@ -225,6 +238,40 @@ Submitted at: ${new Date().toLocaleString()}
       console.error("Error sending email:", error);
       res.status(500).json({ error: "Failed to send email", details: error.message });
     }
+  });
+
+  // Prayer Wall API Routes
+  app.get("/api/prayers", (req, res) => {
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    
+    // Cleanup old prayers (optional, but good for maintenance)
+    db.prepare("DELETE FROM prayers WHERE timestamp < ?").run(sevenDaysAgo);
+    
+    const prayers = db.prepare("SELECT * FROM prayers WHERE timestamp >= ? ORDER BY timestamp DESC").all(sevenDaysAgo);
+    res.json(prayers);
+  });
+
+  app.post("/api/prayers", (req, res) => {
+    const { text, author } = req.body;
+    if (!text) return res.status(400).json({ error: "Text is required" });
+    
+    const id = Math.random().toString(36).substr(2, 9);
+    const timestamp = Date.now();
+    
+    db.prepare("INSERT INTO prayers (id, text, author, timestamp) VALUES (?, ?, ?, ?)").run(
+      id,
+      text,
+      author || "Anonymous",
+      timestamp
+    );
+    
+    res.json({ id, text, author: author || "Anonymous", prayedCount: 0, timestamp });
+  });
+
+  app.post("/api/prayers/:id/pray", (req, res) => {
+    const { id } = req.params;
+    db.prepare("UPDATE prayers SET prayedCount = prayedCount + 1 WHERE id = ?").run(id);
+    res.json({ success: true });
   });
 
   // Vite middleware for development

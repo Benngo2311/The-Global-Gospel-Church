@@ -14,41 +14,56 @@ interface Prayer {
 
 export const PrayerWall: React.FC = () => {
   const { t } = useLanguage();
-  const [prayers, setPrayers] = useState<Prayer[]>([
-    {
-      id: '1',
-      text: 'Praying for healing and strength for all those facing health challenges today.',
-      author: 'Anonymous',
-      prayedCount: 12,
-      timestamp: new Date()
-    },
-    {
-      id: '2',
-      text: 'Please pray for our upcoming global missions and for the hearts of those we reach.',
-      author: 'Pastor John',
-      prayedCount: 24,
-      timestamp: new Date()
-    }
-  ]);
+  const [prayers, setPrayers] = useState<Prayer[]>([]);
   const [newPrayer, setNewPrayer] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleAddPrayer = () => {
-    if (!newPrayer.trim()) return;
-    const prayer: Prayer = {
-      id: Math.random().toString(36).substr(2, 9),
-      text: newPrayer,
-      author: 'Anonymous',
-      prayedCount: 0,
-      timestamp: new Date()
-    };
-    setPrayers([prayer, ...prayers]);
-    setNewPrayer('');
-    setIsAdding(false);
+  useEffect(() => {
+    fetchPrayers();
+  }, []);
+
+  const fetchPrayers = async () => {
+    try {
+      const response = await fetch('/api/prayers');
+      const data = await response.json();
+      // Ensure timestamps are Date objects
+      const formattedData = data.map((p: any) => ({
+        ...p,
+        timestamp: new Date(p.timestamp)
+      }));
+      setPrayers(formattedData);
+    } catch (error) {
+      console.error('Error fetching prayers:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handlePrayed = (id: string) => {
-    setPrayers(prayers.map(p => p.id === id ? { ...p, prayedCount: p.prayedCount + 1 } : p));
+  const handleAddPrayer = async () => {
+    if (!newPrayer.trim()) return;
+    try {
+      const response = await fetch('/api/prayers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: newPrayer, author: 'Anonymous' })
+      });
+      const data = await response.json();
+      setPrayers([{ ...data, timestamp: new Date(data.timestamp) }, ...prayers]);
+      setNewPrayer('');
+      setIsAdding(false);
+    } catch (error) {
+      console.error('Error adding prayer:', error);
+    }
+  };
+
+  const handlePrayed = async (id: string) => {
+    try {
+      await fetch(`/api/prayers/${id}/pray`, { method: 'POST' });
+      setPrayers(prayers.map(p => p.id === id ? { ...p, prayedCount: p.prayedCount + 1 } : p));
+    } catch (error) {
+      console.error('Error updating prayed count:', error);
+    }
   };
 
   return (
@@ -104,7 +119,16 @@ export const PrayerWall: React.FC = () => {
         </AnimatePresence>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {prayers.map((prayer, i) => (
+          {isLoading ? (
+            <div className="col-span-full text-center py-20">
+              <div className="animate-spin w-10 h-10 border-4 border-church-red border-t-transparent rounded-full mx-auto mb-4" />
+              <p className="text-slate-400 font-medium">{t({ en: 'Loading prayers...', vi: 'Đang tải các lời cầu nguyện...' })}</p>
+            </div>
+          ) : prayers.length === 0 ? (
+            <div className="col-span-full text-center py-20 bg-white rounded-[2rem] border border-slate-100">
+              <p className="text-slate-400 font-medium">{t({ en: 'No prayer requests yet. Be the first to post!', vi: 'Chưa có yêu cầu cầu nguyện nào. Hãy là người đầu tiên đăng!' })}</p>
+            </div>
+          ) : prayers.map((prayer, i) => (
             <motion.div
               key={prayer.id}
               initial={{ opacity: 0, y: 20 }}
