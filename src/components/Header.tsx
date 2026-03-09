@@ -62,7 +62,7 @@ export const Header: React.FC = () => {
             <span className="font-serif font-bold text-xl leading-tight tracking-tight text-church-red">
               TGGPC
             </span>
-            <span className="text-[10px] uppercase tracking-widest opacity-70 font-bold text-slate-900">
+            <span className="text-[10px] uppercase tracking-widest font-bold text-slate-900">
               Global Gospel Power
             </span>
           </div>
@@ -76,7 +76,7 @@ export const Header: React.FC = () => {
                 to={item.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-church-red relative py-1 flex items-center gap-1',
-                  location.pathname === item.href || location.pathname.startsWith(item.href + '/') ? 'text-church-red' : 'text-slate-600'
+                  location.pathname === item.href || location.pathname.startsWith(item.href + '/') ? 'text-church-red' : 'text-slate-900'
                 )}
               >
                 {t(item.title)}
@@ -98,7 +98,7 @@ export const Header: React.FC = () => {
                         to={child.href}
                         className={cn(
                           'block px-6 py-4 text-sm font-medium hover:bg-church-red/10 transition-colors',
-                          location.pathname === child.href ? 'text-church-red' : 'text-slate-600'
+                          location.pathname === child.href ? 'text-church-red' : 'text-slate-900'
                         )}
                       >
                         {t(child.title)}
@@ -128,7 +128,7 @@ export const Header: React.FC = () => {
                 e.stopPropagation();
                 setIsLangOpen(!isLangOpen);
               }}
-              className="flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-church-red transition-colors"
+              className="flex items-center gap-1 text-sm font-medium text-slate-900 hover:text-church-red transition-colors"
             >
               <Globe size={16} />
               <span className="uppercase">{language}</span>
@@ -173,7 +173,7 @@ export const Header: React.FC = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden text-slate-600 hover:text-church-red transition-colors"
+            className="md:hidden text-slate-900 hover:text-church-red transition-colors"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -198,7 +198,7 @@ export const Header: React.FC = () => {
                     onClick={() => !item.children && setIsOpen(false)}
                     className={cn(
                       'text-lg font-serif font-medium transition-colors flex items-center justify-between',
-                      location.pathname === item.href || location.pathname.startsWith(item.href + '/') ? 'text-church-red' : 'text-slate-600'
+                      location.pathname === item.href || location.pathname.startsWith(item.href + '/') ? 'text-church-red' : 'text-slate-900'
                     )}
                   >
                     {t(item.title)}
@@ -235,7 +235,7 @@ export const Header: React.FC = () => {
                     }}
                     className={cn(
                       'px-4 py-2 rounded-xl text-sm font-medium transition-all',
-                      language === 'en' ? 'bg-church-red text-white' : 'bg-slate-50 text-slate-600'
+                      language === 'en' ? 'bg-church-red text-white' : 'bg-slate-50 text-slate-900'
                     )}
                   >
                     English
@@ -247,7 +247,7 @@ export const Header: React.FC = () => {
                     }}
                     className={cn(
                       'px-4 py-2 rounded-xl text-sm font-medium transition-all',
-                      language === 'vi' ? 'bg-church-red text-white' : 'bg-slate-50 text-slate-600'
+                      language === 'vi' ? 'bg-church-red text-white' : 'bg-slate-50 text-slate-900'
                     )}
                   >
                     Tiếng Việt
