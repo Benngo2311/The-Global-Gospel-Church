@@ -136,7 +136,7 @@ export const Home: React.FC = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <LiveBroadcast isLive={true} />
+            <LiveBroadcast isLive={false} />
           </motion.div>
         </div>
       </section>

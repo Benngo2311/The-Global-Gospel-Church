@@ -36,7 +36,7 @@ export const Live: React.FC = () => {
           transition={{ delay: 0.2 }}
           className="mb-24"
         >
-          <LiveBroadcast isLive={true} />
+          <LiveBroadcast isLive={false} />
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
