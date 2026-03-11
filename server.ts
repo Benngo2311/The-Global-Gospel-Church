@@ -29,6 +29,8 @@ async function startServer() {
       id TEXT PRIMARY KEY,
       text TEXT NOT NULL,
       author TEXT NOT NULL,
+      email TEXT,
+      phone TEXT,
       prayedCount INTEGER DEFAULT 0,
       timestamp INTEGER NOT NULL
     )
@@ -243,29 +245,82 @@ Submitted at: ${new Date().toLocaleString()}
   // Prayer Wall API Routes
   app.get("/api/prayers", (req, res) => {
     const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    
-    // Cleanup old prayers (optional, but good for maintenance)
-    db.prepare("DELETE FROM prayers WHERE timestamp < ?").run(sevenDaysAgo);
-    
+    // Only return prayers from the last 7 days for the wall
     const prayers = db.prepare("SELECT * FROM prayers WHERE timestamp >= ? ORDER BY timestamp DESC").all(sevenDaysAgo);
     res.json(prayers);
   });
 
-  app.post("/api/prayers", (req, res) => {
-    const { text, author } = req.body;
+  app.post("/api/prayers", async (req, res) => {
+    const { text, author, email, phone } = req.body;
     if (!text) return res.status(400).json({ error: "Text is required" });
     
     const id = Math.random().toString(36).substr(2, 9);
     const timestamp = Date.now();
     
-    db.prepare("INSERT INTO prayers (id, text, author, timestamp) VALUES (?, ?, ?, ?)").run(
+    // Save to database (permanent storage)
+    db.prepare("INSERT INTO prayers (id, text, author, email, phone, timestamp) VALUES (?, ?, ?, ?, ?, ?)").run(
       id,
       text,
       author || "Anonymous",
+      email || null,
+      phone || null,
       timestamp
     );
+
+    // Send email notification
+    const fromAddress = process.env.SMTP_FROM || `"Prayer Wall" <${process.env.SMTP_USER}>`;
+    const mailOptions = {
+      from: fromAddress,
+      to: "thegospelpower777@gmail.com",
+      subject: "New Prayer Request",
+      text: `
+New Prayer Request Submitted:
+
+Author: ${author || "Anonymous"}
+Email: ${email || "N/A"}
+Phone: ${phone || "N/A"}
+
+Prayer Request:
+${text}
+
+Submitted at: ${new Date(timestamp).toLocaleString()}
+      `,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; max-width: 600px;">
+          <h2 style="color: #b91c1c;">New Prayer Request</h2>
+          <hr />
+          <p><strong>Author:</strong> ${author || "Anonymous"}</p>
+          <p><strong>Email:</strong> ${email || "N/A"}</p>
+          <p><strong>Phone:</strong> ${phone || "N/A"}</p>
+          <p><strong>Prayer Request:</strong></p>
+          <p style="white-space: pre-wrap; font-style: italic; color: #444;">"${text}"</p>
+          <hr />
+          <p style="font-size: 12px; color: #666;">Submitted at: ${new Date(timestamp).toLocaleString()}</p>
+        </div>
+      `,
+    };
+
+    try {
+      if (process.env.SMTP_PASS) {
+        console.log(`Sending prayer notification to thegospelpower777@gmail.com`);
+        await sendEmail(mailOptions);
+      } else {
+        console.warn("SMTP not configured, skipping prayer email notification.");
+      }
+    } catch (error) {
+      console.error("Failed to send prayer notification email:", error);
+      // We don't fail the request if email fails, as the prayer is saved in DB
+    }
     
-    res.json({ id, text, author: author || "Anonymous", prayedCount: 0, timestamp });
+    res.json({ 
+      id, 
+      text, 
+      author: author || "Anonymous", 
+      email: email || null,
+      phone: phone || null,
+      prayedCount: 0, 
+      timestamp 
+    });
   });
 
   app.post("/api/prayers/:id/pray", (req, res) => {

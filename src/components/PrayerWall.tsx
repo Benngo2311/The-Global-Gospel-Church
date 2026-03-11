@@ -8,6 +8,8 @@ interface Prayer {
   id: string;
   text: string;
   author: string;
+  email?: string;
+  phone?: string;
   prayedCount: number;
   timestamp: Date;
 }
@@ -16,6 +18,9 @@ export const PrayerWall: React.FC = () => {
   const { t } = useLanguage();
   const [prayers, setPrayers] = useState<Prayer[]>([]);
   const [newPrayer, setNewPrayer] = useState('');
+  const [author, setAuthor] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -46,11 +51,19 @@ export const PrayerWall: React.FC = () => {
       const response = await fetch('/api/prayers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: newPrayer, author: 'Anonymous' })
+        body: JSON.stringify({ 
+          text: newPrayer, 
+          author: author.trim() || 'Anonymous',
+          email: email.trim() || undefined,
+          phone: phone.trim() || undefined
+        })
       });
       const data = await response.json();
       setPrayers([{ ...data, timestamp: new Date(data.timestamp) }, ...prayers]);
       setNewPrayer('');
+      setAuthor('');
+      setEmail('');
+      setPhone('');
       setIsAdding(false);
     } catch (error) {
       console.error('Error adding prayer:', error);
@@ -105,6 +118,29 @@ export const PrayerWall: React.FC = () => {
                   placeholder={t({ en: 'Type your prayer request here...', vi: 'Nhập yêu cầu cầu nguyện của bạn tại đây...' })}
                   className="w-full h-32 bg-slate-50 border-none rounded-2xl px-6 py-4 focus:ring-2 focus:ring-church-red outline-none resize-none mb-4"
                 />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <input
+                    type="text"
+                    value={author}
+                    onChange={(e) => setAuthor(e.target.value)}
+                    placeholder={t({ en: 'Your Name (Optional)', vi: 'Tên của bạn (Tùy chọn)' })}
+                    className="bg-slate-50 border-none rounded-xl px-6 py-3 focus:ring-2 focus:ring-church-red outline-none"
+                  />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t({ en: 'Email (Optional)', vi: 'Email (Tùy chọn)' })}
+                    className="bg-slate-50 border-none rounded-xl px-6 py-3 focus:ring-2 focus:ring-church-red outline-none"
+                  />
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder={t({ en: 'Phone (Optional)', vi: 'Số điện thoại (Tùy chọn)' })}
+                    className="bg-slate-50 border-none rounded-xl px-6 py-3 focus:ring-2 focus:ring-church-red outline-none"
+                  />
+                </div>
                 <div className="flex justify-end gap-4">
                   <button onClick={() => setIsAdding(false)} className="px-6 py-2 text-slate-500 font-bold hover:text-slate-700">
                     {t({ en: 'Cancel', vi: 'Hủy' })}
