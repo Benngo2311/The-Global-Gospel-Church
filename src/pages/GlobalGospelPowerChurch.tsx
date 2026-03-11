@@ -173,18 +173,18 @@ export const GlobalGospelPowerChurch: React.FC = () => {
       </section>
 
       {/* Online Meeting Section */}
-      <section id="online-meeting" className="px-6 py-32 bg-church-red text-white rounded-[4rem] mx-4">
+      <section id="online-meeting" className="px-6 py-32 bg-red-50 text-slate-900 rounded-[4rem] mx-4 border border-red-100">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-16 items-center">
             <div className="w-full lg:w-1/2">
-              <div className="inline-flex items-center gap-2 text-white/80 font-bold uppercase tracking-widest text-xs mb-6">
+              <div className="inline-flex items-center gap-2 text-church-red font-bold uppercase tracking-widest text-xs mb-6">
                 <Video size={16} />
                 {t({ en: 'Global Worship', vi: 'Thờ Phượng Toàn Cầu' })}
               </div>
               <h2 className="text-5xl md:text-7xl font-serif font-bold mb-8">
                 {t({ en: 'Online Meeting', vi: 'Nhóm Trực Tuyến' })}
               </h2>
-              <p className="text-xl text-white/80 leading-relaxed mb-10">
+              <p className="text-2xl text-slate-600 leading-relaxed mb-10">
                 {t({ 
                   en: 'Join our weekly Worship & Praise Service from anywhere in the world. Experience powerful singing, praises, and the preaching of the Word of God.', 
                   vi: 'Tham gia buổi Thờ Phượng & Ca Ngợi hàng tuần của chúng tôi từ bất cứ đâu trên thế giới. Trải nghiệm sự ca hát quyền năng, ngợi khen và giảng dạy Lời Đức Chúa Trời.' 

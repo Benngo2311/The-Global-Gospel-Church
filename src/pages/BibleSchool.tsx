@@ -133,7 +133,7 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
       </section>
 
       {/* Online Classes Section */}
-      <section id="classes" className="px-6 py-32 bg-slate-900 text-white rounded-[4rem] mx-4">
+      <section id="classes" className="px-6 py-32 bg-slate-100 text-slate-900 rounded-[4rem] mx-4 border border-slate-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-2 text-church-red font-bold uppercase tracking-widest text-xs mb-4">
@@ -153,7 +153,7 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white/5 border border-white/10 p-12 rounded-[3rem] hover:bg-white/10 transition-all group"
+                className="bg-white border border-slate-200 p-12 rounded-[3rem] hover:shadow-xl transition-all group"
               >
                 <div className="mb-10">
                   <h3 className="text-3xl font-serif font-bold mb-4 group-hover:text-church-red transition-colors">
@@ -164,11 +164,11 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
 
                 <div className="space-y-8 mb-12">
                   <div className="flex items-start gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-church-red/20 flex items-center justify-center text-church-red shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-church-red/10 flex items-center justify-center text-church-red shrink-0">
                       <Calendar size={24} />
                     </div>
                     <div>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
                         {t({ en: 'Days', vi: 'Ngày Học' })}
                       </p>
                       <p className="text-lg font-medium">{t(cls.schedule)}</p>
@@ -176,11 +176,11 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                   </div>
 
                   <div className="flex items-start gap-5">
-                    <div className="w-12 h-12 rounded-2xl bg-church-red/20 flex items-center justify-center text-church-red shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-church-red/10 flex items-center justify-center text-church-red shrink-0">
                       <Clock size={24} />
                     </div>
                     <div>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
                         {t({ en: 'Time (PT)', vi: 'Giờ Giấc (PT)' })}
                       </p>
                       <p className="text-lg font-medium">{t(cls.time)}</p>
@@ -194,13 +194,13 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6 p-6 rounded-3xl bg-white/5 border border-white/10">
+                  <div className="grid grid-cols-2 gap-6 p-6 rounded-3xl bg-slate-50 border border-slate-100">
                     <div>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Zoom ID</p>
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Zoom ID</p>
                       <p className="text-xl font-bold text-church-red">{cls.zoom}</p>
                     </div>
                     <div>
-                      <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">Password</p>
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Password</p>
                       <p className="text-xl font-bold text-church-red">{cls.password}</p>
                     </div>
                   </div>
