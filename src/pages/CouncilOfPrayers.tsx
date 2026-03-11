@@ -108,7 +108,7 @@ export const CouncilOfPrayers: React.FC = () => {
       </section>
 
       {/* Online Meeting Section */}
-      <section id="conference" className="px-6 py-32 bg-slate-900 text-white rounded-[4rem] mx-4 mt-20">
+      <section id="conference" className="px-6 py-32 bg-red-50 text-slate-900 rounded-[4rem] mx-4 mt-20 border border-red-100">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-16 items-center">
             <div className="w-full lg:w-1/2">
@@ -119,7 +119,7 @@ export const CouncilOfPrayers: React.FC = () => {
               <h2 className="text-5xl md:text-7xl font-serif font-bold mb-8">
                 {t({ en: 'Online Meeting', vi: 'Nhóm Trực Tuyến' })}
               </h2>
-              <p className="text-xl text-white/60 leading-relaxed mb-10">
+              <p className="text-xl text-slate-600 leading-relaxed mb-10">
                 {t({ 
                   en: 'Join our global prayer network as we intercede for cities, nations, and international communities. Be part of a powerful movement of spiritual warfare and support.', 
                   vi: 'Tham gia mạng lưới cầu nguyện toàn cầu của chúng tôi khi chúng tôi cầu thay cho các thành phố, quốc gia và cộng đồng quốc tế. Hãy là một phần của phong trào chiến trận tâm linh và hỗ trợ mạnh mẽ.' 

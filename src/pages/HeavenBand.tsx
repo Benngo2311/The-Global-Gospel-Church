@@ -77,14 +77,14 @@ export const HeavenBand: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               className="w-full lg:w-1/2 relative"
             >
-              <div className="aspect-[4/5] rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white">
+              <div className="rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-white">
                 <img 
                   src="/images/heaven-band.jpeg" 
                   alt="Heaven Band" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-12 left-12 right-12">
                   <div className="glass p-8 rounded-3xl border border-white/20">
                     <p className="text-white/80 text-sm font-bold uppercase tracking-widest mb-2">
@@ -114,7 +114,7 @@ export const HeavenBand: React.FC = () => {
       </section>
 
       {/* Services Section */}
-      <section className="px-6 py-24 bg-slate-900 text-white rounded-[4rem] mx-4">
+      <section className="px-6 py-24 bg-red-50 text-slate-900 rounded-[4rem] mx-4 border border-red-100">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
             <div className="max-w-2xl">
@@ -125,12 +125,14 @@ export const HeavenBand: React.FC = () => {
                 {t({ en: 'Guiding Beliefs & Purpose', vi: 'Niềm Tin & Mục Đích Dẫn Dắt' })}
               </h2>
             </div>
-            <p className="text-slate-400 text-xl max-w-md leading-relaxed">
-              {t({ 
-                en: 'Empower your future with exciting challenges and a supportive environment. Join us!', 
-                vi: 'Trao quyền cho tương lai của bạn với những thử thách thú vị và một môi trường hỗ trợ. Hãy tham gia cùng chúng tôi!' 
-              })}
-            </p>
+            <div className="w-full lg:w-1/2">
+              <p className="text-slate-600 text-xl max-w-md leading-relaxed">
+                {t({ 
+                  en: 'Empower your future with exciting challenges and a supportive environment. Join us!', 
+                  vi: 'Trao quyền cho tương lai của bạn với những thử thách thú vị và một môi trường hỗ trợ. Hãy tham gia cùng chúng tôi!' 
+                })}
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -141,9 +143,9 @@ export const HeavenBand: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="p-10 rounded-[3rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group"
+                className="p-10 rounded-[3rem] bg-white border border-red-100 hover:shadow-xl transition-all group"
               >
-                <div className="w-16 h-16 rounded-2xl bg-church-red/20 flex items-center justify-center text-church-red mb-8 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 rounded-2xl bg-church-red/10 flex items-center justify-center text-church-red mb-8 group-hover:scale-110 transition-transform">
                   {i === 0 ? <Mic2 size={32} /> : i === 1 ? <Radio size={32} /> : <Play size={32} />}
                 </div>
                 <h3 className="text-2xl font-serif font-bold mb-4">{t(feature)}</h3>
