@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { BookOpen, GraduationCap, Languages, Calendar, Video, CheckCircle2, ArrowRight, Clock, Play } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
+import { SEO } from '../components/SEO';
 
 export const HeavenAcademy: React.FC = () => {
   const { t } = useLanguage();
@@ -12,9 +13,9 @@ export const HeavenAcademy: React.FC = () => {
       title: { en: 'Bilingual Bible Study', vi: 'Học Kinh Thánh Song Ngữ' },
       subtitle: { en: '(English–Vietnamese)', vi: '(Anh–Việt)' },
       schedule: { en: 'Every Monday and Wednesday', vi: 'Thứ Hai và Thứ Tư hàng tuần' },
-      time: { en: '5:00 AM to 7:00 AM (California time)', vi: '5:00 AM đến 7:00 AM (Giờ California)' },
-      ptStart: '05:00',
-      ptEnd: '07:00',
+      time: { en: '6:00 AM to 8:00 AM (California time)', vi: '6:00 AM đến 8:00 AM (Giờ California)' },
+      ptStart: '06:00',
+      ptEnd: '08:00',
       zoom: '484 700 7000',
       link: 'https://us02web.zoom.us/j/4847007000?pwd=aEQ3QWNCRUtsVldkaWxSRWtGZmMxdz09'
     },
@@ -22,9 +23,9 @@ export const HeavenAcademy: React.FC = () => {
       title: { en: 'Bible English Program', vi: 'Chương Trình Tiếng Anh Kinh Thánh' },
       subtitle: { en: 'For Youth (ages 6–17)', vi: 'Cho Thanh Thiếu Niên (6–17 tuổi)' },
       schedule: { en: 'Every Friday', vi: 'Thứ Sáu hàng tuần' },
-      time: { en: '4:00 PM to 5:30 PM (California time)', vi: '4:00 PM đến 5:30 PM (Giờ California)' },
-      ptStart: '16:00',
-      ptEnd: '17:30',
+      time: { en: '4:00 PM to 7:30 PM (California time)', vi: '5:00 PM đến 6:30 PM (Giờ California)' },
+      ptStart: '17:00',
+      ptEnd: '18:30',
       zoom: '487 700 7000',
       link: 'https://us02web.zoom.us/j/4877007000'
     }
@@ -38,6 +39,11 @@ export const HeavenAcademy: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
+      <SEO 
+        title={{ en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' }} 
+        description={{ en: 'Teaching in bilingual English-Vietnamese Bible classes for Vietnamese youth under the guidance of the Holy Spirit.', vi: 'Giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam dưới sự dẫn dắt của Đức Thánh Linh.' }}
+        url="https://tggpc.org/ministries/heaven-academy"
+      />
       {/* Hero Section */}
       <section className="px-6 mb-24">
         <div className="max-w-7xl mx-auto">
@@ -57,7 +63,7 @@ export const HeavenAcademy: React.FC = () => {
               <p className="text-2xl text-slate-600 leading-relaxed mb-10 font-medium">
                 {t({ 
                   en: 'By the sovereign guidance of the Holy Spirit, teaching in bilingual English-Vietnamese Bible classes for Vietnamese youth.', 
-                  vi: 'Dưới sự dẫn dắt tối cao của Đức Thánh Linh, giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam.' 
+                  vi: 'Dưới sự dẫn dắt tối cao của Đức Thánh Linh, giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam và Quốc Tế.' 
                 })}
               </p>
               
@@ -72,7 +78,7 @@ export const HeavenAcademy: React.FC = () => {
 
               <p className="text-slate-500 text-lg leading-relaxed mb-12 border-l-4 border-church-red/20 pl-6 italic">
                 {t({ 
-                  en: 'Helping them become familiar with the English language through the Word of God.', 
+                  en: 'Helping them become familiar with the Vietnamese language through the Word of God.', 
                   vi: 'Giúp các em làm quen với tiếng Anh thông qua Lời Chúa.' 
                 })}
               </p>
@@ -161,7 +167,7 @@ export const HeavenAcademy: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-1">
-                        {t({ en: 'Time', vi: 'Giờ Giấc' })}
+                        {t({ en: 'Time', vi: 'Thời Gian ' })}
                       </p>
                       <p className="text-slate-700 font-medium">{t(cls.time)}</p>
                       {(cls as any).ptStart && (cls as any).ptEnd && (

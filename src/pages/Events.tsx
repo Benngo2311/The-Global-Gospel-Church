@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Calendar as CalendarIcon, Clock, MapPin, ExternalLink, Globe } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { SEO } from '../components/SEO';
 
 export const Events: React.FC = () => {
   const { t } = useLanguage();
@@ -46,8 +47,8 @@ export const Events: React.FC = () => {
       zoomId: '484 700 7000',
       zoomPass: '7777',
       desc: { 
-        en: 'The gathering begins with an opening prayer, followed by hymns of praise and worship led by various ministries. The Pastor will preach the Word of God, followed by a time of prayer in response to the message. This is followed by Holy Communion, then more praise and worship. At the end, the congregation enters a time of fellowship, testifying to God\'s blessings, and intercessory prayer; a closing prayer, followed by the Lord\'s Prayer, and the Pastor\'s benediction for the entire church.', 
-        vi: 'Chương trình nhóm lại sẽ bắt đầu bằng cầu nguyện khai lễ, tiếp theo là thánh ca ngợi khen – thờ phượng Chúa qua các ban/chức vụ phục vụ. Mục sư rao giảng sứ điệp Lời Chúa, và Hội Thánh sẽ có thì giờ cầu nguyện đáp ứng sứ điệp. Sau đó là Tiệc Thánh, rồi tiếp tục thánh ca ngợi khen – thờ phượng. Cuối chương trình, Hội Thánh bước vào thì giờ thông công, làm chứng về ơn phước Chúa, cầu nguyện cầu thay; một người sẽ cầu nguyện kết thúc, tiếp đến cầu nguyện chung, và Mục sư cầu nguyện chúc phước cho toàn thể Hội Thánh.' 
+        en: 'After the official, our Church will have extra activities like testimonies, prayer, prophetic declaration, healing, and exorcism.', 
+        vi: 'Sau buổi nhóm chính thức, Hội Thánh sẽ có thêm phần làm chứng, cầu nguyện & cầu thay, nói tiên tri, chữa lành, đuổi quỷ.' 
       }
     },
     {
@@ -67,7 +68,7 @@ export const Events: React.FC = () => {
       },
       desc: { 
         en: 'Global Spiritual Warfare Prayer Council. Jesus Christ said: "I have come to bring fire on the earth, and how I wish it were already kindled!" (Luke 12:49). Join us in humbling ourselves, fasting, and uniting in the name of JESUS CHRIST, praying for a 24/7 storm of glory to transform and sanctify Christians and redeem humanity. This 40-day journey includes spiritual warfare missions to Egypt, Israel, Turkey, Greece, Italy, France, Germany, Switzerland, and a special gathering in Washington, D.C. from April 6-13, 2026. On May 17, 2026, we will join the "Rededicate 250: National Jubilee of Prayer, Praise, and Thanksgiving" at the National Mall.', 
-        vi: 'Hội Đồng Hiệp Nguyện Chiến Trận Thuộc Linh Toàn Cầu. Đức Chúa Giê-xu Christ phán: "Ta đã đến quăng lửa xuống đất; nếu cháy lên rồi, ta còn ước-ao chi nữa!" (Lu-ca 12:49). Hãy hạ mình xuống, kiêng ăn kiêng uống, hiệp một trong danh ĐỨC CHÚA GIÊ-XU CHRIST, cầu nguyện để Ngài giáng bão lửa vinh hiển 24/7 tiêu diệt tội lỗi và thánh hoá Cơ Đốc Nhân. Hành trình 40 ngày bao gồm các chuyến đi chiến trận thuộc linh đến Ai Cập, Do Thái, Thổ Nhĩ Kỳ, Hy Lạp, Ý, Pháp, Đức, Thụy Sĩ và kỳ hiệp nguyện tại Washington, D.C. từ ngày 6-13 tháng 4, 2026. Ngày 17 tháng 5, 2026, chúng ta sẽ tham gia chương trình "Rededicate 250" tại National Mall.' 
+        vi: 'Hội Đồng Hiệp Nguyện Chiến Trận Thuộc Linh Toàn Cầu. Đức Chúa Jêsus Christ phán: "Ta đã đến quăng lửa xuống đất; nếu cháy lên rồi, ta còn ước-ao chi nữa!" (Lu-ca 12:49). Hãy hạ mình xuống, kiêng ăn kiêng uống, hiệp một trong danh ĐỨC CHÚA GIÊ-XU CHRIST, cầu nguyện để Ngài giáng bão lửa vinh hiển 24/7 tiêu diệt tội lỗi và thánh hoá Cơ Đốc Nhân. Hành trình 40 ngày bao gồm các chuyến đi chiến trận thuộc linh đến Ai Cập, Do Thái, Thổ Nhĩ Kỳ, Hy Lạp, Ý, Pháp, Đức, Thụy Sĩ và kỳ hiệp nguyện tại Washington, D.C. từ ngày 6-13 tháng 4, 2026. Ngày 17 tháng 5, 2026, chúng ta sẽ tham gia chương trình "Rededicate 250" tại National Mall.' 
       }
     }
   ];
@@ -90,6 +91,11 @@ export const Events: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 px-6 bg-church-cream min-h-screen">
+      <SEO 
+        title={{ en: 'Upcoming Events', vi: 'Sự Kiện Sắp Tới' }} 
+        description={{ en: 'Stay connected with our global community through these upcoming gatherings and conferences.', vi: 'Luôn kết nối với cộng đồng toàn cầu của chúng tôi thông qua các buổi họp mặt và hội nghị sắp tới này.' }}
+        url="https://tggpc.org/events"
+      />
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20">
           <motion.span 
@@ -199,7 +205,7 @@ export const Events: React.FC = () => {
                         {t({ en: 'Join Zoom', vi: 'Tham Gia Zoom' })}
                         <ExternalLink size={18} />
                       </a>
-                      <div className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      <div className="text-center text-[px] font-bold text-slate-400 uppercase tracking-widest">
                         ID: {event.zoomId} | Pass: {event.zoomPass}
                       </div>
                     </div>
@@ -249,4 +255,3 @@ export const Events: React.FC = () => {
     </div>
   );
 };
-

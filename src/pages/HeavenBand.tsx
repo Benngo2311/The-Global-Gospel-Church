@@ -2,13 +2,14 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Music, Mic2, Radio, Play, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { SEO } from '../components/SEO';
 
 export const HeavenBand: React.FC = () => {
   const { t } = useLanguage();
 
   const features = [
     { en: 'Worship Concerts', vi: 'Hòa Nhạc Thờ Phượng' },
-    { en: 'Livestream Production', vi: 'Sản Xuất Livestream' },
+    { en: 'Online Worship', vi: 'Thờ Phượng Trực Tuyến' },
     { en: 'Gospel Music Creation', vi: 'Sáng Tác Nhạc Thánh' }
   ];
 
@@ -20,6 +21,11 @@ export const HeavenBand: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
+      <SEO 
+        title={{ en: 'Heaven Band', vi: 'Ban Nhạc Thiên Đàng' }} 
+        description={{ en: 'Carrying out Worship Programs, Concerts, Livestreams, Audio Recordings, and the Composition of Sacred Music.', vi: 'Thực hiện các chương trình thờ phượng, hòa nhạc, livestream, ghi âm và sáng tác nhạc thánh.' }}
+        url="https://tggpc.org/ministries/heaven-band"
+      />
       {/* Hero Section */}
       <section className="px-6 mb-24">
         <div className="max-w-7xl mx-auto">
@@ -34,7 +40,8 @@ export const HeavenBand: React.FC = () => {
                 {t({ en: 'Music Ministry', vi: 'Mục Vụ Âm Nhạc' })}
               </div>
               <h1 className="text-6xl md:text-8xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                {t({ en: 'Heaven', vi: 'Ban Nhạc' })} <span className="text-church-red italic">{t({ en: 'Band', vi: 'Thiên Đàng' })}</span>
+                {t({ en: 'Heaven', vi: 'Ban Nhạc' })} 
+                <span className="text-church-red italic">{t({ en: 'Band', vi: 'Thiên Đàng' })}</span>
               </h1>
               <p className="text-2xl text-slate-600 leading-relaxed mb-10 font-medium">
                 {t({ 
@@ -87,10 +94,10 @@ export const HeavenBand: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-12 left-12 right-12">
                   <div className="glass p-8 rounded-3xl border border-white/20">
-                    <p className="text-white/80 text-sm font-bold uppercase tracking-widest mb-2">
+                    <p className="text-black/80 text-sm font-bold uppercase tracking-widest mb-2">
                       {t({ en: 'Established', vi: 'Thành Lập' })}
                     </p>
-                    <p className="text-white text-4xl font-serif font-bold italic">Since 2022</p>
+                    <p className="text-black text-4xl font-serif font-bold italic">Since 2022</p>
                   </div>
                 </div>
               </div>

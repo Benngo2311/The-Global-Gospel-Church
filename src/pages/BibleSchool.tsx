@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Book, GraduationCap, CheckCircle2, ArrowRight, Video, Calendar, Clock, ShieldCheck, Globe, Users } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
+import { SEO } from '../components/SEO';
 
 export const GlobalGospelPowerBibleSchool: React.FC = () => {
   const { t } = useLanguage();
@@ -41,6 +42,11 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
+      <SEO 
+        title={{ en: 'Bible School', vi: 'Trường Kinh Thánh' }} 
+        description={{ en: 'Equipping believers with Basic and Advanced Biblical Studies for those called by God to become His servants.', vi: 'Trang bị cho các tín hữu các nghiên cứu Kinh Thánh cơ bản và nâng cao cho những người được Chúa gọi để trở thành tôi tớ của Ngài.' }}
+        url="https://tggpc.org/ministries/bible-school"
+      />
       {/* Hero Section */}
       <section className="px-6 mb-24">
         <div className="max-w-7xl mx-auto">
@@ -55,8 +61,8 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                 {t({ en: 'Bible School', vi: 'Trường Kinh Thánh' })}
               </div>
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                {t({ en: 'The Global Gospel', vi: 'Trường Kinh Thánh Quyền Năng' })} <br/>
-                <span className="text-church-red italic">{t({ en: 'Power Bible School', vi: 'Tin Lành Toàn Cầu' })}</span>
+                {t({ en: 'The Global Gospel', vi: 'Trường Kinh Thánh Tin Lành' })} <br/>
+                <span className="text-church-red italic">{t({ en: 'Power Bible School', vi: 'Quyền Phép Toàn Cầu' })}</span>
               </h1>
               
               <div className="mb-10">
@@ -66,7 +72,7 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                 <p className="text-xl text-slate-600 leading-relaxed font-medium">
                   {t({ 
                     en: 'By the guidance of the Holy Spirit, teaching, training, and equipping believers in both basic and advanced Biblical studies for Christians whom God has called to become His servants.', 
-                    vi: 'Dưới sự dẫn dắt của Thánh Linh, giảng dạy, đào tạo và trang bị cho các tín hữu các nghiên cứu Kinh Thánh cơ bản và nâng cao cho những Cơ Đốc nhân được Chúa gọi để trở thành tôi tớ Ngài.' 
+                    vi: 'Dưới sự dẫn dắt của Thánh Linh, giảng dạy, đào tạo và trang bị cho các tín hữu, các nghiên cứu Kinh Thánh cơ bản và nâng cao cho những Cơ Đốc nhân được Chúa gọi để trở thành tôi tớ Ngài.' 
                   })}
                 </p>
               </div>
@@ -181,7 +187,7 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
-                        {t({ en: 'Time (PT)', vi: 'Giờ Giấc (PT)' })}
+                        {t({ en: 'Time (PT)', vi: 'Thời Gian' })}
                       </p>
                       <p className="text-lg font-medium">{t(cls.time)}</p>
                       {(cls as any).ptStart && (cls as any).ptEnd && (
@@ -233,8 +239,8 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
           </h2>
           <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">
             {t({ 
-              en: 'Join a community of dedicated believers committed to deepening their understanding of the Word and fulfilling their divine calling.', 
-              vi: 'Tham gia cộng đồng những tín hữu tận hiến, cam kết làm sâu sắc thêm sự hiểu biết về Lời Chúa và hoàn thành tiếng gọi thiên thượng của mình.' 
+              en: 'Join a community of dedicated believers committed to deepening their understanding of the Word of God and fulfilling their divine calling.', 
+              vi: 'Tham gia cộng đồng những tín hữu tận hiến, cam kết trau dồi thêm sự hiểu biết về Lời Chúa và hoàn thành sự kêu gọi của mình.' 
             })}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">

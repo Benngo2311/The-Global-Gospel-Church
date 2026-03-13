@@ -2,12 +2,18 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SITE_CONTENT } from '../constants/content';
+import { SEO } from '../components/SEO';
 
 export const About: React.FC = () => {
   const { t } = useLanguage();
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
+      <SEO 
+        title={{ en: 'About Us', vi: 'Về Chúng Tôi' }} 
+        description={{ en: 'Discover the history, mission, and heart behind The Global Gospel Power Church.', vi: 'Khám phá lịch sử, sứ mệnh và trái tim đằng sau Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' }}
+        url="https://tggpc.org/about"
+      />
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -23,7 +29,7 @@ export const About: React.FC = () => {
           <p className="text-2xl text-slate-600 leading-relaxed max-w-3xl mx-auto font-light whitespace-pre-line">
             {t({ 
               en: 'Discover the history, mission, and heart behind The Global Gospel Power Church.', 
-              vi: 'Khám phá lịch sử, sứ mệnh và trái tim đằng sau \n Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' 
+              vi: 'Khám phá lịch sử, sứ mệnh và trái tim đằng sau \n Hội Thánh Tin Lành Quyền Phép Toàn Cầu.'
             })}
           </p>
         </motion.div>

@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Book, Video, Clock, Users } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
+import { SEO } from '../components/SEO';
 
 export const Classes: React.FC = () => {
   const { t } = useLanguage();
@@ -32,7 +33,7 @@ export const Classes: React.FC = () => {
     {
       day: { en: 'Tue, Thur, Fri', vi: 'Thứ 3, 5, 6' },
       title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' },
-      desc: { en: 'Practical ministry & theological training.', vi: 'Đào tạo mục vụ thực hành & thần học.' },
+      desc: { en: 'Practical ministry & theological training.', vi: 'Đào tạo thần học & thực hành mục vụ.' },
       time: '5AM-8AM CALIFORNIA',
       ptStart: '05:00',
       ptEnd: '08:00',
@@ -41,7 +42,7 @@ export const Classes: React.FC = () => {
     {
       day: { en: 'Weekdays', vi: 'Ngày Trong Tuần' },
       title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' },
-      desc: { en: 'Practical ministry & theological training.', vi: 'Đào tạo mục vụ thực hành & thần học.' },
+      desc: { en: 'Practical ministry & theological training.', vi: 'Đào tạo thần học & thực hành mục vụ.' },
       time: '2:30PM-3:30PM CALIFORNIA',
       ptStart: '14:30',
       ptEnd: '15:30',
@@ -69,6 +70,11 @@ export const Classes: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 px-6 bg-church-cream min-h-screen">
+      <SEO 
+        title={{ en: 'Our Classes', vi: 'Các Lớp Học Của Chúng Tôi' }} 
+        description={{ en: 'Join our online classes to deepen your understanding of the Word and equip you for ministry.', vi: 'Tham gia các lớp học trực tuyến của chúng tôi để làm sâu sắc thêm sự hiểu biết của bạn về Lời Chúa và trang bị cho mục vụ của bạn.' }}
+        url="https://tggpc.org/classes"
+      />
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-20">
           <motion.span 
@@ -76,7 +82,7 @@ export const Classes: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-church-red text-xs font-bold uppercase tracking-[0.2em] mb-4 block"
           >
-            {t({ en: 'SPIRITUAL GROWTH & EDUCATION', vi: 'SỰ PHÁT TRIỂN THUỘC LINH & GIÁO DỤC' })}
+            {t({ en: 'SPIRITUAL GROWTH & EDUCATION', vi: 'PHÁT TRIỂN THUỘC LINH & GIÁO DỤC' })}
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -93,8 +99,8 @@ export const Classes: React.FC = () => {
             className="text-xl text-slate-600 max-w-2xl mx-auto"
           >
             {t({ 
-              en: 'Join our interactive classes designed to deepen your understanding of the Word and equip you for ministry.', 
-              vi: 'Tham gia các lớp học tương tác của chúng tôi được thiết kế để làm sâu sắc thêm sự hiểu biết của bạn về Lời Chúa và trang bị cho bạn cho mục vụ.' 
+              en: 'Join our online classes to deepen your understanding of the Word and equip you for ministry.', 
+              vi: 'Tham gia các lớp học trực tuyến của chúng tôi để làm sâu sắc thêm sự hiểu biết của bạn về Lời Chúa và trang bị cho mục vụ của bạn.' 
             })}
           </motion.p>
         </div>
@@ -110,7 +116,7 @@ export const Classes: React.FC = () => {
               className="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-100 flex flex-col md:flex-row items-center gap-8"
             >
               <div className="flex flex-col items-center justify-center min-w-[140px] border-b md:border-b-0 md:border-r border-slate-100 pb-4 md:pb-0 md:pr-8">
-                <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">
+                <span className="text-[20px] uppercase tracking-widest text-slate-400 font-bold mb-1">
                   {t({ en: 'EVERY', vi: 'MỖI' })}
                 </span>
                 <span className="text-xl font-bold text-church-red uppercase text-center leading-tight">
@@ -127,7 +133,7 @@ export const Classes: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col items-center md:items-end gap-4 min-w-[200px]">
+              <div className="flex flex-col items-center md:items-end gap-4 min-w-[300px]">
                 <div className="flex flex-col items-center md:items-end gap-1">
                   <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
                     <Clock size={14} className="text-church-red" />

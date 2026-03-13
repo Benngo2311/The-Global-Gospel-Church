@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MapPin, Mail, Phone, Send, Facebook, Youtube, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SITE_CONTENT } from '../constants/content';
+import { SEO } from '../components/SEO';
 
 export const Contact: React.FC = () => {
   const { t } = useLanguage();
@@ -46,6 +47,11 @@ export const Contact: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
+      <SEO 
+        title={{ en: 'Contact Us', vi: 'Liên Hệ' }} 
+        description={{ en: 'Get in touch with Global Gospel Power Church. We would love to hear from you.', vi: 'Liên hệ với Hội Thánh Tin Lành Quyền Phép Toàn Cầu. Chúng tôi rất mong nhận được tin từ bạn.' }}
+        url="https://tggpc.org/contact"
+      />
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
           <motion.div

@@ -85,12 +85,12 @@ export const PrayerWall: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div className="max-w-2xl">
             <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6">
-              {t({ en: 'Interactive Prayer Wall', vi: 'Tường Cầu Nguyện Tương Tác' })}
+              {t({ en: 'Prayer Corner', vi: 'Góc Cầu Thay' })}
             </h2>
             <p className="text-slate-600 text-lg">
               {t({ 
-                en: 'Share your prayer requests and join others in intercession. We are a community that carries each other\'s burdens.', 
-                vi: 'Chia sẻ các yêu cầu cầu nguyện của bạn và cùng những người khác cầu thay. Chúng tôi là một cộng đồng cùng gánh vác gánh nặng của nhau.' 
+                en: 'Share your prayer requests and join others in intercession. "Bear one another’s burdens, and so fulfill the law of Christ." (Galatians 6:2)', 
+                vi: 'Chia sẻ các yêu cầu cầu nguyện của bạn và cùng những người khác cầu thay. "Hãy mang lấy gánh nặng cho nhau, như vậy anh em sẽ làm trọn luật pháp của Đấng Christ." (Ga-la-ti 6:2)' 
               })}
             </p>
           </div>

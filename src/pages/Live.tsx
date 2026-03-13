@@ -3,12 +3,18 @@ import { motion } from 'motion/react';
 import { Radio, Share2, MessageCircle, Heart } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { LiveBroadcast } from '../components/LiveBroadcast';
+import { SEO } from '../components/SEO';
 
 export const Live: React.FC = () => {
   const { t } = useLanguage();
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
+      <SEO 
+        title={{ en: 'Watch Live', vi: 'Xem Trực Tiếp' }} 
+        description={{ en: 'Join our global community in real-time. Experience worship, teaching, and prayer as it happens.', vi: 'Tham gia cộng đồng toàn cầu của chúng tôi trong thời gian thực. Trải nghiệm sự thờ phượng, giảng dạy và cầu nguyện khi nó đang diễn ra.' }}
+        url="https://tggpc.org/live"
+      />
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

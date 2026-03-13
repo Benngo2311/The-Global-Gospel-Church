@@ -7,12 +7,17 @@ import { Link } from 'react-router-dom';
 import { PrayerWall } from '../components/PrayerWall';
 import { DailyVerse } from '../components/DailyVerse';
 import { LiveBroadcast } from '../components/LiveBroadcast';
+import { SEO } from '../components/SEO';
 
 export const Home: React.FC = () => {
   const { t } = useLanguage();
 
   return (
     <div className="overflow-hidden">
+      <SEO 
+        title={{ en: 'Home', vi: 'Trang Chủ' }} 
+        url="https://tggpc.org/"
+      />
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center pt-20 px-6">
         <div className="absolute inset-0 z-0">
@@ -162,8 +167,8 @@ export const Home: React.FC = () => {
                 <div className="mb-10">
                   <p className="text-church-red font-serif italic text-2xl md:text-3xl leading-relaxed mb-8">
                     {t({
-                      en: '18 And Jesus came and spoke to them, saying, “All authority has been given to Me in heaven and on earth. 19 Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, 20 teaching them to observe all things that I have commanded you; and l o, I am with you always, even to the end of the age.” Amen.',
-                      vi: '18 Đức Chúa Jêsus đến gần, phán cùng môn đồ như vầy: Hết cả quyền phép ở trên trời và dưới đất đã giao cho ta. 19 Vậy, hãy đi dạy dỗ muôn dân, hãy nhân danh Đức Cha, Đức Con, và Đức Thánh Linh mà làm phép báp-têm cho họ, 20 và dạy họ giữ hết cả mọi điều mà ta đã truyền cho các ngươi. Và nầy, ta thường ở cùng các ngươi luôn cho đến tận thế.'
+                      en: '"Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit: teaching them to observe all things that I have commanded you; and lo, I am with you always, even to the end of the age."',
+                      vi: '"Vậy, hãy đi dạy dỗ muôn dân, hãy nhân danh Đức Cha, Đức Con, và Đức Thánh Linh mà làm phép báp-tem cho họ, và dạy họ giữ hết cả mọi điều mà Ta đã truyền cho các ngươi. Và nầy, Ta thường ở cùng các ngươi luôn cho đến tận thế."'
                     })}
                   </p>
                   <p className="text-sm font-bold uppercase tracking-widest text-slate-400">— Matthew 28:19-20</p>

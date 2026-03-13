@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
@@ -20,9 +21,10 @@ import { SpiritualAssistant } from './components/SpiritualAssistant';
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <Router>
-        <Routes>
+    <HelmetProvider>
+      <LanguageProvider>
+        <Router>
+          <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="about" element={<About />} />
@@ -42,6 +44,7 @@ export default function App() {
         </Routes>
         <SpiritualAssistant />
       </Router>
-    </LanguageProvider>
+      </LanguageProvider>
+    </HelmetProvider>
   );
 }

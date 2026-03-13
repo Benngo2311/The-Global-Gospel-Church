@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, DollarSign, ArrowRight, CheckCircle2, Send, Phone, Mail, User, CreditCard } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { SEO } from '../components/SEO';
 
 export const Giving: React.FC = () => {
   const { t } = useLanguage();
@@ -46,6 +47,11 @@ export const Giving: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 px-6 overflow-hidden">
+      <SEO 
+        title={{ en: 'Giving', vi: 'Dâng Hiến' }} 
+        description={{ en: 'Support the ministry of Global Gospel Power Church through your tithes and offerings.', vi: 'Hỗ trợ mục vụ của Hội Thánh Tin Lành Quyền Phép Toàn Cầu thông qua phần mười và dâng hiến của bạn.' }}
+        url="https://tggpc.org/giving"
+      />
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div
@@ -55,7 +61,7 @@ export const Giving: React.FC = () => {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/10 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
             <Heart size={14} />
-            {t({ en: 'Tithes & Offerings', vi: 'Thập Phân & Dâng Hiến' })}
+            {t({ en: 'Tithes & Offerings', vi: 'Dâng Hiến & Phần Mười' })}
           </div>
           <h1 className="text-5xl md:text-8xl font-serif font-bold text-slate-900 mb-8 leading-tight">
             Tithes & <span className="text-church-red italic">Offerings</span>
@@ -284,4 +290,3 @@ export const Giving: React.FC = () => {
     </div>
   );
 };
-

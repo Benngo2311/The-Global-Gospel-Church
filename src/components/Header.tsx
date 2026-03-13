@@ -63,7 +63,7 @@ export const Header: React.FC = () => {
               TGGPC
             </span>
             <span className="text-[10px] uppercase tracking-widest font-bold text-slate-900">
-              Global Gospel Power
+              Global Gospel Power Church
             </span>
           </div>
         </Link>

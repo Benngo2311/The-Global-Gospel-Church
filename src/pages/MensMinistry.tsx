@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Users, BookOpen, Video, Calendar, Clock, Shield, Heart, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
+import { SEO } from '../components/SEO';
 
 export const MensMinistry: React.FC = () => {
   const { t } = useLanguage();
@@ -18,6 +19,11 @@ export const MensMinistry: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
+      <SEO 
+        title={{ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }} 
+        description={{ en: 'Empowering men to grow in faith, lead their families, and serve the community through bilingual Bible studies and fellowship.', vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình và phục vụ cộng đồng thông qua các buổi học Kinh Thánh song ngữ và thông công.' }}
+        url="https://tggpc.org/ministries/mens-ministry"
+      />
       {/* Hero Section */}
       <section className="px-6 mb-24">
         <div className="max-w-7xl mx-auto">
@@ -43,7 +49,7 @@ export const MensMinistry: React.FC = () => {
                 <p className="text-xl text-slate-600 leading-relaxed font-medium">
                   {t({ 
                     en: "To empower men to grow in their faith, lead their families with integrity, and serve the community with the heart of Christ through fellowship and the Word.", 
-                    vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình bằng sự chính trực và phục vụ cộng đồng với trái tim của Chúa Kitô thông qua sự thông công và Lời Ngài.' 
+                    vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình bằng sự chính trực và phục vụ cộng đồng với trái tim của Đức Chúa Jêsus Christ thông qua sự thông công và Lời Ngài.' 
                   })}
                 </p>
               </div>
@@ -114,6 +120,7 @@ export const MensMinistry: React.FC = () => {
                   vi: 'Tham gia buổi học Kinh Thánh song ngữ hàng tuần được thiết kế riêng cho nam giới. Chúng ta cùng đi sâu vào Kinh Thánh, chia sẻ kinh nghiệm sống và cùng nhau lớn lên trong sự hiểu biết về Đức Chúa Trời.' 
                 })}
               </p>
+
             </div>
             
             <div className="w-full lg:w-1/2">
@@ -146,8 +153,8 @@ export const MensMinistry: React.FC = () => {
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
                         {t({ en: 'Time', vi: 'Giờ Giấc' })}
                       </p>
-                      <p className="text-xl font-bold">6:00 PM to 9:00 PM (California)</p>
-                      <TimeRange ptStart="18:00" ptEnd="21:00" className="mt-2" />
+                      <p className="text-xl font-bold">7:00 PM to 10:00 PM (California)</p>
+                      <TimeRange ptStart="19:00" ptEnd="22:00" className="mt-2" />
                     </div>
                   </div>
 
@@ -183,15 +190,15 @@ export const MensMinistry: React.FC = () => {
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/5 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
             <Heart size={14} />
-            {t({ en: 'Brotherhood', vi: 'Tình Anh Em' })}
+            {t({ en: 'Brotherhood In Christ', vi: 'Tình Anh Em Trong Đấng Christ' })}
           </div>
           <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-8">
-            {t({ en: 'A Community of Brothers', vi: 'Cộng Đồng Những Người Anh Em' })}
+            {t({ en: 'A Community of Brothers', vi: 'Cộng Đồng Nam Giới' })}
           </h2>
           <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">
             {t({ 
               en: 'We believe that men are called to be the spiritual pillars of their homes and communities. Join us as we support, challenge, and encourage one another to be the men God created us to be.', 
-              vi: 'Chúng tôi tin rằng nam giới được gọi để trở thành những trụ cột tâm linh của gia đình và cộng đồng. Hãy tham gia cùng chúng tôi khi chúng ta hỗ trợ, thử thách và khích lệ lẫn nhau để trở thành những người nam mà Chúa đã tạo dựng.' 
+              vi: 'Chúng tôi tin rằng nam giới được gọi để trở thành những trụ cột thuộc linh của gia đình và cộng đồng. Hãy tham gia cùng chúng tôi để được hỗ trợ và khích lệ lẫn nhau trở thành những người nam mà Chúa đã tạo dựng.' 
             })}
           </p>
           

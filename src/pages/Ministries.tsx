@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Heart, Globe, Users, Shield, Zap, Star, Book } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { SEO } from '../components/SEO';
 
 export const Ministries: React.FC = () => {
   const { t } = useLanguage();
@@ -32,7 +33,7 @@ export const Ministries: React.FC = () => {
     {
       icon: <Shield size={40} />,
       title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' },
-      desc: { en: 'By the guidance of the Holy Spirit, organizing periods of fasting and prayer, night watches for spiritual warfare, and prayer walks as led by the Holy Spirit.', vi: 'Dưới sự dẫn dắt của Thánh Linh, tổ chức các giai đoạn kiêng ăn và cầu nguyện, canh đêm cho chiến trận tâm linh và đi bộ cầu nguyện.' },
+      desc: { en: 'By the sovereign guidance of the Holy Spirit, teaching in bilingual English-Vietnamese Bible classes for Vietnamese youth.', vi: 'Dưới sự dẫn dắt tối cao của Đức Thánh Linh, giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam và Quốc Tế.' },
       link: '/ministries/heaven-academy',
       external: false
     },

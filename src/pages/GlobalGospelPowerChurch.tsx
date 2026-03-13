@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Church, Users, Heart, Video, Calendar, Clock, Quote, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
+import { SEO } from '../components/SEO';
 
 export const GlobalGospelPowerChurch: React.FC = () => {
   const { t } = useLanguage();
@@ -12,7 +13,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
     { en: 'Bible Teaching', vi: 'Giảng Dạy Kinh Thánh' },
     { en: 'Water Baptism', vi: 'Báp-têm Bằng Nước' },
     { en: 'Communion', vi: 'Tiệc Thánh' },
-    { en: 'Prayer & Intercession', vi: 'Cầu Nguyện & Thay Cho' },
+    { en: 'Prayer & Intercession', vi: 'Cầu Nguyện & Cầu Thay ' },
     { en: 'Deliverance', vi: 'Giải Cứu' },
     { en: 'Healing Sessions', vi: 'Chữa Lành' },
     { en: 'Evangelism Initiatives', vi: 'Truyền Giáo' }
@@ -20,6 +21,11 @@ export const GlobalGospelPowerChurch: React.FC = () => {
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
+      <SEO 
+        title={{ en: 'The Global Gospel Power Church', vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' }} 
+        description={{ en: 'Organizing Worship Services, Bible Teachings, Water Baptisms, Baptism of the Holy Spirit, Holy Communion, Prayer, Intercession, Deliverance, Healing, and Evangelism for the Community.', vi: 'Tổ chức các buổi thờ phượng, dạy Kinh Thánh, báp-têm bằng nước, báp-têm bằng Thánh Linh, tiệc thánh, cầu nguyện, cầu thay, giải cứu, chữa lành và truyền giáo cho cộng đồng.' }}
+        url="https://tggpc.org/ministries/church"
+      />
       {/* Hero Section */}
       <section className="px-6 mb-24">
         <div className="max-w-7xl mx-auto">
@@ -34,8 +40,8 @@ export const GlobalGospelPowerChurch: React.FC = () => {
                 {t({ en: 'Main Ministry', vi: 'Mục Vụ Chính' })}
               </div>
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                {t({ en: 'The Global Gospel', vi: 'Hội Thánh Quyền Năng' })} <br/>
-                <span className="text-church-red italic">{t({ en: 'Power Church', vi: 'Tin Lành Toàn Cầu' })}</span>
+                {t({ en: 'The Global Gospel', vi: 'Hội Thánh Tin Lành' })} <br/>
+                <span className="text-church-red italic">{t({ en: 'Power Church', vi: 'Quyền Phép Toàn Cầu' })}</span>
               </h1>
               
               <div className="mb-10">
@@ -97,7 +103,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
             <Quote className="absolute top-10 left-10 text-church-red/10 w-24 h-24 -z-0" />
             <div className="relative z-10">
               <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-8">
-                {t({ en: 'Scriptural Basis', vi: 'Cơ Sở Kinh Thánh' })} — Matthew 28:18–20
+                {t({ en: 'Scriptural Basis', vi: 'Nền Tảng Kinh Thánh' })} — Matthew 28:18–20
               </p>
               <p className="text-xl md:text-2xl font-serif italic text-slate-800 leading-relaxed mb-8 whitespace-pre-line">
                 {t({ 
@@ -131,12 +137,12 @@ export const GlobalGospelPowerChurch: React.FC = () => {
               </h2>
               <div className="text-xl text-slate-600 leading-relaxed mb-8">
                 <p className="mb-4">
-                  {t({ 
-                    en: 'Organize worship gatherings that foster a sense of community and spiritual growth, including:', 
-                    vi: 'Tổ chức các buổi nhóm thờ phượng nhằm thúc đẩy tinh thần cộng đồng và sự phát triển thuộc linh, bao gồm:' 
-                  })}
-                </p>
-                <ul className="space-y-4 list-disc pl-6">
+                {t({ 
+                  en: 'Organize worship gatherings that foster a sense of community and spiritual growth, including:', 
+                    vi: 'Tổ chức các buổi nhóm thờ phượng nhằm phát triển thuộc linh và thúc đẩy tinh thần cộng đồng bao gồm:'  
+                })}
+              </p> 
+              <ul className="space-y-4 list-disc pl-6">
                   <li>
                     {t({ en: 'Bible teaching sessions.', vi: 'Các buổi dạy Kinh Thánh.' })}
                   </li>
@@ -207,7 +213,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
                         {t({ en: 'Next Service', vi: 'Buổi Nhóm Tiếp Theo' })}
                       </p>
-                      <p className="text-lg font-bold">Sunday, November 23</p>
+                      <p className="text-lg font-bold">Sunday, March 15</p>
                     </div>
                   </div>
 
@@ -219,8 +225,8 @@ export const GlobalGospelPowerChurch: React.FC = () => {
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
                         {t({ en: 'Time', vi: 'Giờ Giấc' })}
                       </p>
-                      <p className="text-lg font-bold">5:00 AM to 10:00 AM (California)</p>
-                      <TimeRange ptStart="05:00" ptEnd="10:00" className="mt-2" />
+                      <p className="text-lg font-bold">6:00 AM to 11:00 AM (California)</p>
+                      <TimeRange ptStart="06:00" ptEnd="11:00" className="mt-2" />
                     </div>
                   </div>
 
@@ -264,7 +270,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
           <p className="text-xl text-slate-600 leading-relaxed mb-12">
             {t({ 
               en: 'Whether you are joining us in person or online, there is a place for you at The Global Gospel Power Church.', 
-              vi: 'Cho dù bạn tham gia trực tiếp hay trực tuyến, luôn có một chỗ dành cho bạn tại Hội Thánh Quyền Năng Tin Lành Toàn Cầu.' 
+              vi: 'Cho dù bạn tham gia trực tiếp hay trực tuyến, luôn có một chỗ dành cho bạn tại Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' 
             })}
           </p>
           <motion.button
