@@ -32,8 +32,8 @@ export const MensMinistry: React.FC = () => {
                 {t({ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' })}
               </div>
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                Equipping Men for <br/>
-                <span className="text-church-red italic">Godly Leadership</span>
+                {t({ en: 'Equipping Men for', vi: 'Trang Bị Cho Nam Giới' })} <br/>
+                <span className="text-church-red italic">{t({ en: 'Godly Leadership', vi: 'Sự Lãnh Đạo Thuộc Linh' })}</span>
               </h1>
               
               <div className="mb-10">
@@ -108,25 +108,12 @@ export const MensMinistry: React.FC = () => {
               <h2 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8">
                 {t({ en: 'Online Meeting', vi: 'Nhóm Trực Tuyến' })}
               </h2>
-              <p className="text-xl text-slate-600 leading-relaxed mb-10">
+              <p className="text-2xl text-slate-600 leading-relaxed mb-10">
                 {t({ 
                   en: 'Join our weekly bilingual Bible study session specifically designed for men. We dive deep into the scriptures, share life experiences, and grow together in the knowledge of God.', 
                   vi: 'Tham gia buổi học Kinh Thánh song ngữ hàng tuần được thiết kế riêng cho nam giới. Chúng ta cùng đi sâu vào Kinh Thánh, chia sẻ kinh nghiệm sống và cùng nhau lớn lên trong sự hiểu biết về Đức Chúa Trời.' 
                 })}
               </p>
-              
-              <div className="flex items-center gap-6">
-                <div className="flex -space-x-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="w-12 h-12 rounded-full border-4 border-church-cream overflow-hidden">
-                      <img src={`https://i.pravatar.cc/150?u=${i + 10}`} alt="User" referrerPolicy="no-referrer" />
-                    </div>
-                  ))}
-                </div>
-                <p className="text-slate-500 font-medium">
-                  <span className="text-slate-900 font-bold">50+</span> {t({ en: 'Men joined recently', vi: 'Anh em vừa tham gia' })}
-                </p>
-              </div>
             </div>
             
             <div className="w-full lg:w-1/2">

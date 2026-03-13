@@ -34,7 +34,7 @@ export const HeavenBand: React.FC = () => {
                 {t({ en: 'Music Ministry', vi: 'Mục Vụ Âm Nhạc' })}
               </div>
               <h1 className="text-6xl md:text-8xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                Heaven <span className="text-church-red italic">Band</span>
+                {t({ en: 'Heaven', vi: 'Ban Nhạc' })} <span className="text-church-red italic">{t({ en: 'Band', vi: 'Thiên Đàng' })}</span>
               </h1>
               <p className="text-2xl text-slate-600 leading-relaxed mb-10 font-medium">
                 {t({ 

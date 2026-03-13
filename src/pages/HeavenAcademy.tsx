@@ -52,7 +52,7 @@ export const HeavenAcademy: React.FC = () => {
                 {t({ en: 'Education Ministry', vi: 'Mục Vụ Giáo Dục' })}
               </div>
               <h1 className="text-6xl md:text-8xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                Heaven <span className="text-church-red italic">Academy</span>
+                {t({ en: 'Heaven', vi: 'Học Viện' })} <span className="text-church-red italic">{t({ en: 'Academy', vi: 'Thiên Đàng' })}</span>
               </h1>
               <p className="text-2xl text-slate-600 leading-relaxed mb-10 font-medium">
                 {t({ 

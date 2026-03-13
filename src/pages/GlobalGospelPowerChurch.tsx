@@ -34,8 +34,8 @@ export const GlobalGospelPowerChurch: React.FC = () => {
                 {t({ en: 'Main Ministry', vi: 'Mục Vụ Chính' })}
               </div>
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                The Global Gospel <br/>
-                <span className="text-church-red italic">Power Church</span>
+                {t({ en: 'The Global Gospel', vi: 'Hội Thánh Quyền Năng' })} <br/>
+                <span className="text-church-red italic">{t({ en: 'Power Church', vi: 'Tin Lành Toàn Cầu' })}</span>
               </h1>
               
               <div className="mb-10">

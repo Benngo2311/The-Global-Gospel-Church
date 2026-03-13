@@ -55,8 +55,8 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                 {t({ en: 'Bible School', vi: 'Trường Kinh Thánh' })}
               </div>
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                The Global Gospel <br/>
-                <span className="text-church-red italic">Power Bible School</span>
+                {t({ en: 'The Global Gospel', vi: 'Trường Kinh Thánh Quyền Năng' })} <br/>
+                <span className="text-church-red italic">{t({ en: 'Power Bible School', vi: 'Tin Lành Toàn Cầu' })}</span>
               </h1>
               
               <div className="mb-10">

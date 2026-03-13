@@ -23,8 +23,8 @@ export const CouncilOfPrayers: React.FC = () => {
                 {t({ en: 'Spiritual Warfare', vi: 'Chiến Trận Tâm Linh' })}
               </div>
               <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                Council Of Prayers For The <br/>
-                <span className="text-church-red italic">Global Spiritual Battle</span>
+                {t({ en: 'Council Of Prayers For The', vi: 'Hội Đồng Cầu Nguyện Cho' })} <br/>
+                <span className="text-church-red italic">{t({ en: 'Global Spiritual Battle', vi: 'Chiến Trận Tâm Linh Toàn Cầu' })}</span>
               </h1>
               
               <div className="mb-10">
