@@ -242,31 +242,11 @@ Submitted at: ${new Date().toLocaleString()}
     }
   });
 
-  // Prayer Wall API Routes
-  app.get("/api/prayers", (req, res) => {
-    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    // Only return prayers from the last 7 days for the wall
-    const prayers = db.prepare("SELECT * FROM prayers WHERE timestamp >= ? ORDER BY timestamp DESC").all(sevenDaysAgo);
-    res.json(prayers);
-  });
-
-  app.post("/api/prayers", async (req, res) => {
-    const { text, author, email, phone } = req.body;
+  // Prayer Wall Email Notification API
+  app.post("/api/send-prayer-email", async (req, res) => {
+    const { text, author, email, phone, timestamp } = req.body;
     if (!text) return res.status(400).json({ error: "Text is required" });
     
-    const id = Math.random().toString(36).substr(2, 9);
-    const timestamp = Date.now();
-    
-    // Save to database (permanent storage)
-    db.prepare("INSERT INTO prayers (id, text, author, email, phone, timestamp) VALUES (?, ?, ?, ?, ?, ?)").run(
-      id,
-      text,
-      author || "Anonymous",
-      email || null,
-      phone || null,
-      timestamp
-    );
-
     // Send email notification
     const fromAddress = process.env.SMTP_FROM || `"Prayer Wall" <${process.env.SMTP_USER}>`;
     const mailOptions = {
@@ -309,23 +289,9 @@ Submitted at: ${new Date(timestamp).toLocaleString()}
       }
     } catch (error) {
       console.error("Failed to send prayer notification email:", error);
-      // We don't fail the request if email fails, as the prayer is saved in DB
+      // We don't fail the request if email fails
     }
     
-    res.json({ 
-      id, 
-      text, 
-      author: author || "Anonymous", 
-      email: email || null,
-      phone: phone || null,
-      prayedCount: 0, 
-      timestamp 
-    });
-  });
-
-  app.post("/api/prayers/:id/pray", (req, res) => {
-    const { id } = req.params;
-    db.prepare("UPDATE prayers SET prayedCount = prayedCount + 1 WHERE id = ?").run(id);
     res.json({ success: true });
   });
 

@@ -3,6 +3,59 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Heart, MessageSquare, Plus, Check } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { cn } from '../lib/utils';
+import { collection, addDoc, updateDoc, doc, onSnapshot, query, orderBy, increment } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string;
+    email?: string | null;
+    emailVerified?: boolean;
+    isAnonymous?: boolean;
+    tenantId?: string | null;
+    providerInfo: {
+      providerId: string;
+      displayName: string | null;
+      email: string | null;
+      photoUrl: string | null;
+    }[];
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData.map(provider => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        email: provider.email,
+        photoUrl: provider.photoURL
+      })) || []
+    },
+    operationType,
+    path
+  };
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
 
 interface Prayer {
   id: string;
@@ -25,57 +78,64 @@ export const PrayerWall: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchPrayers();
-  }, []);
-
-  const fetchPrayers = async () => {
-    try {
-      const response = await fetch('/api/prayers');
-      const data = await response.json();
-      // Ensure timestamps are Date objects
-      const formattedData = data.map((p: any) => ({
-        ...p,
-        timestamp: new Date(p.timestamp)
-      }));
-      setPrayers(formattedData);
-    } catch (error) {
-      console.error('Error fetching prayers:', error);
-    } finally {
+    const q = query(collection(db, 'prayers'), orderBy('timestamp', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const prayersData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        timestamp: new Date(doc.data().timestamp)
+      })) as Prayer[];
+      setPrayers(prayersData);
       setIsLoading(false);
-    }
-  };
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'prayers');
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleAddPrayer = async () => {
     if (!newPrayer.trim()) return;
     try {
-      const response = await fetch('/api/prayers', {
+      const timestamp = Date.now();
+      const prayerData = {
+        text: newPrayer,
+        author: author.trim() || 'Anonymous',
+        email: email.trim() || '',
+        phone: phone.trim() || '',
+        prayedCount: 0,
+        timestamp
+      };
+      
+      // Save to Firestore
+      await addDoc(collection(db, 'prayers'), prayerData);
+      
+      // Send email notification
+      fetch('/api/send-prayer-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          text: newPrayer, 
-          author: author.trim() || 'Anonymous',
-          email: email.trim() || undefined,
-          phone: phone.trim() || undefined
-        })
-      });
-      const data = await response.json();
-      setPrayers([{ ...data, timestamp: new Date(data.timestamp) }, ...prayers]);
+        body: JSON.stringify(prayerData)
+      }).catch(console.error);
+
       setNewPrayer('');
       setAuthor('');
       setEmail('');
       setPhone('');
       setIsAdding(false);
     } catch (error) {
-      console.error('Error adding prayer:', error);
+      handleFirestoreError(error, OperationType.CREATE, 'prayers');
     }
   };
 
   const handlePrayed = async (id: string) => {
     try {
-      await fetch(`/api/prayers/${id}/pray`, { method: 'POST' });
-      setPrayers(prayers.map(p => p.id === id ? { ...p, prayedCount: p.prayedCount + 1 } : p));
+      const prayerRef = doc(db, 'prayers', id);
+      await updateDoc(prayerRef, {
+        prayedCount: increment(1)
+      });
     } catch (error) {
-      console.error('Error updating prayed count:', error);
+      handleFirestoreError(error, OperationType.UPDATE, `prayers/${id}`);
     }
   };
 

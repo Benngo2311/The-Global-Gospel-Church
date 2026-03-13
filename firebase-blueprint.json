@@ -1,0 +1,24 @@
+{
+  "entities": {
+    "Prayer": {
+      "title": "Prayer",
+      "description": "A prayer request submitted by a user.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string", "description": "The content of the prayer request." },
+        "author": { "type": "string", "description": "The name of the person submitting the prayer." },
+        "email": { "type": "string", "description": "The email of the person submitting the prayer." },
+        "phone": { "type": "string", "description": "The phone number of the person submitting the prayer." },
+        "prayedCount": { "type": "number", "description": "The number of times people have prayed for this request." },
+        "timestamp": { "type": "number", "description": "The timestamp when the prayer was submitted." }
+      },
+      "required": ["text", "author", "prayedCount", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/prayers/{prayerId}": {
+      "schema": { "$ref": "Prayer" },
+      "description": "Collection of prayer requests."
+    }
+  }
+}

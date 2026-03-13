@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: prayers
+    // Document ID: auto-generated
+    // Fields:
+    //   - text: string (required, max 2000 chars) - The prayer text
+    //   - author: string (required, max 100 chars) - The author's name
+    //   - email: string (optional, max 100 chars) - The author's email
+    //   - phone: string (optional, max 50 chars) - The author's phone
+    //   - prayedCount: number (required, >= 0) - Number of times prayed
+    //   - timestamp: number (required) - Creation timestamp
+    //
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isValidString(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+        request.resource.data[field].size() >= minLen &&
+        request.resource.data[field].size() <= maxLen;
+    }
+    
+    function isValidOptionalString(field, minLen, maxLen) {
+      return !('field' in request.resource.data) ||
+             (request.resource.data[field] is string &&
+              request.resource.data[field].size() >= minLen &&
+              request.resource.data[field].size() <= maxLen);
+    }
+    
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+    
+    function isValidPrayer(data) {
+      return hasOnlyAllowedFields(['text', 'author', 'email', 'phone', 'prayedCount', 'timestamp']) &&
+             isValidString('text', 1, 2000) &&
+             isValidString('author', 1, 100) &&
+             isValidOptionalString('email', 0, 100) &&
+             isValidOptionalString('phone', 0, 50) &&
+             data.prayedCount is number && data.prayedCount >= 0 &&
+             data.timestamp is number;
+    }
+    
+    function isValidPrayerIncrement() {
+      // Only allow updating prayedCount by exactly 1
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['prayedCount']) &&
+             request.resource.data.prayedCount == resource.data.prayedCount + 1;
+    }
+
+    match /prayers/{prayerId} {
+      // Publicly readable as this is a public prayer wall
+      allow read: if true;
+      
+      // Publicly creatable, but strictly validated
+      allow create: if isValidPrayer(request.resource.data) && request.resource.data.prayedCount == 0;
+      
+      // Anyone can increment the prayed count
+      allow update: if isValidPrayerIncrement();
+    }
+  }
+}
