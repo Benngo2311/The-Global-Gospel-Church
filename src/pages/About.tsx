@@ -47,14 +47,8 @@ export const About: React.FC = () => {
               <p>{t(SITE_CONTENT.about.description)}</p>
               <p>
                 {t({
-                  en: 'Our mission is to empower believers to live out their faith in everyday life, providing resources and support for spiritual growth and community engagement.',
-                  vi: 'Sứ mệnh của chúng tôi là trao quyền cho các tín hữu sống đức tin của họ trong cuộc sống hàng ngày, cung cấp các nguồn lực và hỗ trợ cho sự phát triển tâm linh và sự tham gia cộng đồng.'
-                })}
-              </p>
-              <p>
-                {t({
-                  en: 'We are committed to reaching the unreached and building a global family of believers who are equipped to spread the Gospel of Jesus Christ.',
-                  vi: 'Chúng tôi cam kết tiếp cận những người chưa được tiếp cận và xây dựng một gia đình tín hữu toàn cầu được trang bị để truyền bá Tin Lành của Đức Chúa Jêsus Christ.'
+                  en: 'Together we will build a powerful Global Gospel family and proclaim the name of Jesus Christ to all humanity so that they may receive His salvation and eternal life in the glorious kingdom of heaven.',
+                  vi: 'Chúng ta cùng nhau xây dựng một đại gia đình Tin Lành Quyền Phép Toàn Cầu và rao truyền danh Đức Chúa Jêsus Christ cho toàn nhân loại được tiếp nhận sự cứu rỗi của Ngài và được sự sống đời đời trên Vương Quốc Thiên Đàng vinh hiển.'
                 })}
               </p>
             </div>
@@ -81,37 +75,79 @@ export const About: React.FC = () => {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
-          {[
-            {
-              title: { en: 'Our Vision', vi: 'Tầm Nhìn' },
-              desc: { en: 'To see a world transformed by the power of the Gospel and the love of Christ.', vi: 'Thấy một thế giới được biến đổi bởi quyền năng của Tin Lành và tình yêu của Đức Chúa Jêsus Christ.' },
-              icon: '🌟'
-            },
-            {
-              title: { en: 'Our Values', vi: 'Giá Trị' },
-              desc: { en: 'Faith, Community, Integrity, and Compassion are at the core of everything we do.', vi: 'Đức tin, Cộng đồng, Chính trực và Lòng trắc ẩn là cốt lõi của mọi việc chúng tôi làm.' },
-              icon: '🤝'
-            },
-            {
-              title: { en: 'Our Goal', vi: 'Mục Tiêu' },
-              desc: { en: 'To equip every believer to be a light in their community and beyond.', vi: 'Trang bị cho mỗi tín hữu trở thành ánh sáng trong cộng đồng của họ và xa hơn nữa.' },
-              icon: '🎯'
-            }
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="p-12 rounded-[3rem] bg-white shadow-xl border border-slate-100 text-center hover:shadow-2xl transition-all"
-            >
-              <div className="text-5xl mb-6">{item.icon}</div>
-              <h3 className="text-2xl font-serif font-bold mb-4 text-slate-900">{t(item.title)}</h3>
-              <p className="text-slate-600 leading-relaxed">{t(item.desc)}</p>
-            </motion.div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-32">
+          {/* Vision - Takes up 8 columns (2/3 width) on desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="md:col-span-8 p-12 md:p-16 rounded-[3rem] bg-church-cream shadow-xl border border-church-gold/20 hover:shadow-2xl transition-all relative overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-church-gold/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-church-gold/20 transition-colors" />
+            <div className="relative z-10">
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl mb-8 shadow-sm text-church-red">
+                🌟
+              </div>
+              <h3 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-slate-900">
+                {t({ en: 'Our Vision', vi: 'Tầm Nhìn' })}
+              </h3>
+              <p className="text-xl text-slate-600 leading-relaxed font-medium">
+                {t({ 
+                  en: 'Through the illumination of the Holy Spirit, we see a world being transformed according to God\'s will by the Power Gospel and the eternal love of Jesus Christ.', 
+                  vi: 'Nhờ Đức Thánh Linh soi sáng mắt tâm linh, thấy được một thế giới đang biến đổi theo ý muốn của Đức Chúa Trời bởi Tin Lành Quyền Phép và tình yêu đời đời của Đức Chúa Jêsus Christ.' 
+                })}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Goal - Takes up 4 columns (1/3 width) on desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="md:col-span-4 p-12 rounded-[3rem] bg-slate-900 text-white shadow-xl hover:shadow-2xl transition-all relative overflow-hidden group"
+          >
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-church-red/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-church-red/30 transition-colors" />
+            <div className="relative z-10 h-full flex flex-col">
+              <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-3xl mb-8 backdrop-blur-sm">
+                🎯
+              </div>
+              <h3 className="text-3xl font-serif font-bold mb-6">
+                {t({ en: 'Our Goal', vi: 'Mục Tiêu' })}
+              </h3>
+              <p className="text-lg text-slate-300 leading-relaxed mt-auto">
+                {t({ 
+                  en: 'To equip every Christian to be a light in their community and beyond.', 
+                  vi: 'Trang bị cho mỗi Cơ Đốc nhân trở thành ánh sáng trong cộng đồng của họ và xa hơn nữa.' 
+                })}
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Values - Takes up full width below */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="md:col-span-12 p-12 md:p-16 rounded-[3rem] bg-white shadow-xl border border-slate-100 hover:shadow-2xl transition-all flex flex-col md:flex-row items-center gap-12"
+          >
+            <div className="w-24 h-24 bg-church-red/5 rounded-[2rem] flex items-center justify-center text-5xl shrink-0">
+              🤝
+            </div>
+            <div>
+              <h3 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-slate-900">
+                {t({ en: 'Our Values', vi: 'Giá Trị' })}
+              </h3>
+              <p className="text-xl text-slate-600 leading-relaxed">
+                {t({ 
+                  en: 'Complete faith in the Lord, absolute trust in the Lord, and unconditional love in the Lord—these are the three core values ​​that we are upholding in our mission. (1 Corinthians 13:13)', 
+                  vi: 'Đức tin trọn vẹn trong Chúa, sự tin cậy tuyệt đối trong Chúa, tình yêu thương vô điều kiện trong Chúa đó là ba giá trị cốt lỗi mà chúng tôi đang thực thi sứ mạng. (I Cô-rinh-tô 13:13)' 
+                })}
+              </p>
+            </div>
+          </motion.div>
         </div>
 
         <motion.section 
@@ -121,29 +157,23 @@ export const About: React.FC = () => {
           className="bg-slate-900 p-16 md:p-24 rounded-[4rem] text-white relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-96 h-96 bg-church-red/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="max-w-3xl mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-8">
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-church-gold/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+          <div className="max-w-4xl mx-auto text-center relative z-10">
+            <span className="text-church-red text-sm font-bold uppercase tracking-[0.2em] mb-4 block">
+              {t({ en: 'Since 2020', vi: 'Từ Năm 2020' })}
+            </span>
+            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-12">
               {t({ en: 'Our History', vi: 'Lịch Sử Của Chúng Tôi' })}
             </h2>
-            <p className="text-xl text-slate-300 leading-relaxed mb-12">
-              {t({
-                en: 'Founded in 2020, Global Gospel Power Church emerged from a desire to create a welcoming online space for Christians seeking connection and spiritual growth. Since then, we have grown into a global family, reaching thousands with the message of hope.',
-                vi: 'Được thành lập vào năm 2020, Hội Thánh Quyền Năng Tin Lành Toàn Cầu nảy sinh từ mong muốn tạo ra một không gian trực tuyến chào đón cho những Cơ Đốc nhân đang tìm kiếm sự kết nối và phát triển tâm linh. Kể từ đó, chúng tôi đã phát triển thành một gia đình toàn cầu, tiếp cận hàng ngàn người với thông điệp hy vọng.'
-              })}
-            </p>
-            <div className="flex flex-wrap justify-center gap-12">
-              <div>
-                <p className="text-5xl font-serif font-bold text-church-red mb-2">2020</p>
-                <p className="text-slate-400 uppercase tracking-widest text-sm">{t({ en: 'Founded', vi: 'Thành Lập' })}</p>
-              </div>
-              <div>
-                <p className="text-5xl font-serif font-bold text-church-red mb-2">100+</p>
-                <p className="text-slate-400 uppercase tracking-widest text-sm">{t({ en: 'Members', vi: 'Thành Viên' })}</p>
-              </div>
-              <div>
-                <p className="text-5xl font-serif font-bold text-church-red mb-2">5+</p>
-                <p className="text-slate-400 uppercase tracking-widest text-sm">{t({ en: 'Countries', vi: 'Quốc Gia' })}</p>
-              </div>
+            <div className="relative px-8 md:px-16">
+              <div className="absolute -top-8 left-0 text-church-red/20 text-8xl font-serif leading-none">"</div>
+              <p className="text-2xl md:text-3xl text-slate-300 leading-relaxed font-serif italic relative z-10">
+                {t({
+                  en: 'Established by the Holy Trinity in 2020, the Global Gospel Power Church has been fulfilling the Lord’s vision of growing online churches and churches in many countries around the world.',
+                  vi: 'Được Đức Chúa Trời Ba Ngôi thiết lập vào năm 2020, Giáo Hội Tin Lành Quyền Phép Toàn Cầu đã và đang thực hiện khải tượng của Chúa phát triển các Hội Thánh trực tuyến và các Hội Thánh tại nhiều quốc gia trên thế giới.'
+                })}
+              </p>
+              <div className="absolute -bottom-16 right-0 text-church-red/20 text-8xl font-serif leading-none">"</div>
             </div>
           </div>
         </motion.section>
