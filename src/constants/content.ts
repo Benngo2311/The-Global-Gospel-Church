@@ -29,16 +29,16 @@ export const SITE_CONTENT: Content = {
       vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' 
     },
     subtitle: { 
-      en: 'A community dedicated to spiritual growth, connection, and global prayer. Join us as we spread the message of The Trinity of God across the United States and beyond.', 
-      vi: 'Một cộng đồng hết lòng tận hiến cho sự phát triển thuộc linh, kết nối và cầu nguyện toàn cầu. Hãy tham gia cùng chúng tôi khi chúng tôi lan tỏa thông điệp của Ba Ngôi Đức Chúa Trời khắp Hoa Kỳ và xa hơn nữa.' 
+      en: 'Welcome to Global Gospel Power Church—where God\’s living Word is preached in the power of the Holy Spirit, lives are transformed, faith is revived, and nations are touched by the glory of God.', 
+      vi: 'Chào mừng bạn đến với Giáo Hội Tin Lành Quyền Phép Toàn Cầu—nơi Lời sự sống của Chúa được rao giảng trong quyền năng Đức Thánh Linh, đời sống được biến đổi, đức tin được phục hưng, và các dân tộc được chạm đến bởi vinh hiển của Đức Chúa Trời.' 
     },
     cta: { en: 'Join Us Online', vi: 'Tham Gia Trực Tuyến' },
   },
   about: {
     title: { en: 'Our Mission', vi: 'Sứ Mệnh Của Chúng Tôi' },
     description: { 
-      en: 'At Global Gospel Power Church, we are dedicated to fostering a vibrant online community where individuals can grow spiritually, connect with others, and deepen their faith through virtual services and educational programs under the guidance of the Holy Spirit .', 
-      vi: 'Tại Hội Thánh Tin Lành Quyền Phép Toàn Cầu, chúng tôi tận hiến để thúc đẩy một cộng đồng trực tuyến nóng cháy, nơi các cá nhân có thể phát triển thuộc linh, kết nối với những người khác và làm sâu sắc thêm đức tin của họ thông qua các dịch vụ trực tuyến và các chương trình giáo dục theo sự soi dẫn của Đức Thánh Linh.' 
+      en: 'The Global Gospel Power Church is given a consecrated mission by the Triune God to foster a Christian community with burning hearts, spiritually united, connected with others, and growing in faith through educational programs inspired by the Holy Spirit and based on God\'s Bible.', 
+      vi: 'Giáo Hội Tin Lành Quyền Phép Toàn Cầu được Đức Chúa Trời Ba Ngôi ban cho sứ mạng tận hiến để thúc đẩy một cộng đồng Cơ Đốc với những tấm lòng rực lửa, hiệp một phát triển thuộc linh, kết nối với mọi người khác và làm tăng trưởng đức tin của họ thông qua các chương trình giáo dục bởi sự soi sáng của Đức Thánh Linh trên nền tảng kinh thánh của Đức Chúa Trời.' 
     },
   },
   contact: {

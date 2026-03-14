@@ -10,7 +10,7 @@ import { LiveBroadcast } from '../components/LiveBroadcast';
 import { SEO } from '../components/SEO';
 
 export const Home: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <div className="overflow-hidden">
@@ -39,7 +39,7 @@ export const Home: React.FC = () => {
             <span className="inline-block px-4 py-1.5 rounded-full bg-church-red/10 text-church-red text-xs font-bold uppercase tracking-widest mb-6">
               {t({ en: 'Welcome to our Church', vi: 'Chào mừng bạn đến với Hội Thánh' })}
             </span>
-            <h1 className="text-6xl md:text-8xl font-serif font-bold text-slate-900 leading-[0.9] mb-8 tracking-tighter">
+            <h1 className={`text-6xl md:text-8xl font-serif font-bold text-slate-900 mb-8 tracking-tighter ${language === 'vi' ? 'leading-tight' : 'leading-[0.9]'}`}>
               {t(SITE_CONTENT.hero.title)}
             </h1>
             <p className="text-xl text-slate-600 mb-10 max-w-lg leading-relaxed">
