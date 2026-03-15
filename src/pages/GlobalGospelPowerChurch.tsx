@@ -4,6 +4,7 @@ import { Church, Users, Heart, Video, Calendar, Clock, Quote, ArrowRight, CheckC
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
 import { SEO } from '../components/SEO';
+import { Link } from 'react-router-dom';
 
 export const GlobalGospelPowerChurch: React.FC = () => {
   const { t } = useLanguage();
@@ -291,13 +292,15 @@ export const GlobalGospelPowerChurch: React.FC = () => {
               vi: 'Cho dù bạn tham gia trực tiếp hay trực tuyến, luôn có một chỗ dành cho bạn tại Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' 
             })}
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-10 py-5 bg-church-red text-white rounded-full font-bold shadow-2xl shadow-church-red/20"
-          >
-            {t({ en: 'Contact Us for More Info', vi: 'Liên Hệ Để Biết Thêm Thông Tin' })}
-          </motion.button>
+          <Link to="/contact">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-block px-10 py-5 bg-church-red text-white rounded-full font-bold shadow-2xl shadow-church-red/20"
+            >
+              {t({ en: 'Contact Us for More Info', vi: 'Liên Hệ Để Biết Thêm Thông Tin' })}
+            </motion.div>
+          </Link>
         </div>
       </section>
     </div>

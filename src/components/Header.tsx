@@ -112,7 +112,7 @@ export const Header: React.FC = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          {/* Support Button */}
+          {/* Support Button - Temporarily Disabled
           <button 
             onClick={() => window.dispatchEvent(new CustomEvent('open-chat'))}
             className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/10 text-church-red text-xs font-bold hover:bg-church-red hover:text-white transition-all"
@@ -120,6 +120,7 @@ export const Header: React.FC = () => {
             <MessageSquare size={14} />
             {t({ en: 'Support & Prayer', vi: 'Hỗ Trợ & Cầu Nguyện' })}
           </button>
+          */}
 
           {/* Language Switcher */}
           <div className="relative lang-switcher">

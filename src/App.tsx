@@ -17,7 +17,7 @@ import { MensMinistry } from './pages/MensMinistry';
 import { Giving } from './pages/Giving';
 import { Contact } from './pages/Contact';
 import { Live } from './pages/Live';
-import { SpiritualAssistant } from './components/SpiritualAssistant';
+// import { SpiritualAssistant } from './components/SpiritualAssistant';
 
 export default function App() {
   return (
@@ -42,7 +42,7 @@ export default function App() {
             <Route path="live" element={<Live />} />
           </Route>
         </Routes>
-        <SpiritualAssistant />
+        {/* <SpiritualAssistant /> */}
       </Router>
       </LanguageProvider>
     </HelmetProvider>

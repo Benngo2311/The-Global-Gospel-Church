@@ -97,10 +97,7 @@ export const DailyVerse: React.FC = () => {
           >
             <div className="space-y-6">
               <h2 className="text-2xl md:text-4xl font-serif font-bold text-white leading-tight italic">
-                "{verse.en}"
-              </h2>
-              <h2 className="text-2xl md:text-4xl font-serif font-bold text-white/70 leading-tight italic">
-                "{verse.vi}"
+                "{language === 'en' ? verse.en : verse.vi}"
               </h2>
             </div>
             <p className="text-church-gold font-serif text-xl mt-8">— {t(verse.ref)}</p>
@@ -117,22 +114,25 @@ export const DailyVerse: React.FC = () => {
           </button>
 
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-            <a 
-              href="https://kinhthanh.httlvn.org/?v=NKJV" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-xs text-white/40 hover:text-white transition-colors underline underline-offset-4"
-            >
-              Read in English (NKJV)
-            </a>
-            <a 
-              href="https://kinhthanh.httlvn.org/?v=VI1934" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-xs text-white/40 hover:text-white transition-colors underline underline-offset-4"
-            >
-              Đọc bằng Tiếng Việt (VI1934)
-            </a>
+            {language === 'en' ? (
+              <a 
+                href="https://kinhthanh.httlvn.org/?v=NKJV" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-white/40 hover:text-white transition-colors underline underline-offset-4"
+              >
+                Read in English (NKJV)
+              </a>
+            ) : (
+              <a 
+                href="https://kinhthanh.httlvn.org/?v=VN1925" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-white/40 hover:text-white transition-colors underline underline-offset-4"
+              >
+                Đọc bằng Tiếng Việt (VN1925)
+              </a>
+            )}
           </div>
         </div>
       </div>
