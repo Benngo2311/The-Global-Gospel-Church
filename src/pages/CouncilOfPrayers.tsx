@@ -209,15 +209,15 @@ export const CouncilOfPrayers: React.FC = () => {
             <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white border border-slate-100 shadow-sm">
               <Users className="text-church-red" size={24} />
               <div className="text-left">
-                <p className="text-slate-900 font-bold leading-none">Global</p>
-                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-1">Network</p>
+                <p className="text-slate-900 font-bold leading-none">{t({ en: 'Global', vi: 'Toàn Cầu' })}</p>
+                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-1">{t({ en: 'Network', vi: 'Mạng Lưới' })}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white border border-slate-100 shadow-sm">
               <Shield className="text-church-red" size={24} />
               <div className="text-left">
-                <p className="text-slate-900 font-bold leading-none">24/7</p>
-                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-1">Intercession</p>
+                <p className="text-slate-900 font-bold leading-none">{t({ en: '24/7', vi: '24/7' })}</p>
+                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-1">{t({ en: 'Intercession', vi: 'Cầu Thay' })}</p>
               </div>
             </div>
           </div>

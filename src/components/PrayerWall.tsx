@@ -76,6 +76,16 @@ export const PrayerWall: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [prayedSet, setPrayedSet] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const stored = localStorage.getItem('prayedItems');
+    if (stored) {
+      try {
+        setPrayedSet(new Set(JSON.parse(stored)));
+      } catch (e) {}
+    }
+  }, []);
 
   useEffect(() => {
     const q = query(collection(db, 'prayers'), orderBy('timestamp', 'desc'));
@@ -128,13 +138,31 @@ export const PrayerWall: React.FC = () => {
     }
   };
 
-  const handlePrayed = async (id: string) => {
+  const togglePrayed = async (id: string) => {
+    const isPrayed = prayedSet.has(id);
+    const newSet = new Set(prayedSet);
+    
+    if (isPrayed) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setPrayedSet(newSet);
+    localStorage.setItem('prayedItems', JSON.stringify(Array.from(newSet)));
+
     try {
       const prayerRef = doc(db, 'prayers', id);
       await updateDoc(prayerRef, {
-        prayedCount: increment(1)
+        prayedCount: increment(isPrayed ? -1 : 1)
       });
     } catch (error) {
+      if (isPrayed) {
+        newSet.add(id);
+      } else {
+        newSet.delete(id);
+      }
+      setPrayedSet(newSet);
+      localStorage.setItem('prayedItems', JSON.stringify(Array.from(newSet)));
       handleFirestoreError(error, OperationType.UPDATE, `prayers/${id}`);
     }
   };
@@ -235,9 +263,18 @@ export const PrayerWall: React.FC = () => {
             >
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className="w-10 h-10 rounded-full bg-church-red/10 flex items-center justify-center text-church-red">
-                    <Heart size={20} />
-                  </div>
+                  <button 
+                    onClick={() => togglePrayed(prayer.id)}
+                    className={cn(
+                      "w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-110",
+                      prayedSet.has(prayer.id) 
+                        ? "bg-church-red text-white shadow-md" 
+                        : "bg-church-red/10 text-church-red hover:bg-church-red/20"
+                    )}
+                    title={prayedSet.has(prayer.id) ? t({ en: 'Undo Prayer', vi: 'Hủy Cầu Nguyện' }) : t({ en: 'Pray for this', vi: 'Cầu nguyện cho điều này' })}
+                  >
+                    <Heart size={20} className={cn(prayedSet.has(prayer.id) && "fill-current")} />
+                  </button>
                   <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">
                     {prayer.timestamp.toLocaleDateString()}
                   </span>
@@ -247,10 +284,15 @@ export const PrayerWall: React.FC = () => {
               <div className="flex justify-between items-center pt-6 border-t border-slate-50">
                 <span className="text-xs font-bold text-slate-400">{prayer.author}</span>
                 <button
-                  onClick={() => handlePrayed(prayer.id)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/5 text-church-red hover:bg-church-red hover:text-white transition-all group"
+                  onClick={() => togglePrayed(prayer.id)}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-full transition-all group",
+                    prayedSet.has(prayer.id)
+                      ? "bg-church-red text-white shadow-md"
+                      : "bg-church-red/5 text-church-red hover:bg-church-red hover:text-white"
+                  )}
                 >
-                  <Check size={14} className="group-hover:scale-125 transition-transform" />
+                  <Check size={14} className={cn("transition-transform", !prayedSet.has(prayer.id) && "group-hover:scale-125")} />
                   <span className="text-xs font-bold">{prayer.prayedCount} {t({ en: 'Prayed', vi: 'Đã cầu nguyện' })}</span>
                 </button>
               </div>

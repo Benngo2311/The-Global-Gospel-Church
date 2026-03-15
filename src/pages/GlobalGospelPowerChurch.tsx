@@ -108,8 +108,8 @@ export const GlobalGospelPowerChurch: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <Quote className="text-church-red/40 w-16 h-16 mx-auto mb-6" />
-            <p className="text-church-red font-bold uppercase tracking-[0.2em] text-sm mb-4">
+            <Quote className="text-red-400/80 w-16 h-16 mx-auto mb-6" />
+            <p className="text-red-400 font-bold uppercase tracking-[0.2em] text-sm mb-4">
               {t({ en: 'Scriptural Basis', vi: 'Nền Tảng Kinh Thánh' })}
             </p>
             <h2 className="text-3xl font-serif text-white">{t({ en: 'Matthew 28:18–20', vi: 'Ma-thi-ơ 28:18–20' })}</h2>
@@ -121,14 +121,14 @@ export const GlobalGospelPowerChurch: React.FC = () => {
             viewport={{ once: true }}
             className="relative px-8 md:px-16 text-center"
           >
-            <div className="absolute -top-8 left-0 text-church-red/20 text-8xl font-serif leading-none">"</div>
-            <p className="text-2xl md:text-3xl text-slate-300 leading-relaxed font-serif italic relative z-10">
+            <div className="absolute -top-8 left-0 text-red-400/60 text-8xl font-serif leading-none">"</div>
+            <p className="text-2xl md:text-3xl text-white leading-relaxed font-serif italic relative z-10">
               {t({ 
                 en: '18 And Jesus came and spoke to them, saying, “All authority has been given to Me in heaven and on earth. 19 Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, 20 teaching them to observe all things that I have commanded you; and lo, I am with you always, even to the end of the age.” Amen.',
                 vi: '18 Đức Chúa Jêsus đến gần, phán cùng môn đồ như vầy: Hết cả quyền phép ở trên trời và dưới đất đã giao cho ta. 19 Vậy, hãy đi dạy dỗ muôn dân, hãy nhân danh Đức Cha, Đức Con, và Đức Thánh Linh mà làm phép báp-têm cho họ, 20 và dạy họ giữ hết cả mọi điều mà ta đã truyền cho các ngươi. Và nầy, ta thường ở cùng các ngươi luôn cho đến tận thế.'
               })}
             </p>
-            <div className="absolute -bottom-16 right-0 text-church-red/20 text-8xl font-serif leading-none">"</div>
+            <div className="absolute -bottom-16 right-0 text-red-400/60 text-8xl font-serif leading-none">"</div>
           </motion.div>
         </div>
       </section>

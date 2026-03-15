@@ -84,22 +84,30 @@ export const HeavenBand: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               className="w-full lg:w-1/2 relative"
             >
-              <div className="rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-white">
+              <div className="relative rounded-[2rem] md:rounded-[4rem] overflow-hidden shadow-2xl border-4 md:border-8 border-white bg-white">
                 <img 
                   src="/images/heaven-band.jpeg" 
                   alt="Heaven Band" 
                   className="w-full h-auto block"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-                <div className="absolute bottom-12 left-12 right-12">
+                <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="hidden md:block absolute bottom-12 left-12 right-12">
                   <div className="glass p-8 rounded-3xl border border-white/20">
                     <p className="text-white/80 text-sm font-bold uppercase tracking-widest mb-2">
                       {t({ en: 'Established', vi: 'Thành Lập' })}
                     </p>
-                    <p className="text-white text-4xl font-serif font-bold italic">Since 2022</p>
+                    <p className="text-white text-4xl font-serif font-bold italic">Since 2020</p>
                   </div>
                 </div>
+              </div>
+
+              {/* Mobile Established Badge */}
+              <div className="md:hidden mt-6 bg-church-cream p-6 rounded-3xl border border-church-red/10 text-center shadow-sm">
+                <p className="text-church-red text-xs font-bold uppercase tracking-widest mb-1">
+                  {t({ en: 'Established', vi: 'Thành Lập' })}
+                </p>
+                <p className="text-slate-900 text-2xl font-serif font-bold italic">Since 2020</p>
               </div>
               
               {/* Floating Badge */}

@@ -162,21 +162,21 @@ export const About: React.FC = () => {
           <div className="absolute top-0 right-0 w-96 h-96 bg-church-red/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-church-gold/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
           <div className="max-w-4xl mx-auto text-center relative z-10">
-            <span className="text-church-red text-sm font-bold uppercase tracking-[0.2em] mb-4 block">
+            <span className="text-red-400 text-sm font-bold uppercase tracking-[0.2em] mb-4 block">
               {t({ en: 'Since 2020', vi: 'Từ Năm 2020' })}
             </span>
             <h2 className="text-4xl md:text-6xl font-serif font-bold mb-12">
               {t({ en: 'Our History', vi: 'Lịch Sử Của Chúng Tôi' })}
             </h2>
             <div className="relative px-8 md:px-16">
-              <div className="absolute -top-8 left-0 text-church-red/20 text-8xl font-serif leading-none">"</div>
-              <p className="text-2xl md:text-3xl text-slate-300 leading-relaxed font-serif italic relative z-10">
+              <div className="absolute -top-8 left-0 text-red-400/60 text-8xl font-serif leading-none">"</div>
+              <p className="text-2xl md:text-3xl text-white leading-relaxed font-serif italic relative z-10">
                 {t({
                   en: 'Established by the Holy Trinity in 2020, the Global Gospel Power Church has been fulfilling the Lord’s vision of growing online churches and churches in many countries around the world.',
                   vi: 'Được Đức Chúa Trời Ba Ngôi thiết lập vào năm 2020, Giáo Hội Tin Lành Quyền Phép Toàn Cầu đã và đang thực hiện khải tượng của Chúa phát triển các Hội Thánh trực tuyến và các Hội Thánh tại nhiều quốc gia trên thế giới.'
                 })}
               </p>
-              <div className="absolute -bottom-16 right-0 text-church-red/20 text-8xl font-serif leading-none">"</div>
+              <div className="absolute -bottom-16 right-0 text-red-400/60 text-8xl font-serif leading-none">"</div>
             </div>
           </div>
         </motion.section>
