@@ -37,8 +37,8 @@ export const MensMinistry: React.FC = () => {
                 <Users size={14} />
                 {t({ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' })}
               </div>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                {t({ en: 'Equipping Men for', vi: 'Trang Bị Cho Nam Giới' })} <br/>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight text-balance">
+                {t({ en: 'Equipping Men for', vi: 'Trang Bị Cho Nam Giới' })}{' '}
                 <span className="text-church-red italic">{t({ en: 'Godly Leadership', vi: 'Sự Lãnh Đạo Thuộc Linh' })}</span>
               </h1>
               
@@ -79,24 +79,18 @@ export const MensMinistry: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               className="w-full lg:w-1/2 relative"
             >
-              <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl relative">
+              <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-church-cream p-4 flex items-center justify-center relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1529070538492-11a79f244044?ixlib=rb-4.0.3&auto=format&fit=crop&q=80&w=800" 
-                  alt="Men's Fellowship" 
-                  className="w-full h-full object-cover"
+                  src={t({
+                    en: '/images/mens-logo-en.png', // Replace with your English logo filename
+                    vi: '/images/mens-logo-vi.png'  // Replace with your Vietnamese logo filename
+                  })}
+                  alt="Men's Ministry Logo" 
+                  className="w-full h-full object-contain scale-110"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
-                <div className="absolute bottom-12 left-12 right-12">
-                  <div className="glass p-8 rounded-3xl border border-white/20">
-                    <Shield className="text-church-red mb-4" size={32} />
-                    <p className="text-white text-xl font-serif italic">
-                      "As iron sharpens iron, so one man sharpens another."
-                    </p>
-                    <p className="text-white/60 text-sm mt-2 font-bold uppercase tracking-widest">— Proverbs 27:17</p>
-                  </div>
-                </div>
               </div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-church-red/5 rounded-full blur-3xl -z-10" />
             </motion.div>
           </div>
         </div>

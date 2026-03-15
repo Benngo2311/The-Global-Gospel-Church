@@ -67,9 +67,12 @@ export const About: React.FC = () => {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-church-red rounded-[3rem] z-10 flex items-center justify-center p-8 text-white shadow-2xl">
-              <p className="text-xl font-serif italic text-center">
-                "{t({ en: 'Go into all the world and preach the gospel to all creation.', vi: 'Hãy đi khắp thế gian, giảng Tin Lành cho mọi người.' })}"
+            <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-church-red rounded-[3rem] z-10 flex flex-col items-center justify-center p-8 text-white shadow-2xl">
+              <p className="text-xl font-serif italic text-center mb-4">
+                "{t({ en: 'Go into all the world and preach the gospel to every creature.', vi: 'Hãy đi khắp thế gian, giảng Tin Lành cho mọi người.' })}"
+              </p>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/80 text-center">
+                — {t({ en: 'Mark 16:15', vi: 'Mác 16:15' })}
               </p>
             </div>
           </motion.div>

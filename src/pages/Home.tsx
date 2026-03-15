@@ -171,7 +171,7 @@ export const Home: React.FC = () => {
                       vi: '"Vậy, hãy đi dạy dỗ muôn dân, hãy nhân danh Đức Cha, Đức Con, và Đức Thánh Linh mà làm phép báp-tem cho họ, và dạy họ giữ hết cả mọi điều mà Ta đã truyền cho các ngươi. Và nầy, Ta thường ở cùng các ngươi luôn cho đến tận thế."'
                     })}
                   </p>
-                  <p className="text-sm font-bold uppercase tracking-widest text-slate-400">— Matthew 28:19-20</p>
+                  <p className="text-sm font-bold uppercase tracking-widest text-slate-400">— {t({ en: 'Matthew 28:19-20', vi: 'Ma-thi-ơ 28:19-20' })}</p>
                 </div>
                 
                 <Link

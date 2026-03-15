@@ -94,10 +94,10 @@ export const HeavenBand: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-12 left-12 right-12">
                   <div className="glass p-8 rounded-3xl border border-white/20">
-                    <p className="text-black/80 text-sm font-bold uppercase tracking-widest mb-2">
+                    <p className="text-white/80 text-sm font-bold uppercase tracking-widest mb-2">
                       {t({ en: 'Established', vi: 'Thành Lập' })}
                     </p>
-                    <p className="text-black text-4xl font-serif font-bold italic">Since 2022</p>
+                    <p className="text-white text-4xl font-serif font-bold italic">Since 2022</p>
                   </div>
                 </div>
               </div>

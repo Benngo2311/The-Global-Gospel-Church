@@ -39,8 +39,8 @@ export const GlobalGospelPowerChurch: React.FC = () => {
                 <Church size={14} />
                 {t({ en: 'Main Ministry', vi: 'Mục Vụ Chính' })}
               </div>
-              <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-                {t({ en: 'The Global Gospel', vi: 'Hội Thánh Tin Lành' })} <br/>
+              <h1 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight text-balance">
+                {t({ en: 'The Global Gospel', vi: 'Hội Thánh Tin Lành' })}{' '}
                 <span className="text-church-red italic">{t({ en: 'Power Church', vi: 'Quyền Phép Toàn Cầu' })}</span>
               </h1>
               
@@ -97,23 +97,38 @@ export const GlobalGospelPowerChurch: React.FC = () => {
       </section>
 
       {/* Scriptural Basis */}
-      <section className="px-6 py-32 bg-slate-50">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white p-12 md:p-20 rounded-[4rem] shadow-xl border border-slate-100 relative">
-            <Quote className="absolute top-10 left-10 text-church-red/10 w-24 h-24 -z-0" />
-            <div className="relative z-10">
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-8">
-                {t({ en: 'Scriptural Basis', vi: 'Nền Tảng Kinh Thánh' })} — Matthew 28:18–20
-              </p>
-              <p className="text-xl md:text-2xl font-serif italic text-slate-800 leading-relaxed mb-8 whitespace-pre-line">
-                {t({ 
-                  en: '18 And Jesus came and spoke to them, saying, “All authority has been given to Me in heaven and on earth. 19 Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, 20 teaching them to observe all things that I have commanded you; and l o, I am with you always, even to the end of the age.” Amen.',
-                  vi: '18 Đức Chúa Jêsus đến gần, phán cùng môn đồ như vầy: Hết cả quyền phép ở trên trời và dưới đất đã giao cho ta. 19 Vậy, hãy đi dạy dỗ muôn dân, hãy nhân danh Đức Cha, Đức Con, và Đức Thánh Linh mà làm phép báp-têm cho họ, 20 và dạy họ giữ hết cả mọi điều mà ta đã truyền cho các ngươi. Và nầy, ta thường ở cùng các ngươi luôn cho đến tận thế.'
-                })}
-              </p>
-              <div className="w-20 h-1 bg-church-red rounded-full" />
-            </div>
-          </div>
+      <section className="px-6 py-32 bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-church-red/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-church-gold/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        <div className="max-w-4xl mx-auto relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <Quote className="text-church-red/40 w-16 h-16 mx-auto mb-6" />
+            <p className="text-church-red font-bold uppercase tracking-[0.2em] text-sm mb-4">
+              {t({ en: 'Scriptural Basis', vi: 'Nền Tảng Kinh Thánh' })}
+            </p>
+            <h2 className="text-3xl font-serif text-white">{t({ en: 'Matthew 28:18–20', vi: 'Ma-thi-ơ 28:18–20' })}</h2>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="relative px-8 md:px-16 text-center"
+          >
+            <div className="absolute -top-8 left-0 text-church-red/20 text-8xl font-serif leading-none">"</div>
+            <p className="text-2xl md:text-3xl text-slate-300 leading-relaxed font-serif italic relative z-10">
+              {t({ 
+                en: '18 And Jesus came and spoke to them, saying, “All authority has been given to Me in heaven and on earth. 19 Go therefore and make disciples of all the nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, 20 teaching them to observe all things that I have commanded you; and lo, I am with you always, even to the end of the age.” Amen.',
+                vi: '18 Đức Chúa Jêsus đến gần, phán cùng môn đồ như vầy: Hết cả quyền phép ở trên trời và dưới đất đã giao cho ta. 19 Vậy, hãy đi dạy dỗ muôn dân, hãy nhân danh Đức Cha, Đức Con, và Đức Thánh Linh mà làm phép báp-têm cho họ, 20 và dạy họ giữ hết cả mọi điều mà ta đã truyền cho các ngươi. Và nầy, ta thường ở cùng các ngươi luôn cho đến tận thế.'
+              })}
+            </p>
+            <div className="absolute -bottom-16 right-0 text-church-red/20 text-8xl font-serif leading-none">"</div>
+          </motion.div>
         </div>
       </section>
 
@@ -122,50 +137,53 @@ export const GlobalGospelPowerChurch: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-20 items-center">
             <div className="w-full lg:w-1/2 order-2 lg:order-1">
-              <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1585770536735-27993a080586?q=80&auto=format&fit=crop&ixlib=rb-4.1.0&w=800&h=800&crop=" 
-                  alt="Church Activities" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+              <div className="relative lg:translate-x-8">
+                <div className="aspect-[4/3] rounded-[3rem] overflow-hidden shadow-2xl">
+                  <img 
+                    src="https://images.unsplash.com/photo-1585770536735-27993a080586?q=80&auto=format&fit=crop&ixlib=rb-4.1.0&w=1000&h=750&crop=" 
+                    alt="Church Activities" 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-church-cream rounded-[3rem] -z-10" />
               </div>
             </div>
             <div className="w-full lg:w-1/2 order-1 lg:order-2">
+              <span className="text-church-red text-sm font-bold uppercase tracking-[0.2em] mb-4 block">
+                {t({ en: 'What We Do', vi: 'Những Gì Chúng Tôi Làm' })}
+              </span>
               <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-8">
                 {t({ en: 'Our Activities', vi: 'Các Hoạt Động Của Chúng Tôi' })}
               </h2>
-              <div className="text-xl text-slate-600 leading-relaxed mb-8">
-                <p className="mb-4">
+              <p className="text-xl text-slate-600 leading-relaxed mb-10">
                 {t({ 
                   en: 'Organize worship gatherings that foster a sense of community and spiritual growth, including:', 
-                    vi: 'Tổ chức các buổi nhóm thờ phượng nhằm phát triển thuộc linh và thúc đẩy tinh thần cộng đồng bao gồm:'  
+                  vi: 'Tổ chức các buổi nhóm thờ phượng nhằm phát triển thuộc linh và thúc đẩy tinh thần cộng đồng bao gồm:'  
                 })}
               </p> 
-              <ul className="space-y-4 list-disc pl-6">
-                  <li>
-                    {t({ en: 'Bible teaching sessions.', vi: 'Các buổi dạy Kinh Thánh.' })}
-                  </li>
-                  <li>
-                    {t({ 
-                      en: 'Regular prayer, intercession, deliverance, and healing for both personal and collective needs.', 
-                      vi: 'Cầu nguyện cầu thay, giải cứu chữa lành thường xuyên cho các nhu cầu cá nhân và tập thể.' 
-                    })}
-                  </li>
-                  <li>
-                    {t({ 
-                      en: 'Building together and sharing the vision of evangelism towards the community.', 
-                      vi: 'Cùng nhau gây dựng và chia sẻ khải tượng truyền giáo hướng đến cộng đồng.' 
-                    })}
-                  </li>
-                  <li>
-                    {t({ 
-                      en: 'Sharing the love and message of Jesus Christ with everyone.', 
-                      vi: 'Chia sẻ tình yêu và thông điệp của Đức Chúa Jêsus Christ với tất cả mọi người.' 
-                    })}
-                  </li>
-                </ul>
+              
+              <div className="space-y-6 mb-12">
+                {[
+                  { icon: '📖', en: 'Bible teaching sessions.', vi: 'Các buổi dạy Kinh Thánh.' },
+                  { icon: '🙏', en: 'Regular prayer, intercession, deliverance, and healing for both personal and collective needs.', vi: 'Cầu nguyện cầu thay, giải cứu chữa lành thường xuyên cho các nhu cầu cá nhân và tập thể.' },
+                  { icon: '🌍', en: 'Building together and sharing the vision of evangelism towards the community.', vi: 'Cùng nhau gây dựng và chia sẻ khải tượng truyền giáo hướng đến cộng đồng.' },
+                  { icon: '❤️', en: 'Sharing the love and message of Jesus Christ with everyone.', vi: 'Chia sẻ tình yêu và thông điệp của Đức Chúa Jêsus Christ với tất cả mọi người.' }
+                ].map((item, i) => (
+                  <motion.div 
+                    key={i}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex items-start gap-4 p-6 bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all"
+                  >
+                    <div className="text-2xl shrink-0">{item.icon}</div>
+                    <p className="text-slate-700 font-medium">{t({ en: item.en, vi: item.vi })}</p>
+                  </motion.div>
+                ))}
               </div>
+
               <div className="flex items-center gap-4 p-6 bg-church-cream rounded-3xl border border-church-red/10">
                 <Heart className="text-church-red shrink-0" size={32} />
                 <div>
