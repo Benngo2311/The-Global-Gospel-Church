@@ -4,6 +4,7 @@ import { BookOpen, GraduationCap, Languages, Calendar, Video, CheckCircle2, Arro
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
 import { SEO } from '../components/SEO';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const HeavenAcademy: React.FC = () => {
   const { t } = useLanguage();
@@ -225,6 +226,10 @@ export const HeavenAcademy: React.FC = () => {
           </p>
         </div>
       </section>
+      <PageNavigation 
+        prev={{ title: { en: 'Bible School', vi: 'Trường Kinh Thánh' }, path: '/ministries/bible-school' }}
+        next={{ title: { en: 'Council Of Prayers', vi: 'Hội Đồng Hiệp Nguyện' }, path: '/ministries/council-of-prayers' }}
+      />
     </div>
   );
 };

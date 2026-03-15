@@ -4,6 +4,7 @@ import { Users, BookOpen, Video, Calendar, Clock, Shield, Heart, ArrowRight, Che
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
 import { SEO } from '../components/SEO';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const MensMinistry: React.FC = () => {
   const { t } = useLanguage();
@@ -221,6 +222,10 @@ export const MensMinistry: React.FC = () => {
           </div>
         </div>
       </section>
+      <PageNavigation 
+        prev={{ title: { en: 'Council Of Prayers', vi: 'Hội Đồng Hiệp Nguyện' }, path: '/ministries/council-of-prayers' }}
+        next={{ title: { en: 'Ministries', vi: 'Mục Vụ' }, path: '/ministries' }}
+      />
     </div>
   );
 };

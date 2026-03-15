@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Heart, Globe, Users, Shield, Zap, Star, Book } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SEO } from '../components/SEO';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const Ministries: React.FC = () => {
   const { t } = useLanguage();
@@ -170,6 +171,10 @@ export const Ministries: React.FC = () => {
           </div>
         </div>
       </section>
+      <PageNavigation 
+        prev={{ title: { en: 'About Us', vi: 'Về Chúng Tôi' }, path: '/about' }}
+        next={{ title: { en: 'The Global Gospel Power Church', vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' }, path: '/ministries/church' }}
+      />
     </div>
   );
 };

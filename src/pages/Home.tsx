@@ -8,6 +8,7 @@ import { PrayerWall } from '../components/PrayerWall';
 import { DailyVerse } from '../components/DailyVerse';
 import { LiveBroadcast } from '../components/LiveBroadcast';
 import { SEO } from '../components/SEO';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const Home: React.FC = () => {
   const { t, language } = useLanguage();
@@ -277,6 +278,7 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </section>
+      <PageNavigation next={{ title: { en: 'About Us', vi: 'Về Chúng Tôi' }, path: '/about' }} />
     </div>
   );
 };

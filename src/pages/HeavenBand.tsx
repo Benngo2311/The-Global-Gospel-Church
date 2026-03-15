@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Music, Mic2, Radio, Play, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SEO } from '../components/SEO';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const HeavenBand: React.FC = () => {
   const { t } = useLanguage();
@@ -207,6 +208,10 @@ export const HeavenBand: React.FC = () => {
           </div>
         </div>
       </section>
+      <PageNavigation 
+        prev={{ title: { en: 'The Global Gospel Power Church', vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' }, path: '/ministries/church' }}
+        next={{ title: { en: 'Bible School', vi: 'Trường Kinh Thánh' }, path: '/ministries/bible-school' }}
+      />
     </div>
   );
 };

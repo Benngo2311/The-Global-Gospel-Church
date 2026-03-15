@@ -4,6 +4,7 @@ import { Shield, Users, Globe, Video, Calendar, Clock, Quote, ArrowRight, Extern
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
 import { SEO } from '../components/SEO';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const CouncilOfPrayers: React.FC = () => {
   const { t } = useLanguage();
@@ -223,6 +224,10 @@ export const CouncilOfPrayers: React.FC = () => {
           </div>
         </div>
       </section>
+      <PageNavigation 
+        prev={{ title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' }, path: '/ministries/heaven-academy' }}
+        next={{ title: { en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
+      />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
 import { SEO } from '../components/SEO';
 import { Link } from 'react-router-dom';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const GlobalGospelPowerChurch: React.FC = () => {
   const { t } = useLanguage();
@@ -303,6 +304,10 @@ export const GlobalGospelPowerChurch: React.FC = () => {
           </Link>
         </div>
       </section>
+      <PageNavigation 
+        prev={{ title: { en: 'Ministries', vi: 'Mục Vụ' }, path: '/ministries' }}
+        next={{ title: { en: 'Heaven Band', vi: 'Ban Nhạc Thiên Đàng' }, path: '/ministries/heaven-band' }}
+      />
     </div>
   );
 };

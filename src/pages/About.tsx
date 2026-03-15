@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SITE_CONTENT } from '../constants/content';
 import { SEO } from '../components/SEO';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const About: React.FC = () => {
   const { t } = useLanguage();
@@ -181,6 +182,10 @@ export const About: React.FC = () => {
           </div>
         </motion.section>
       </div>
+      <PageNavigation 
+        prev={{ title: { en: 'Home', vi: 'Trang Chủ' }, path: '/' }}
+        next={{ title: { en: 'Ministries', vi: 'Mục Vụ' }, path: '/ministries' }}
+      />
     </div>
   );
 };

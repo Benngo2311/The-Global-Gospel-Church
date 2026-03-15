@@ -4,6 +4,7 @@ import { Book, GraduationCap, CheckCircle2, ArrowRight, Video, Calendar, Clock, 
 import { useLanguage } from '../contexts/LanguageContext';
 import { TimeRange } from '../components/TimeRange';
 import { SEO } from '../components/SEO';
+import { PageNavigation } from '../components/PageNavigation';
 
 export const GlobalGospelPowerBibleSchool: React.FC = () => {
   const { t } = useLanguage();
@@ -261,6 +262,10 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
           </div>
         </div>
       </section>
+      <PageNavigation 
+        prev={{ title: { en: 'Heaven Band', vi: 'Ban Nhạc Thiên Đàng' }, path: '/ministries/heaven-band' }}
+        next={{ title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' }, path: '/ministries/heaven-academy' }}
+      />
     </div>
   );
 };
