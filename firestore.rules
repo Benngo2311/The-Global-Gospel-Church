@@ -47,9 +47,11 @@ service cloud.firestore {
     }
     
     function isValidPrayerIncrement() {
-      // Only allow updating prayedCount by exactly 1
+      // Only allow updating prayedCount by exactly +1 or -1, and ensure it doesn't go below 0
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['prayedCount']) &&
-             request.resource.data.prayedCount == resource.data.prayedCount + 1;
+             (request.resource.data.prayedCount == resource.data.prayedCount + 1 || 
+              request.resource.data.prayedCount == resource.data.prayedCount - 1) &&
+             request.resource.data.prayedCount >= 0;
     }
 
     match /prayers/{prayerId} {

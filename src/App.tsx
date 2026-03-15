@@ -17,6 +17,7 @@ import { MensMinistry } from './pages/MensMinistry';
 import { Giving } from './pages/Giving';
 import { Contact } from './pages/Contact';
 import { Live } from './pages/Live';
+import { ScrollToTop } from './components/ScrollToTop';
 // import { SpiritualAssistant } from './components/SpiritualAssistant';
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
     <HelmetProvider>
       <LanguageProvider>
         <Router>
+          <ScrollToTop />
           <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
