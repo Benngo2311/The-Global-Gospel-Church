@@ -26,9 +26,7 @@ export const Classes: React.FC = () => {
       time: '5AM-7AM CALIFORNIA',
       ptStart: '05:00',
       ptEnd: '07:00',
-      link: 'https://us02web.zoom.us/j/4837007000',
-      isZoom: true,
-      zoomDetails: 'Passcode: 7777'
+      link: '/ministries/womens-ministry'
     },
     {
       day: { en: 'Tue, Thur, Fri', vi: 'Thứ 3, 5, 6' },

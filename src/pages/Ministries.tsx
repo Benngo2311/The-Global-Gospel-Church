@@ -51,6 +51,13 @@ export const Ministries: React.FC = () => {
       desc: { en: 'Empowering men to grow in faith, lead their families, and serve the community through bilingual Bible studies and fellowship.', vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình và phục vụ cộng đồng thông qua các buổi học Kinh Thánh song ngữ và thông công.' },
       link: '/ministries/mens-ministry',
       external: false
+    },
+    {
+      icon: <Users size={40} />,
+      title: { en: "Women's Global Power Gospel Council", vi: 'Ban Nữ Giới Tin Lành Quyền Phép Toàn Cầu' },
+      desc: { en: "Empowering women to grow in faith, pray, intercede, witness, study God's word, support their spouses, and care for their children.", vi: 'Trao quyền cho phụ nữ phát triển đức tin, cầu nguyện, cầu thay, làm chứng, học Lời Chúa, hỗ trợ người phối ngẫu và chăm sóc con cái.' },
+      link: '/ministries/womens-ministry',
+      external: false
     }
   ];
 

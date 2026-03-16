@@ -14,6 +14,7 @@ import { GlobalGospelPowerBibleSchool } from './pages/BibleSchool';
 import { GlobalGospelPowerChurch } from './pages/GlobalGospelPowerChurch';
 import { CouncilOfPrayers } from './pages/CouncilOfPrayers';
 import { MensMinistry } from './pages/MensMinistry';
+import { WomensMinistry } from './pages/WomensMinistry';
 import { Giving } from './pages/Giving';
 import { Contact } from './pages/Contact';
 import { Live } from './pages/Live';
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="ministries/church" element={<GlobalGospelPowerChurch />} />
             <Route path="ministries/council-of-prayers" element={<CouncilOfPrayers />} />
             <Route path="ministries/mens-ministry" element={<MensMinistry />} />
+            <Route path="ministries/womens-ministry" element={<WomensMinistry />} />
             <Route path="giving" element={<Giving />} />
             <Route path="contact" element={<Contact />} />
             <Route path="live" element={<Live />} />

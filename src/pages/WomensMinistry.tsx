@@ -6,24 +6,24 @@ import { TimeRange } from '../components/TimeRange';
 import { SEO } from '../components/SEO';
 import { PageNavigation } from '../components/PageNavigation';
 
-export const MensMinistry: React.FC = () => {
+export const WomensMinistry: React.FC = () => {
   const { t } = useLanguage();
 
   const features = [
-    { en: 'Spiritual Leadership', vi: 'Lãnh Đạo Tâm Linh' },
-    { en: 'Bilingual Bible Study', vi: 'Học Kinh Thánh Song Ngữ' },
-    { en: 'Accountability Groups', vi: 'Nhóm Giải Trình' },
-    { en: 'Community Service', vi: 'Phục Vụ Cộng Đồng' },
-    { en: 'Mentorship', vi: 'Sự Cố Vấn' },
-    { en: 'Fellowship Events', vi: 'Sự Kiện Thông Công' }
+    { en: 'Prayer & Intercession', vi: 'Cầu Nguyện & Cầu Thay' },
+    { en: 'Witnessing', vi: 'Làm Chứng' },
+    { en: "Studying God's Word", vi: 'Học Lời Chúa' },
+    { en: 'Supporting Spouse', vi: 'Hỗ Trợ Người Phối Ngẫu' },
+    { en: 'Caring for Children', vi: 'Chăm Sóc Con Cái' },
+    { en: 'Fellowship', vi: 'Sự Thông Công' }
   ];
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
       <SEO 
-        title={{ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }} 
-        description={{ en: 'Empowering men to grow in faith, lead their families, and serve the community through bilingual Bible studies and fellowship.', vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình và phục vụ cộng đồng thông qua các buổi học Kinh Thánh song ngữ và thông công.' }}
-        url="https://tggpc.org/ministries/mens-ministry"
+        title={{ en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' }} 
+        description={{ en: "Empowering women to grow in faith, pray, intercede, witness, study God's word, support their spouses, and care for their children.", vi: 'Trao quyền cho phụ nữ phát triển đức tin, cầu nguyện, cầu thay, làm chứng, học Lời Chúa, hỗ trợ người phối ngẫu và chăm sóc con cái.' }}
+        url="https://tggpc.org/ministries/womens-ministry"
       />
       {/* Hero Section */}
       <section className="px-6 mb-24">
@@ -36,11 +36,11 @@ export const MensMinistry: React.FC = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/10 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
                 <Users size={14} />
-                {t({ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' })}
+                {t({ en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' })}
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight text-balance">
-                {t({ en: 'Equipping Men for', vi: 'Trang Bị Cho Nam Giới' })}{' '}
-                <span className="text-church-red italic">{t({ en: 'Godly Leadership', vi: 'Sự Lãnh Đạo Thuộc Linh' })}</span>
+                {t({ en: 'Equipping Women for', vi: 'Trang Bị Cho Nữ Giới' })}{' '}
+                <span className="text-church-red italic">{t({ en: 'Godly Service', vi: 'Phục Vụ Thuộc Linh' })}</span>
               </h1>
               
               <div className="mb-10">
@@ -49,8 +49,8 @@ export const MensMinistry: React.FC = () => {
                 </h3>
                 <p className="text-xl text-slate-600 leading-relaxed font-medium">
                   {t({ 
-                    en: "To empower men to grow in their faith, lead their families with integrity, and serve the community with the heart of Christ through fellowship and the Word.", 
-                    vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình bằng sự chính trực và phục vụ cộng đồng với trái tim của Đức Chúa Jêsus Christ thông qua sự thông công và Lời Ngài.' 
+                    en: "To empower women to grow in their faith, pray, intercede, witness, study God's word, support their spouses, and care for their children.", 
+                    vi: 'Trao quyền cho phụ nữ phát triển đức tin, cầu nguyện, cầu thay, làm chứng, học Lời Chúa, hỗ trợ người phối ngẫu và chăm sóc con cái.' 
                   })}
                 </p>
               </div>
@@ -70,7 +70,7 @@ export const MensMinistry: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 className="inline-flex items-center gap-3 px-10 py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg shadow-xl hover:bg-church-red transition-all"
               >
-                {t({ en: 'Join Bible Study', vi: 'Tham Gia Học Kinh Thánh' })}
+                {t({ en: 'Join Classes', vi: 'Tham Gia Lớp Học' })}
                 <ArrowRight size={20} />
               </motion.a>
             </motion.div>
@@ -82,12 +82,9 @@ export const MensMinistry: React.FC = () => {
             >
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-church-cream p-4 flex items-center justify-center relative">
                 <img 
-                  src={t({
-                    en: '/images/mens-logo-en.png', // Replace with your English logo filename
-                    vi: '/images/mens-logo-vi.png'  // Replace with your Vietnamese logo filename
-                  })}
-                  alt="Men's Ministry Logo" 
-                  className="w-full h-full object-contain scale-110"
+                  src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  alt="Women's Ministry" 
+                  className="w-full h-full object-cover rounded-[3rem]"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -104,15 +101,15 @@ export const MensMinistry: React.FC = () => {
             <div className="w-full lg:w-1/2">
               <div className="inline-flex items-center gap-2 text-church-red font-bold uppercase tracking-widest text-xs mb-6">
                 <Video size={16} />
-                {t({ en: 'Virtual Bible Study', vi: 'Học Kinh Thánh Trực Tuyến' })}
+                {t({ en: 'Virtual Classes', vi: 'Lớp Học Trực Tuyến' })}
               </div>
               <h2 className="text-5xl md:text-7xl font-serif font-bold text-slate-900 mb-8">
-                {t({ en: 'Online Meeting', vi: 'Nhóm Trực Tuyến' })}
+                {t({ en: 'Online Classes', vi: 'Lớp Học Trực Tuyến' })}
               </h2>
               <p className="text-2xl text-slate-600 leading-relaxed mb-10">
                 {t({ 
-                  en: 'Join our weekly bilingual Bible study session specifically designed for men. We dive deep into the scriptures, share life experiences, and grow together in the knowledge of God.', 
-                  vi: 'Tham gia buổi học Kinh Thánh song ngữ hàng tuần được thiết kế riêng cho nam giới. Chúng ta cùng đi sâu vào Kinh Thánh, chia sẻ kinh nghiệm sống và cùng nhau lớn lên trong sự hiểu biết về Đức Chúa Trời.' 
+                  en: 'Join our online classes for worship, intercession, and Bible study. We gather to seek God\'s presence and grow together in His Word.', 
+                  vi: 'Tham gia các lớp học trực tuyến của chúng tôi để thờ phượng, cầu thay và học Kinh Thánh. Chúng ta cùng nhau tìm kiếm sự hiện diện của Chúa và lớn lên trong Lời Ngài.' 
                 })}
               </p>
 
@@ -124,7 +121,7 @@ export const MensMinistry: React.FC = () => {
                 className="bg-white p-10 md:p-12 rounded-[3rem] text-slate-900 shadow-2xl border border-slate-100"
               >
                 <h3 className="text-3xl font-serif font-bold mb-8 text-church-red">
-                  {t({ en: 'Bilingual Bible Study For Men (EN–VN)', vi: 'Học Kinh Thánh Song Ngữ Cho Nam Giới (ANH–VIỆT)' })}
+                  {t({ en: 'Women of Global Gospel Power', vi: 'Phụ Nữ Quyền Năng Tin Lành Toàn Cầu' })}
                 </h3>
                 
                 <div className="space-y-8 mb-12">
@@ -136,7 +133,7 @@ export const MensMinistry: React.FC = () => {
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
                         {t({ en: 'Frequency', vi: 'Tần Suất' })}
                       </p>
-                      <p className="text-xl font-bold">{t({ en: 'Every Friday', vi: 'Thứ Sáu Hàng Tuần' })}</p>
+                      <p className="text-xl font-bold">{t({ en: 'Every Mon, Wed, Sat', vi: 'Thứ Hai, Thứ Tư, Thứ Bảy Hàng Tuần' })}</p>
                     </div>
                   </div>
 
@@ -148,8 +145,8 @@ export const MensMinistry: React.FC = () => {
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
                         {t({ en: 'Time', vi: 'Giờ Giấc' })}
                       </p>
-                      <p className="text-xl font-bold">7:00 PM to 10:00 PM (California)</p>
-                      <TimeRange ptStart="19:00" ptEnd="22:00" className="mt-2" />
+                      <p className="text-xl font-bold">5:00 AM to 7:00 AM (California)</p>
+                      <TimeRange ptStart="05:00" ptEnd="07:00" className="mt-2" />
                     </div>
                   </div>
 
@@ -185,15 +182,15 @@ export const MensMinistry: React.FC = () => {
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/5 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
             <Heart size={14} />
-            {t({ en: 'Brotherhood In Christ', vi: 'Tình Anh Em Trong Đấng Christ' })}
+            {t({ en: 'Sisterhood In Christ', vi: 'Tình Chị Em Trong Đấng Christ' })}
           </div>
           <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-8">
-            {t({ en: 'A Community of Brothers', vi: 'Cộng Đồng Nam Giới' })}
+            {t({ en: 'A Community of Sisters', vi: 'Cộng Đồng Nữ Giới' })}
           </h2>
           <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">
             {t({ 
-              en: 'We believe that men are called to be the spiritual pillars of their homes and communities. Join us as we support, challenge, and encourage one another to be the men God created us to be.', 
-              vi: 'Chúng tôi tin rằng nam giới được gọi để trở thành những trụ cột thuộc linh của gia đình và cộng đồng. Hãy tham gia cùng chúng tôi để được hỗ trợ và khích lệ lẫn nhau trở thành những người nam mà Chúa đã tạo dựng.' 
+              en: 'We believe that women play a vital role in their families and communities. Join us as we support, challenge, and encourage one another to be the women God created us to be.', 
+              vi: 'Chúng tôi tin rằng phụ nữ đóng một vai trò quan trọng trong gia đình và cộng đồng. Hãy tham gia cùng chúng tôi để được hỗ trợ, khích lệ lẫn nhau trở thành những người nữ mà Chúa đã tạo dựng.' 
             })}
           </p>
           
@@ -209,8 +206,8 @@ export const MensMinistry: React.FC = () => {
               <div className="w-14 h-14 rounded-2xl bg-church-cream flex items-center justify-center text-church-red mx-auto mb-6">
                 <Shield size={28} />
               </div>
-              <h4 className="text-xl font-serif font-bold mb-2">{t({ en: 'Integrity', vi: 'Sự Chính Trực' })}</h4>
-              <p className="text-slate-500 text-sm">{t({ en: 'Living lives of honor.', vi: 'Sống đời sống danh dự.' })}</p>
+              <h4 className="text-xl font-serif font-bold mb-2">{t({ en: 'Faithfulness', vi: 'Sự Trung Tín' })}</h4>
+              <p className="text-slate-500 text-sm">{t({ en: 'Living lives of devotion.', vi: 'Sống đời sống tận hiến.' })}</p>
             </div>
             <div className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
               <div className="w-14 h-14 rounded-2xl bg-church-cream flex items-center justify-center text-church-red mx-auto mb-6">
@@ -223,8 +220,8 @@ export const MensMinistry: React.FC = () => {
         </div>
       </section>
       <PageNavigation 
-        prev={{ title: { en: 'Council Of Prayers', vi: 'Hội Đồng Hiệp Nguyện' }, path: '/ministries/council-of-prayers' }}
-        next={{ title: { en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' }, path: '/ministries/womens-ministry' }}
+        prev={{ title: { en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
+        next={{ title: { en: 'Ministries', vi: 'Mục Vụ' }, path: '/ministries' }}
       />
     </div>
   );
