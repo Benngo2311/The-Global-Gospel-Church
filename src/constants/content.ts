@@ -14,6 +14,7 @@ export const NAV_ITEMS: NavItem[] = [
       { title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' }, href: '/ministries/heaven-academy' },
       { title: { en: 'Heaven Band', vi: 'Ban Nhạc Thiên Đàng' }, href: '/ministries/heaven-band' },
       { title: { en: 'Men\'s Global Power Gospel Council', vi: 'Ban Nam Giới Tin lành Quyền Phép Toàn Cầu' }, href: '/ministries/mens-ministry' },
+      { title: { en: 'Women\'s Global Power Gospel Council', vi: 'Ban Nữ Giới Tin lành Quyền Phép Toàn Cầu' }, href: '/ministries/womens-ministry' },
       { title: { en: 'Council Of Prayers For The Global Spiritual Warfare', vi: 'Hội Đồng Cầu Nguyện Chiến Trận Thuộc Linh Toàn Cầu' }, href: '/ministries/council-of-prayers' }
     ]
   },
