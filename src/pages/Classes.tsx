@@ -21,7 +21,7 @@ export const Classes: React.FC = () => {
     },
     {
       day: { en: 'MON, WED, SAT', vi: 'Thứ 2, 4, 7' },
-      title: { en: 'Women of Global Gospel Power', vi: 'Phụ Nữ Tin Lành Quyền Phép Toàn Cầu' },
+      title: { en: 'Women Ministry', vi: 'Mục Vụ Nữ Giới' },
       desc: { en: 'Worship, intercession & Bible study.', vi: 'Thờ phượng, cầu thay & học Kinh Thánh.' },
       time: '5AM-7AM CALIFORNIA',
       ptStart: '05:00',
@@ -57,7 +57,7 @@ export const Classes: React.FC = () => {
     },
     {
       day: { en: 'Friday', vi: 'Thứ 6' },
-      title: { en: 'Men\'s Global Power Gospel Council', vi: 'Hội Đồng Tin Lành Quyền Phép Nam Giới Toàn Cầu' },
+      title: { en: 'Men\'s Ministry', vi: 'Mục Vụ Nam Giới' },
       desc: { en: 'Bilingual Bible Study For Men (EN–VN)', vi: 'Học Kinh Thánh song ngữ cho nam giới (Anh-Việt)' },
       time: '6PM - 9PM CALIFORNIA',
       ptStart: '18:00',

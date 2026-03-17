@@ -91,7 +91,7 @@ export const Header: React.FC = () => {
               
               {item.children && (
                 <div className="absolute left-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                  <div className="w-64 glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+                  <div className="w-80 glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
                     {item.children.map((child) => (
                       <Link
                         key={child.href}

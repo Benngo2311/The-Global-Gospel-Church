@@ -54,6 +54,24 @@ service cloud.firestore {
              request.resource.data.prayedCount >= 0;
     }
 
+    function isValidRepentance(data) {
+      return hasOnlyAllowedFields(['text', 'author', 'email', 'phone', 'graceCount', 'timestamp']) &&
+             isValidString('text', 1, 2000) &&
+             isValidString('author', 1, 100) &&
+             isValidOptionalString('email', 0, 100) &&
+             isValidOptionalString('phone', 0, 50) &&
+             data.graceCount is number && data.graceCount >= 0 &&
+             data.timestamp is number;
+    }
+    
+    function isValidGraceIncrement() {
+      // Only allow updating graceCount by exactly +1 or -1, and ensure it doesn't go below 0
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['graceCount']) &&
+             (request.resource.data.graceCount == resource.data.graceCount + 1 || 
+              request.resource.data.graceCount == resource.data.graceCount - 1) &&
+             request.resource.data.graceCount >= 0;
+    }
+
     match /prayers/{prayerId} {
       // Publicly readable as this is a public prayer wall
       allow read: if true;
@@ -63,6 +81,17 @@ service cloud.firestore {
       
       // Anyone can increment the prayed count
       allow update: if isValidPrayerIncrement();
+    }
+
+    match /repentances/{repentanceId} {
+      // Publicly readable as this is a public repenting corner
+      allow read: if true;
+      
+      // Publicly creatable, but strictly validated
+      allow create: if isValidRepentance(request.resource.data) && request.resource.data.graceCount == 0;
+      
+      // Anyone can increment the grace count
+      allow update: if isValidGraceIncrement();
     }
   }
 }

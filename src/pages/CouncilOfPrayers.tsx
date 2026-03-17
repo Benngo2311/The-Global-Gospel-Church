@@ -226,7 +226,7 @@ export const CouncilOfPrayers: React.FC = () => {
       </section>
       <PageNavigation 
         prev={{ title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' }, path: '/ministries/heaven-academy' }}
-        next={{ title: { en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
+        next={{ title: { en: "Men Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
       />
     </div>
   );

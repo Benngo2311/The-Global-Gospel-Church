@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { SITE_CONTENT } from '../constants/content';
 import { Link } from 'react-router-dom';
 import { PrayerWall } from '../components/PrayerWall';
+import { RepentingCorner } from '../components/RepentingCorner';
 import { DailyVerse } from '../components/DailyVerse';
 import { LiveBroadcast } from '../components/LiveBroadcast';
 import { SEO } from '../components/SEO';
@@ -247,6 +248,7 @@ export const Home: React.FC = () => {
       </section>
 
       <PrayerWall />
+      <RepentingCorner />
 
       {/* Call to Action */}
       <section className="py-32 px-6">

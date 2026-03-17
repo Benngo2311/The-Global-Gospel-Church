@@ -21,7 +21,7 @@ export const MensMinistry: React.FC = () => {
   return (
     <div className="pt-32 pb-20 overflow-hidden">
       <SEO 
-        title={{ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }} 
+        title={{ en: "Men Ministry", vi: 'Mục Vụ Nam Giới' }} 
         description={{ en: 'Empowering men to grow in faith, lead their families, and serve the community through bilingual Bible studies and fellowship.', vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình và phục vụ cộng đồng thông qua các buổi học Kinh Thánh song ngữ và thông công.' }}
         url="https://tggpc.org/ministries/mens-ministry"
       />
@@ -36,7 +36,7 @@ export const MensMinistry: React.FC = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/10 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
                 <Users size={14} />
-                {t({ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' })}
+                {t({ en: "Men Ministry", vi: 'Mục Vụ Nam Giới' })}
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight text-balance">
                 {t({ en: 'Equipping Men for', vi: 'Trang Bị Cho Nam Giới' })}{' '}
@@ -86,7 +86,7 @@ export const MensMinistry: React.FC = () => {
                     en: '/images/mens-logo-en.png', // Replace with your English logo filename
                     vi: '/images/mens-logo-vi.png'  // Replace with your Vietnamese logo filename
                   })}
-                  alt="Men's Ministry Logo" 
+                  alt="Men Ministry Logo" 
                   className="w-full h-full object-contain scale-110"
                   referrerPolicy="no-referrer"
                 />
@@ -224,7 +224,7 @@ export const MensMinistry: React.FC = () => {
       </section>
       <PageNavigation 
         prev={{ title: { en: 'Council Of Prayers', vi: 'Hội Đồng Hiệp Nguyện' }, path: '/ministries/council-of-prayers' }}
-        next={{ title: { en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' }, path: '/ministries/womens-ministry' }}
+        next={{ title: { en: "Women Ministry", vi: 'Mục Vụ Nữ Giới' }, path: '/ministries/womens-ministry' }}
       />
     </div>
   );

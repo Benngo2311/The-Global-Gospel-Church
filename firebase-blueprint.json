@@ -13,12 +13,30 @@
         "timestamp": { "type": "number", "description": "The timestamp when the prayer was submitted." }
       },
       "required": ["text", "author", "prayedCount", "timestamp"]
+    },
+    "Repentance": {
+      "title": "Repentance",
+      "description": "A repentance confession submitted by a user.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string", "description": "The content of the repentance." },
+        "author": { "type": "string", "description": "The name of the person submitting the repentance." },
+        "email": { "type": "string", "description": "The email of the person submitting the repentance." },
+        "phone": { "type": "string", "description": "The phone number of the person submitting the repentance." },
+        "graceCount": { "type": "number", "description": "The number of times people have sent grace for this repentance." },
+        "timestamp": { "type": "number", "description": "The timestamp when the repentance was submitted." }
+      },
+      "required": ["text", "author", "graceCount", "timestamp"]
     }
   },
   "firestore": {
     "/prayers/{prayerId}": {
       "schema": { "$ref": "Prayer" },
       "description": "Collection of prayer requests."
+    },
+    "/repentances/{repentanceId}": {
+      "schema": { "$ref": "Repentance" },
+      "description": "Collection of repentance confessions."
     }
   }
 }

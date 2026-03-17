@@ -21,7 +21,7 @@ export const WomensMinistry: React.FC = () => {
   return (
     <div className="pt-32 pb-20 overflow-hidden">
       <SEO 
-        title={{ en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' }} 
+        title={{ en: "Women Ministry", vi: 'Mục Vụ Nữ Giới' }} 
         description={{ en: "Empowering women to grow in faith, pray, intercede, witness, study God's word, support their spouses, and care for their children.", vi: 'Trao quyền cho phụ nữ phát triển đức tin, cầu nguyện, cầu thay, làm chứng, học Lời Chúa, hỗ trợ người phối ngẫu và chăm sóc con cái.' }}
         url="https://tggpc.org/ministries/womens-ministry"
       />
@@ -36,7 +36,7 @@ export const WomensMinistry: React.FC = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/10 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
                 <Users size={14} />
-                {t({ en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' })}
+                {t({ en: "Women Ministry", vi: 'Mục Vụ Nữ Giới' })}
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight text-balance">
                 {t({ en: 'Equipping Women for', vi: 'Trang Bị Cho Nữ Giới' })}{' '}
@@ -83,7 +83,7 @@ export const WomensMinistry: React.FC = () => {
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-church-cream p-4 flex items-center justify-center relative">
                 <img 
                   src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                  alt="Women's Ministry" 
+                  alt="Women Ministry" 
                   className="w-full h-full object-cover rounded-[3rem]"
                   referrerPolicy="no-referrer"
                 />
@@ -220,7 +220,7 @@ export const WomensMinistry: React.FC = () => {
         </div>
       </section>
       <PageNavigation 
-        prev={{ title: { en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
+        prev={{ title: { en: "Men Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
         next={{ title: { en: 'Ministries', vi: 'Mục Vụ' }, path: '/ministries' }}
       />
     </div>

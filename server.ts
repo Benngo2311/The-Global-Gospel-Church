@@ -295,6 +295,59 @@ Submitted at: ${new Date(timestamp).toLocaleString()}
     res.json({ success: true });
   });
 
+  // Repentance Email Notification API
+  app.post("/api/send-repentance-email", async (req, res) => {
+    const { text, author, email, phone, timestamp } = req.body;
+    if (!text) return res.status(400).json({ error: "Text is required" });
+    
+    // Send email notification
+    const fromAddress = process.env.SMTP_FROM || `"Repenting Corner" <${process.env.SMTP_USER}>`;
+    const mailOptions = {
+      from: fromAddress,
+      to: "thegospelpower777@gmail.com",
+      subject: "New Repentance Confession",
+      text: `
+New Repentance Confession Submitted:
+
+Author: ${author || "Anonymous"}
+Email: ${email || "N/A"}
+Phone: ${phone || "N/A"}
+
+Confession:
+${text}
+
+Submitted at: ${new Date(timestamp).toLocaleString()}
+      `,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; max-width: 600px;">
+          <h2 style="color: #059669;">New Repentance Confession</h2>
+          <hr />
+          <p><strong>Author:</strong> ${author || "Anonymous"}</p>
+          <p><strong>Email:</strong> ${email || "N/A"}</p>
+          <p><strong>Phone:</strong> ${phone || "N/A"}</p>
+          <p><strong>Confession:</strong></p>
+          <p style="white-space: pre-wrap; font-style: italic; color: #444;">"${text}"</p>
+          <hr />
+          <p style="font-size: 12px; color: #666;">Submitted at: ${new Date(timestamp).toLocaleString()}</p>
+        </div>
+      `,
+    };
+
+    try {
+      if (process.env.SMTP_PASS) {
+        console.log(`Sending repentance notification to thegospelpower777@gmail.com`);
+        await sendEmail(mailOptions);
+      } else {
+        console.warn("SMTP not configured, skipping repentance email notification.");
+      }
+    } catch (error) {
+      console.error("Failed to send repentance notification email:", error);
+      // We don't fail the request if email fails
+    }
+    
+    res.json({ success: true });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

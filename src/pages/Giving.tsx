@@ -101,12 +101,6 @@ export const Giving: React.FC = () => {
                 </div>
                 <h2 className="text-3xl font-serif font-bold text-slate-900">Zelle</h2>
               </div>
-              <p className="text-slate-600 mb-8 text-lg leading-relaxed">
-                {t({ 
-                  en: 'The most direct way to support our ministry. Send your contribution to our official church account.', 
-                  vi: 'Cách trực tiếp nhất để hỗ trợ mục vụ của chúng tôi. Gửi đóng góp của bạn đến tài khoản chính thức của hội thánh.' 
-                })}
-              </p>
               <a 
                 href="https://enroll.zellepay.com/qr-codes?data=eyJhY3Rpb24iOiJwYXltZW50IiwibmFtZSI6IlRIRSBHTE9CQUwgR09TUEVMIFBPV0VSIENIVVJDSCBBY2NvdW50cyIsInFyQ29kZU5hbWUiOiJUSEUgR0xPQkFMIEdPU1BFTCBQT1dFUiBDSFVSQ0giLCJ0b2tlbiI6IjMxMDkwMjI2NDcifQ%3D%3D"
                 target="_blank"
@@ -131,12 +125,6 @@ export const Giving: React.FC = () => {
                 </div>
                 <h2 className="text-3xl font-serif font-bold">Venmo</h2>
               </div>
-              <p className="text-slate-400 mb-8 text-lg leading-relaxed">
-                {t({ 
-                  en: 'Fast and secure giving through Venmo. Support the work of the Lord with just a few taps.', 
-                  vi: 'Dâng hiến nhanh chóng và an toàn qua Venmo. Hỗ trợ công việc của Chúa chỉ với vài thao tác.' 
-                })}
-              </p>
               <a 
                 href="https://l.messenger.com/l.php?u=https%3A%2F%2Fwww.paypal.com%2Fqrcodes%2Fvenmocs%2Fcd02710f-5313-4dd8-93fc-b4361ccf408c%3Fcreated%3D1772607581&h=AT5Njn9yRJbkl2GfxcUJU881S2_N19bETS9Q_YhGSJhOD58XcHp_9E0utH7CTFp-5NahJ1LQQ6VzUTExarm-_6JL7HRPd8f3iVt-9Ney4Hse-ULSTD8Zr620pQFywqc"
                 target="_blank"
