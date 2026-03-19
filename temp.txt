@@ -1,0 +1,6 @@
+                    disabled={isSubmitting}
+                    className="px-8 py-2 bg-church-red text-white rounded-full font-bold hover:bg-red-800 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isSubmitting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                    {t({ en: 'Publish', vi: 'Đăng Bài' })}
+                  </button>

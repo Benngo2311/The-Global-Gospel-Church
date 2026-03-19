@@ -21,7 +21,7 @@ export const Classes: React.FC = () => {
     },
     {
       day: { en: 'MON, WED, SAT', vi: 'Thứ 2, 4, 7' },
-      title: { en: 'Women Ministry', vi: 'Mục Vụ Nữ Giới' },
+      title: { en: 'Women of Global Gospel Power', vi: 'Phụ Nữ Tin Lành Quyền Phép Toàn Cầu' },
       desc: { en: 'Worship, intercession & Bible study.', vi: 'Thờ phượng, cầu thay & học Kinh Thánh.' },
       time: '5AM-7AM CALIFORNIA',
       ptStart: '05:00',
@@ -57,7 +57,7 @@ export const Classes: React.FC = () => {
     },
     {
       day: { en: 'Friday', vi: 'Thứ 6' },
-      title: { en: 'Men\'s Ministry', vi: 'Mục Vụ Nam Giới' },
+      title: { en: 'Men\'s Global Power Gospel Council', vi: 'Hội Đồng Tin Lành Quyền Phép Nam Giới Toàn Cầu' },
       desc: { en: 'Bilingual Bible Study For Men (EN–VN)', vi: 'Học Kinh Thánh song ngữ cho nam giới (Anh-Việt)' },
       time: '6PM - 9PM CALIFORNIA',
       ptStart: '18:00',
@@ -70,7 +70,7 @@ export const Classes: React.FC = () => {
     <div className="pt-32 pb-20 px-6 bg-church-cream min-h-screen">
       <SEO 
         title={{ en: 'Our Classes', vi: 'Các Lớp Học Của Chúng Tôi' }} 
-        description={{ en: 'Join our online classes to deepen your understanding of the Word and equip you for ministry.', vi: 'Tham gia các lớp học trực tuyến của chúng tôi để làm sâu sắc thêm sự hiểu biết của bạn về Lời Chúa và trang bị cho mục vụ của bạn.' }}
+        description={{ en: 'Join our online classes to experience the power of the Holy Spirit, deepen your understanding of God\'s Word, and equip yourself for your ministry and mission.', vi: 'Tham gia các lớp học trực tuyến của chúng tôi để được trải nghiệm quyền phép Đức Thánh Linh, được sâu sắc thêm về Lời Chúa và trang bị cho chức vụ-sứ mạng của bạn của bạn.' }}
         url="https://tggpc.org/classes"
       />
       <div className="max-w-5xl mx-auto">

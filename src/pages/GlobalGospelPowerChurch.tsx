@@ -134,6 +134,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
         </div>
       </section>
 
+
       {/* Activities Detail */}
       <section className="px-6 py-32">
         <div className="max-w-7xl mx-auto">
@@ -142,7 +143,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
               <div className="relative lg:translate-x-8">
                 <div className="aspect-[4/3] rounded-[3rem] overflow-hidden shadow-2xl">
                   <img 
-                    src="https://images.unsplash.com/photo-1585770536735-27993a080586?q=80&auto=format&fit=crop&ixlib=rb-4.1.0&w=1000&h=750&crop=" 
+                    src="/images/44948156_1149991888481939_1302043452023767040_n.jpg?q=80&auto=format&fit=crop&ixlib=rb-4.1.0&w=1000&h=750&crop=" 
                     alt="Church Activities" 
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
@@ -221,7 +222,7 @@ export const GlobalGospelPowerChurch: React.FC = () => {
             <div className="w-full lg:w-1/2">
               <div className="bg-white p-10 md:p-12 rounded-[3rem] text-slate-900 shadow-2xl">
                 <h3 className="text-3xl font-serif font-bold mb-8 text-church-red">
-                  {t({ en: 'Worship & Praise Service', vi: 'Buổi Nhóm Thờ Phượng & Ca Ngợi' })}
+                  {t({ en: 'Worship & Praise Service', vi: 'Buổi Nhóm Thờ Phượng & Ca Ngợi Chúa' })}
                 </h3>
                 
                 <div className="space-y-6 mb-10">
@@ -285,12 +286,12 @@ export const GlobalGospelPowerChurch: React.FC = () => {
             <Users size={40} />
           </div>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-8">
-            {t({ en: 'Become Part of Our Family', vi: 'Trở Thành Một Phần Của Gia Đình Chúng Tôi' })}
+            {t({ en: 'Become  Valuable Part Of The Global Gospel Power Family.', vi: 'Hãy Trở Thành Một Phần Rất Quý Trọng Trong Đại Gia Đình Tin Lành Quyền Phép Toàn Cầu' })}
           </h2>
           <p className="text-xl text-slate-600 leading-relaxed mb-12">
             {t({ 
-              en: 'Whether you are joining us in person or online, there is a place for you at The Global Gospel Power Church.', 
-              vi: 'Cho dù bạn tham gia trực tiếp hay trực tuyến, luôn có một chỗ dành cho bạn tại Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' 
+              en: 'Whether you are joining us online or in person, there is a place for you at The Global Gospel Power Church.', 
+              vi: 'Cho dù bạn tham gia trực tuyến (online) hoặc trực tiếp (offline), luôn có một chỗ dành cho bạn tại Giáo Hội Tin Lành Quyền Phép Toàn Cầu.' 
             })}
           </p>
           <Link to="/contact">

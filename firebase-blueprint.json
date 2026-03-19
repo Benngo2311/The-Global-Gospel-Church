@@ -27,6 +27,22 @@
         "timestamp": { "type": "number", "description": "The timestamp when the repentance was submitted." }
       },
       "required": ["text", "author", "graceCount", "timestamp"]
+    },
+    "Creation": {
+      "title": "Creation",
+      "description": "A creation (testimony, poem, song, or prophetic revelation) submitted by a user.",
+      "type": "object",
+      "properties": {
+        "category": { "type": "string", "description": "The category of the creation." },
+        "title": { "type": "string", "description": "The title of the creation." },
+        "author": { "type": "string", "description": "The author of the creation." },
+        "content": { "type": "string", "description": "The content of the creation." },
+        "audioUrl": { "type": "string", "description": "The URL of the uploaded audio file." },
+        "imageUrl": { "type": "string", "description": "The URL of the uploaded image file." },
+        "videoUrl": { "type": "string", "description": "The URL of the uploaded video file." },
+        "timestamp": { "type": "number", "description": "The timestamp when the creation was submitted." }
+      },
+      "required": ["category", "title", "author", "content", "timestamp"]
     }
   },
   "firestore": {
@@ -37,6 +53,10 @@
     "/repentances/{repentanceId}": {
       "schema": { "$ref": "Repentance" },
       "description": "Collection of repentance confessions."
+    },
+    "/creations/{creationId}": {
+      "schema": { "$ref": "Creation" },
+      "description": "Collection of creations (testimonies, poems, songs, prophetic revelations)."
     }
   }
 }

@@ -43,13 +43,13 @@ export const CouncilOfPrayers: React.FC = () => {
                   <p>
                     {t({ 
                       en: 'Through the inspired guidance of the Holy Spirit, we are committing ourselves to transformative periods of fasting and prayer, participating in night watches focused on spiritual warfare, and undertaking prayer patrol as led by His presence.', 
-                      vi: 'Thông qua sự soi dẫn của Đức Thánh Linh, chúng tôi cam kết thực hiện các giai đoạn kiêng ăn và cầu nguyện mang tính biến đổi, tham gia vào các buổi canh đêm tập trung vào chiến trận thuộc linh và thực hiện các cuộc tuần hành cầu nguyện theo sự dẫn dắt của Ngài.' 
+                      vi: 'Thông qua sự soi dẫn của Đức Thánh Linh, chúng tôi cam kết thực hiện các giai đoạn kiêng ăn và cầu nguyện mang tính biến đổi, tham gia vào các buổi thức canh tập trung vào chiến trận thuộc linh và thực hiện các cuộc tuần hành cầu nguyện theo sự dẫn dắt của Ngài.' 
                     })}
                   </p>
                   <p>
                     {t({ 
-                      en: 'Additionally, as we are empowered by the Spirit, we are forging connections among pastors, elders, and believers from various regions to fervently intercede for our cities, nations, international communities, and urgent needs, creating a powerful network of prayer and support.', 
-                      vi: 'Ngoài ra, khi được Đức Thánh Linh ban quyền năng, chúng tôi đang tạo dựng mối kết nối giữa các mục sư, trưởng lão và tín hữu từ nhiều vùng khác nhau để khẩn thiết cầu thay cho các thành phố, quốc gia, cộng đồng quốc tế và các nhu cầu cấp bách, tạo nên một mạng lưới cầu nguyện và hỗ trợ mạnh mẽ.' 
+                      en: 'Furthermore, empowered by the Holy Spirit, we have been building connections among pastors, elders, and members from diverse regions to urgently intercede for cities, nations, international communities, and pressing needs, creating a strong network of prayer and support.', 
+                      vi: 'Ngoài ra, được Đức Thánh Linh ban quyền năng, chúng tôi đã và đang tạo dựng mối kết nối giữa các Mục sư, trưởng lão và tín hữu từ nhiều vùng khác nhau để khẩn thiết cầu thay cho các thành phố, quốc gia, cộng đồng quốc tế và các nhu cầu cấp bách, tạo nên một mạng lưới cầu nguyện và hỗ trợ mạnh mẽ.' 
                     })}
                   </p>
                 </div>
@@ -71,11 +71,14 @@ export const CouncilOfPrayers: React.FC = () => {
               animate={{ opacity: 1, scale: 1 }}
               className="w-full lg:w-1/2 relative"
             >
-              <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-white p-12 flex items-center justify-center">
+              <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-church-cream p-4 flex items-center justify-center relative">
                 <img 
-                  src="/images/logo-hoi-dong.png" 
-                  alt="Council of Prayers Logo" 
-                  className="w-full h-full object-contain"
+                  src={t({
+                    en: '/images/649587674_916013731134872_6329450132014002231_n.jpg', // Replace with your English logo filename
+                    vi: '/images/649554819_2091439091648932_852311070534848665_n.jpg'  // Replace with your Vietnamese logo filename
+                  })}
+                  alt="Men's Ministry Logo" 
+                  className="w-full h-full object-contain scale-125"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -128,8 +131,8 @@ export const CouncilOfPrayers: React.FC = () => {
               </h2>
               <p className="text-xl text-slate-600 leading-relaxed mb-10">
                 {t({ 
-                  en: 'Join our global prayer network as we intercede for cities, nations, and international communities. Be part of a powerful movement of spiritual warfare and support.', 
-                  vi: 'Tham gia mạng lưới cầu nguyện toàn cầu của chúng tôi khi chúng tôi cầu thay cho các thành phố, quốc gia và cộng đồng quốc tế. Hãy là một phần của phong trào chiến trận tâm linh và hỗ trợ mạnh mẽ.' 
+                  en: 'Join the Triune God\'s global prayer network so we can pray, intercede, and wage spiritual battles for individuals, families, churches, cities, nations, and the entire world. Join the victorious spiritual battle with the armies of Angels, Archangels, Chariots, and Fire Horses of the Kingdom of Heaven.', 
+                  vi: 'Hãy tham gia mạng lưới cầu nguyện toàn cầu của Ba Ngôi Đức Chúa Trời để chúng ta cầu nguyện, cầu thay, chiến trận thuộc linh cho cá nhân, gia đình, Hội Thánh, thành phố, quốc gia và toàn thế giới. Bạn hãy mau chóng tham gia chiến trận thuộc linh đắc thắng cùng các đạo binh Thiên Sứ, Thiên Thần, Xe Lửa, Ngựa Lửa của Vương Quốc Thiên Đàng.' 
                 })}
               </p>
             </div>
@@ -139,7 +142,7 @@ export const CouncilOfPrayers: React.FC = () => {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-church-red/5 rounded-bl-[4rem]" />
                 
                 <h3 className="text-3xl font-serif font-bold mb-8 text-church-red">
-                  {t({ en: 'Conference', vi: 'Hội Nghị' })}
+                  {t({ en: 'United Prayer Conference', vi: 'Hội Đồng Hiệp Nguyện' })}
                 </h3>
                 
                 <div className="space-y-8 mb-12">
@@ -202,16 +205,16 @@ export const CouncilOfPrayers: React.FC = () => {
           </h2>
           <p className="text-xl text-slate-600 leading-relaxed mb-12">
             {t({ 
-              en: 'Connect with pastors, elders, and believers worldwide to fervently intercede for our world.', 
-              vi: 'Kết nối với các mục sư, trưởng lão và tín hữu trên toàn thế giới để khẩn thiết cầu thay cho thế giới của chúng ta.' 
+              en: 'Connect with pastors, elders, and Christians around the world to earnestly pray and intercede for all of humanity.', 
+              vi: 'Kết nối với các mục sư, trưởng lão và Cơ Đốc nhân trên toàn thế giới để khẩn thiết cầu nguyện, cầu thay cho toàn nhân loại của chúng ta.' 
             })}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white border border-slate-100 shadow-sm">
               <Users className="text-church-red" size={24} />
               <div className="text-left">
-                <p className="text-slate-900 font-bold leading-none">{t({ en: 'Global', vi: 'Toàn Cầu' })}</p>
-                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-1">{t({ en: 'Network', vi: 'Mạng Lưới' })}</p>
+                <p className="text-slate-900 font-bold leading-none">{t({ en: 'Global', vi: 'Mạng Lưới' })}</p>
+                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest mt-1">{t({ en: 'Network', vi: 'Toàn Cầu' })}</p>
               </div>
             </div>
             <div className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-white border border-slate-100 shadow-sm">
@@ -226,7 +229,7 @@ export const CouncilOfPrayers: React.FC = () => {
       </section>
       <PageNavigation 
         prev={{ title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' }, path: '/ministries/heaven-academy' }}
-        next={{ title: { en: "Men Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
+        next={{ title: { en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
       />
     </div>
   );

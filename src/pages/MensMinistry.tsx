@@ -10,18 +10,21 @@ export const MensMinistry: React.FC = () => {
   const { t } = useLanguage();
 
   const features = [
-    { en: 'Spiritual Leadership', vi: 'Lãnh Đạo Tâm Linh' },
+    { en: 'Prayer, Intercession', vi: 'Cầu Nguyện, Cầu Thay' },
     { en: 'Bilingual Bible Study', vi: 'Học Kinh Thánh Song Ngữ' },
-    { en: 'Accountability Groups', vi: 'Nhóm Giải Trình' },
+    { en: 'Faith Sharing Group', vi: 'Nhóm Chia Sẻ Đức Tin' },
+    { en: 'Testimony', vi: 'Làm Chứng' },
+    { en: 'Fellowship', vi: 'Thông Công' },
     { en: 'Community Service', vi: 'Phục Vụ Cộng Đồng' },
     { en: 'Mentorship', vi: 'Sự Cố Vấn' },
-    { en: 'Fellowship Events', vi: 'Sự Kiện Thông Công' }
+    { en: 'Apply, Practice', vi: 'Áp Dụng, Thực Hành' },
+    
   ];
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
       <SEO 
-        title={{ en: "Men Ministry", vi: 'Mục Vụ Nam Giới' }} 
+        title={{ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }} 
         description={{ en: 'Empowering men to grow in faith, lead their families, and serve the community through bilingual Bible studies and fellowship.', vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình và phục vụ cộng đồng thông qua các buổi học Kinh Thánh song ngữ và thông công.' }}
         url="https://tggpc.org/ministries/mens-ministry"
       />
@@ -36,7 +39,7 @@ export const MensMinistry: React.FC = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/10 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
                 <Users size={14} />
-                {t({ en: "Men Ministry", vi: 'Mục Vụ Nam Giới' })}
+                {t({ en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' })}
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight text-balance">
                 {t({ en: 'Equipping Men for', vi: 'Trang Bị Cho Nam Giới' })}{' '}
@@ -49,8 +52,8 @@ export const MensMinistry: React.FC = () => {
                 </h3>
                 <p className="text-xl text-slate-600 leading-relaxed font-medium">
                   {t({ 
-                    en: "To empower men to grow in their faith, lead their families with integrity, and serve the community with the heart of Christ through fellowship and the Word.", 
-                    vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình bằng sự chính trực và phục vụ cộng đồng với trái tim của Đức Chúa Jêsus Christ thông qua sự thông công và Lời Ngài.' 
+                    en: "Training and educating adult men in faith; leading their families with exemplary holiness and integrity; and serving the community with the loving heart of Jesus Christ through communion in unity under the power of the Holy Spirit and the Word of God.", 
+                    vi: 'Đào tạo, huấn luyện cho những người nam giới trưởng thành đức tin; lãnh đạo gia đình bằng sự gương mẫu, thánh khiết, chính trực; và phục vụ cộng đồng với trái tim yêu thương của Đức Chúa Jêsus Christ thông qua mối tương giao hiệp nhất trong quyền phép Đức Thánh Linh và Lời Chúa.' 
                   })}
                 </p>
               </div>
@@ -83,11 +86,11 @@ export const MensMinistry: React.FC = () => {
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-church-cream p-4 flex items-center justify-center relative">
                 <img 
                   src={t({
-                    en: '/images/mens-logo-en.png', // Replace with your English logo filename
-                    vi: '/images/mens-logo-vi.png'  // Replace with your Vietnamese logo filename
+                    en: '/images/6.png', // Replace with your English logo filename
+                    vi: '/images/5.png'  // Replace with your Vietnamese logo filename
                   })}
-                  alt="Men Ministry Logo" 
-                  className="w-full h-full object-contain scale-110"
+                  alt="Men's Ministry Logo" 
+                  className="w-full h-full object-contain scale-180"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -96,7 +99,6 @@ export const MensMinistry: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* Online Meeting Section */}
       <section id="online-meeting" className="px-6 py-32 bg-church-cream rounded-[4rem] mx-4">
         <div className="max-w-7xl mx-auto">
@@ -185,15 +187,15 @@ export const MensMinistry: React.FC = () => {
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/5 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
             <Heart size={14} />
-            {t({ en: 'Brotherhood In Christ', vi: 'Tình Anh Em Trong Đấng Christ' })}
+            {t({ en: 'Brotherhood In Christ', vi: 'Tình Anh Em Vững Bền Trong Đấng Christ' })}
           </div>
           <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-8">
             {t({ en: 'A Community of Brothers', vi: 'Cộng Đồng Nam Giới' })}
           </h2>
           <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">
             {t({ 
-              en: 'We believe that men are called to be the spiritual pillars of their homes and communities. Join us as we support, challenge, and encourage one another to be the men God created us to be.', 
-              vi: 'Chúng tôi tin rằng nam giới được gọi để trở thành những trụ cột thuộc linh của gia đình và cộng đồng. Hãy tham gia cùng chúng tôi để được hỗ trợ và khích lệ lẫn nhau trở thành những người nam mà Chúa đã tạo dựng.' 
+              en: 'We believe that men are called to be spiritual pillars of their families and communities. Join us to support and encourage one another to become strong, powerful, and mature men whom God will greatly use.', 
+              vi: 'Chúng tôi tin rằng nam giới được gọi để trở thành những trụ cột thuộc linh của gia đình và cộng đồng. Hãy tham gia cùng chúng tôi để được hỗ trợ và khích lệ lẫn nhau trở thành những người nam trưởng thành, mạnh mẽ, đầy dẫy quyền năng được Đức Chúa Trời đại dụng.' 
             })}
           </p>
           
@@ -224,7 +226,7 @@ export const MensMinistry: React.FC = () => {
       </section>
       <PageNavigation 
         prev={{ title: { en: 'Council Of Prayers', vi: 'Hội Đồng Hiệp Nguyện' }, path: '/ministries/council-of-prayers' }}
-        next={{ title: { en: "Women Ministry", vi: 'Mục Vụ Nữ Giới' }, path: '/ministries/womens-ministry' }}
+        next={{ title: { en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' }, path: '/ministries/womens-ministry' }}
       />
     </div>
   );

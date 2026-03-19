@@ -69,8 +69,8 @@ export const Giving: React.FC = () => {
           <div className="max-w-3xl mx-auto space-y-6 text-xl text-slate-600 leading-relaxed">
             <p>
               {t({ 
-                en: 'If you would like to give your tithes and offerings, you may send them through Zelle or Venmo to:', 
-                vi: 'Nếu bạn muốn dâng phần thập phân và dâng hiến của mình, bạn có thể gửi qua Zelle hoặc Venmo đến:' 
+                en: 'If you are moved by the Holy Spirit to give your tithe or consecrated offering, you can send it via Zelle or Venmo to:', 
+                vi: 'Nếu bạn được Đức Thánh Linh cảm động dâng hiến phần mười hoặc lạc hiến của mình, bạn có thể gửi qua Zelle hoặc Venmo đến:' 
               })}
             </p>
             <p className="text-2xl font-bold text-slate-900 break-all">
@@ -78,8 +78,8 @@ export const Giving: React.FC = () => {
             </p>
             <p>
               {t({ 
-                en: 'Thank you for giving faithfully and supporting the work of the Lord.', 
-                vi: 'Cảm ơn bạn đã dâng hiến một cách trung tín và hỗ trợ công việc của Chúa.' 
+                en: 'God has seen your generous giving heart. May God always bestow the riches of Heaven upon your life, your family, and the Church.', 
+                vi: 'Chúa đã nhìn thấy tấm lòng dâng hiến rộng rãi của bạn. Cầu xin Chúa luôn luôn ban sự giàu có của Thiên Đàng trên đời sống của bạn cùng gia đình và Hội Thánh.' 
               })}
             </p>
           </div>
@@ -139,8 +139,8 @@ export const Giving: React.FC = () => {
             <div className="p-8 rounded-[2.5rem] bg-church-cream border border-church-gold/20">
               <p className="text-slate-700 font-medium leading-relaxed">
                 {t({ 
-                  en: 'Please also fill out the giving form so our team can know who gave and how the offering was sent, and can record it properly.', 
-                  vi: 'Vui lòng điền vào mẫu dâng hiến để đội ngũ của chúng tôi biết ai đã dâng và lễ vật đã được gửi như thế nào, để có thể ghi chép chính xác.' 
+                  en: 'Please fill out the giving form so the finance committee knows who donated and how the money was sent, allowing for accurate record-keeping.', 
+                  vi: 'Vui lòng điền vào mẫu dâng hiến để ban tài chính biết ai đã dâng và số tiền đã được gửi như thế nào, để có thể ghi chép chính xác.' 
                 })}
               </p>
             </div>
@@ -241,7 +241,7 @@ export const Giving: React.FC = () => {
                   onChange={handleChange}
                   rows={4}
                   className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-church-red focus:border-transparent outline-none transition-all resize-none"
-                  placeholder={t({ en: 'How was the offering sent? (e.g. Zelle, Venmo)', vi: 'Lễ vật đã được gửi như thế nào? (vd: Zelle, Venmo)' })}
+                  placeholder={t({ en: 'How was the money sent? (e.g. Zelle, Venmo)', vi: 'Số tiền đã được gửi như thế nào? (vd: Zelle, Venmo)' })}
                 />
               </div>
 
@@ -264,8 +264,8 @@ export const Giving: React.FC = () => {
                     <CheckCircle2 size={20} />
                     <p className="text-sm font-medium">
                       {t({ 
-                        en: 'Thank you for your faithful giving. May the Lord bless you abundantly.', 
-                        vi: 'Cảm ơn bạn đã dâng hiến một cách trung tín. Nguyện Chúa ban phước dồi dào cho bạn.' 
+                        en: 'Thank you for giving in a way that pleases God. May God help you in all areas of your life.', 
+                        vi: 'Cảm ơn bạn đã dâng hiến một cách đẹp lòng Chúa. Nguyện xin Chúa vùa giúp bạn trong mọi lĩnh vực cuộc sống.' 
                       })}
                     </p>
                   </motion.div>

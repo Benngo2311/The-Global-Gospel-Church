@@ -13,7 +13,7 @@ export const Ministries: React.FC = () => {
     {
       icon: <Globe size={40} />,
       title: { en: 'The Global Gospel Power Church', vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' },
-      desc: { en: 'Organizing Worship Services, Bible Teachings, Water Baptisms, Baptism of the Holy Spirit, Holy Communion, Prayer, Intercession, Deliverance, Healing, and Evangelism for the Community.', vi: 'Tổ chức các buổi thờ phượng, dạy Kinh Thánh, báp-têm bằng nước, báp-têm bằng Thánh Linh, tiệc thánh, cầu nguyện, cầu thay, giải cứu, chữa lành và truyền giáo cho cộng đồng.' },
+      desc: { en: 'Organize worship gatherings that foster a sense of community and spiritual growth, including: Bible teaching sessions; Regular prayer, intercession, deliverance, and healing for both personal and collective needs; Building together and sharing the vision of evangelism towards the community; Sharing the love and message of Jesus Christ with everyone.', vi: 'Tổ chức các buổi nhóm thờ phượng nhằm phát triển thuộc linh và thúc đẩy tinh thần cộng đồng bao gồm: Các buổi dạy Kinh Thánh; Cầu nguyện, cầu thay, giải cứu chữa lành thường xuyên cho các nhu cầu cá nhân và tập thể; Cùng nhau gây dựng và chia sẻ khải tượng truyền giáo hướng đến cộng đồng; Chia sẻ tình yêu và thông điệp của Đức Chúa Jêsus Christ với tất cả mọi người.' },
       link: '/ministries/church',
       external: false
     },
@@ -27,35 +27,35 @@ export const Ministries: React.FC = () => {
     {
       icon: <Book size={40} />,
       title: { en: 'The Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' },
-      desc: { en: 'By the guidance of the Holy Spirit, teaching, training, and equipping believers with Basic and Advanced Biblical Studies, for Christians who are called by God to become His servants.', vi: 'Dưới sự dẫn dắt của Thánh Linh, giảng dạy, đào tạo và trang bị cho các tín hữu các nghiên cứu Kinh Thánh cơ bản và nâng cao cho những người được Chúa gọi.' },
+      desc: { en: 'Teaching, training, and equipping believers in both basic and advanced Biblical studies for Christians whom God has called to become His servants by the guidance of the Holy Spirit.', vi: 'Giảng dạy, đào tạo và trang bị cho các tín hữu, các nghiên cứu Kinh Thánh cơ bản và nâng cao cho những Cơ Đốc nhân được Chúa gọi để trở thành tôi tớ Ngài dưới sự dẫn dắt của Thánh Linh.' },
       link: '/ministries/bible-school',
       external: false
     },
     {
       icon: <Shield size={40} />,
       title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' },
-      desc: { en: 'By the sovereign guidance of the Holy Spirit, teaching in bilingual English-Vietnamese Bible classes for Vietnamese youth.', vi: 'Dưới sự dẫn dắt tối cao của Đức Thánh Linh, giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam và Quốc Tế.' },
+      desc: { en: 'Teaching in bilingual English-Vietnamese Bible classes for Vietnamese youth by the sovereign guidance of the Holy Spirit.', vi: 'Giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam và Quốc Tế dưới sự dẫn dắt tối cao của Đức Thánh Linh.' },
       link: '/ministries/heaven-academy',
       external: false
     },
     {
       icon: <Users size={40} />,
       title: { en: 'Council Of Prayers For The Global Spiritual Battle', vi: 'Hội Đồng Hiệp Nguyện Chiến Trận Thuộc Linh Toàn Cầu' },
-      desc: { en: 'By the guidance of the Holy Spirit, organizing periods of fasting and prayer, night watches for spiritual warfare, and prayer walks as led by the Holy Spirit.', vi: 'Dưới sự dẫn dắt của Thánh Linh, tổ chức các giai đoạn kiêng ăn và cầu nguyện, canh đêm cho chiến trận tâm linh và đi bộ cầu nguyện.' },
+      desc: { en: 'Through the inspired guidance of the Holy Spirit, we are committing ourselves to transformative periods of fasting and prayer, participating in night watches focused on spiritual warfare, and undertaking prayer patrol as led by His presence.', vi: 'Thông qua sự soi dẫn của Đức Thánh Linh, chúng tôi cam kết thực hiện các giai đoạn kiêng ăn và cầu nguyện mang tính biến đổi, tham gia vào các buổi thức canh tập trung vào chiến trận thuộc linh và thực hiện các cuộc tuần hành cầu nguyện theo sự dẫn dắt của Ngài.' },
       link: '/ministries/council-of-prayers',
       external: false
     },
     {
       icon: <Users size={40} />,
-      title: { en: "Men Ministry", vi: 'Mục Vụ Nam Giới' },
-      desc: { en: 'Empowering men to grow in faith, lead their families, and serve the community through bilingual Bible studies and fellowship.', vi: 'Trao quyền cho nam giới phát triển đức tin, lãnh đạo gia đình và phục vụ cộng đồng thông qua các buổi học Kinh Thánh song ngữ và thông công.' },
+      title: { en: "Men's Global Power Gospel Council", vi: 'Ban Nam Giới Tin Lành Quyền Phép Toàn Cầu' },
+      desc: { en: 'Training and educating adult men in faith; leading their families with exemplary holiness and integrity; and serving the community with the loving heart of Jesus Christ through communion in unity under the power of the Holy Spirit and the Word of God.', vi: 'Đào tạo, huấn luyện cho những người nam giới trưởng thành đức tin; lãnh đạo gia đình bằng sự gương mẫu, thánh khiết, chính trực; và phục vụ cộng đồng với trái tim yêu thương của Đức Chúa Jêsus Christ thông qua mối tương giao hiệp nhất trong quyền phép Đức Thánh Linh và Lời Chúa.' },
       link: '/ministries/mens-ministry',
       external: false
     },
     {
       icon: <Users size={40} />,
-      title: { en: "Women Ministry", vi: 'Mục Vụ Nữ Giới' },
-      desc: { en: "Empowering women to grow in faith, pray, intercede, witness, study God's word, support their spouses, and care for their children.", vi: 'Trao quyền cho phụ nữ phát triển đức tin, cầu nguyện, cầu thay, làm chứng, học Lời Chúa, hỗ trợ người phối ngẫu và chăm sóc con cái.' },
+      title: { en: "Women's Global Power Gospel Council", vi: 'Ban Nữ Giới Tin Lành Quyền Phép Toàn Cầu' },
+      desc: { en: "Through the power of the Holy Spirit, we study God's Word, develop faith and love in the Lord, witness to others to God's salvation, pray, intercede, help our spouses and care for our children, and serve the Global Gospel Power Church and the community of churches.", vi: 'Nhờ cầy quyền phép Đức Thánh Linh học Lời Chúa, phát triển đức tin và tình yêu trong Chúa, làm chứng cho mọi người đến với sự cứu rỗi của Chúa, cầu nguyện, cầu thay, giúp đỡ người phối ngẫu và chăm sóc con cái, phục vụ Giáo Hội Tin Lành Quyền Toàn Cầu và cộng đồng các Hội Thánh.' },
       link: '/ministries/womens-ministry',
       external: false
     }
@@ -101,7 +101,7 @@ export const Ministries: React.FC = () => {
                 </p>
               </div>
               <div>
-                <p className="text-4xl font-serif font-bold text-church-red mb-2">6</p>
+                <p className="text-4xl font-serif font-bold text-church-red mb-2">7</p>
                 <p className="text-slate-500 font-medium">
                   {t({ en: 'Active Ministry Programs', vi: 'Chương Trình Mục Vụ Hoạt Động' })}
                 </p>
@@ -117,7 +117,7 @@ export const Ministries: React.FC = () => {
           >
             <div className="aspect-square rounded-[3rem] overflow-hidden shadow-2xl relative group">
               <img 
-                src="https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?ixlib=rb-4.0.3&auto=format&fit=crop&q=80&w=800" 
+                src="/images/649465941_1269453055137354_818195905768922351_n.jpg" 
                 alt="Ministries" 
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 referrerPolicy="no-referrer"

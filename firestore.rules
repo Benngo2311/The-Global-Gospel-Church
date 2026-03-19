@@ -72,6 +72,19 @@ service cloud.firestore {
              request.resource.data.graceCount >= 0;
     }
 
+    function isValidCreation(data) {
+      return hasOnlyAllowedFields(['category', 'title', 'author', 'content', 'audioUrl', 'imageUrl', 'videoUrl', 'timestamp']) &&
+             isValidString('category', 1, 50) &&
+             (data.category == 'testimonies' || data.category == 'poems' || data.category == 'songs' || data.category == 'prophetic') &&
+             isValidString('title', 1, 200) &&
+             isValidString('author', 1, 100) &&
+             isValidString('content', 1, 5000) &&
+             isValidOptionalString('audioUrl', 0, 1000) &&
+             isValidOptionalString('imageUrl', 0, 1000) &&
+             isValidOptionalString('videoUrl', 0, 1000) &&
+             data.timestamp is number;
+    }
+
     match /prayers/{prayerId} {
       // Publicly readable as this is a public prayer wall
       allow read: if true;
@@ -92,6 +105,17 @@ service cloud.firestore {
       
       // Anyone can increment the grace count
       allow update: if isValidGraceIncrement();
+    }
+
+    match /creations/{creationId} {
+      // Publicly readable
+      allow read: if true;
+      
+      // Publicly creatable, but strictly validated
+      allow create: if isValidCreation(request.resource.data);
+      
+      // No updates allowed for creations
+      allow update: if false;
     }
   }
 }

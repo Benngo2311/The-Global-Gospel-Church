@@ -4,8 +4,6 @@ import { ArrowRight, BookOpen, Users, Calendar, Heart, Globe, MessageSquare, Rad
 import { useLanguage } from '../contexts/LanguageContext';
 import { SITE_CONTENT } from '../constants/content';
 import { Link } from 'react-router-dom';
-import { PrayerWall } from '../components/PrayerWall';
-import { RepentingCorner } from '../components/RepentingCorner';
 import { DailyVerse } from '../components/DailyVerse';
 import { LiveBroadcast } from '../components/LiveBroadcast';
 import { SEO } from '../components/SEO';
@@ -18,6 +16,7 @@ export const Home: React.FC = () => {
     <div className="overflow-hidden">
       <SEO 
         title={{ en: 'Home', vi: 'Trang Chủ' }} 
+        description={{ en: 'Welcome to The Global Gospel Power Church.', vi: 'Chào mừng bạn đến với Hội Thánh Tin Lành Quyền Phép Toàn Cầu.' }}
         url="https://tggpc.org/"
       />
       {/* Hero Section */}
@@ -89,8 +88,8 @@ export const Home: React.FC = () => {
                 </h3>
                 <p className="text-slate-500 mb-8 leading-relaxed">
                   {t({ 
-                    en: 'Upcoming events to inspire, connect, and grow in faith. Join us worldwide via Zoom.', 
-                    vi: 'Các sự kiện sắp tới để truyền cảm hứng, kết nối và phát triển đức tin. Tham gia cùng chúng tôi trên toàn thế giới qua Zoom.' 
+                    en: 'Join us worldwide via Zoom for upcoming events to inspire, connect, and grow faith in the eternal love of Jesus Christ.', 
+                    vi: 'Hãy tham gia cùng chúng tôi với toàn thế giới qua Zoom trong các sự kiện sắp tới để truyền cảm hứng, kết nối và phát triển đức tin trong tình yêu đời đời của Đức Chúa Jêsus Christ.' 
                   })}
                 </p>
 
@@ -126,7 +125,7 @@ export const Home: React.FC = () => {
                 {t({ en: 'Live Broadcast', vi: 'Phát Trực Tiếp' })}
               </div>
               <h2 className="text-4xl font-serif font-bold text-slate-900">
-                {t({ en: 'Join Our Livestream', vi: 'Tham Gia Buổi Trực Tiếp' })}
+                {t({ en: 'Join Our Online Meeting', vi: 'Tham Gia Buổi Nhóm Trực Tuyến' })}
               </h2>
             </div>
             <Link
@@ -153,9 +152,9 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-6xl font-serif font-bold mb-6">
-              {t({ en: 'Our Ministries', vi: 'Mục Vụ Của Chúng Tôi' })}
+              {t({ en: 'Our Ministries', vi: 'Các Mục Vụ Của Chúng Tôi' })}
             </h2>
-            <p className="text-slate-500 uppercase tracking-widest font-bold text-xs">— {t({ en: 'Fulfilling the Great Commission', vi: 'Hoàn Thành Đại Mạng Lệnh' })}</p>
+            <p className="text-slate-500 uppercase tracking-widest font-bold text-xs">— {t({ en: 'All Share The Purpose Of Helping The Lord\'s Servants And Children Fulfill The Lord\'s Great Commission.', vi: 'Đều Có Mục Đích Giúp Đỡ Các Quý Tôi Tớ, Con Cái Chúa Hoàn Thành Đại Mạng Lệnh Của Chúa' })}</p>
           </div>
 
           <motion.div
@@ -226,7 +225,7 @@ export const Home: React.FC = () => {
       <section className="py-32 px-6 bg-church-cream">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-4">{t({ en: 'Our Journey in Photos', vi: 'Hành Trình Qua Ảnh' })}</h2>
+            <h2 className="text-4xl md:text-6xl font-serif font-bold mb-4">{t({ en: 'The Journey of Grace', vi: 'Chặng Đường Ân Điển' })}</h2>
             <div className="w-24 h-1 bg-church-gold mx-auto rounded-full" />
           </div>
 
@@ -246,9 +245,6 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </section>
-
-      <PrayerWall />
-      <RepentingCorner />
 
       {/* Call to Action */}
       <section className="py-32 px-6">

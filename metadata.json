@@ -2,6 +2,7 @@
   "name": "The Global Gospel Power Church",
   "description": "A vibrant online community dedicated to spiritual growth, connection, and global prayer networks across the United States and worldwide.",
   "requestFramePermissions": [
-    "geolocation"
+    "geolocation",
+    "microphone"
   ]
 }

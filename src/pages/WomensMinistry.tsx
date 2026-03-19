@@ -10,19 +10,19 @@ export const WomensMinistry: React.FC = () => {
   const { t } = useLanguage();
 
   const features = [
-    { en: 'Prayer & Intercession', vi: 'Cầu Nguyện & Cầu Thay' },
-    { en: 'Witnessing', vi: 'Làm Chứng' },
     { en: "Studying God's Word", vi: 'Học Lời Chúa' },
+    { en: 'Witnessing', vi: 'Làm Chứng' },
+    { en: 'Prayer & Intercession', vi: 'Cầu Nguyện & Cầu Thay' },
     { en: 'Supporting Spouse', vi: 'Hỗ Trợ Người Phối Ngẫu' },
     { en: 'Caring for Children', vi: 'Chăm Sóc Con Cái' },
-    { en: 'Fellowship', vi: 'Sự Thông Công' }
+    { en: 'Serving the Churches', vi: 'Phục Vụ Các Hội Thánh' }
   ];
 
   return (
     <div className="pt-32 pb-20 overflow-hidden">
       <SEO 
-        title={{ en: "Women Ministry", vi: 'Mục Vụ Nữ Giới' }} 
-        description={{ en: "Empowering women to grow in faith, pray, intercede, witness, study God's word, support their spouses, and care for their children.", vi: 'Trao quyền cho phụ nữ phát triển đức tin, cầu nguyện, cầu thay, làm chứng, học Lời Chúa, hỗ trợ người phối ngẫu và chăm sóc con cái.' }}
+        title={{ en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' }} 
+        description={{ en: "Through the power of the Holy Spirit, we learn God\'s Word, develop faith and love in the Lord, witness to others to God\'s salvation, pray, intercede, help our spouses and care for our children, serve the Global Gospel Power Church, and serve other churches and the human community.", vi: 'Nhờ cầy quyền phép Đức Thánh Linh học Lời Chúa, phát triển đức tin và tình yêu trong Chúa, làm chứng cho mọi người đến với sự cứu rỗi của Chúa, cầu nguyện, cầu thay, giúp đỡ người phối ngẫu và chăm sóc con cái, phục vụ Giáo Hội Tin Lành Quyền Toàn Cầu, phục vụ các Hội Thánh và cộng đồng nhân loại.' }}
         url="https://tggpc.org/ministries/womens-ministry"
       />
       {/* Hero Section */}
@@ -36,7 +36,7 @@ export const WomensMinistry: React.FC = () => {
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/10 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
                 <Users size={14} />
-                {t({ en: "Women Ministry", vi: 'Mục Vụ Nữ Giới' })}
+                {t({ en: "Women's Ministry", vi: 'Mục Vụ Nữ Giới' })}
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-slate-900 mb-8 leading-tight text-balance">
                 {t({ en: 'Equipping Women for', vi: 'Trang Bị Cho Nữ Giới' })}{' '}
@@ -49,8 +49,8 @@ export const WomensMinistry: React.FC = () => {
                 </h3>
                 <p className="text-xl text-slate-600 leading-relaxed font-medium">
                   {t({ 
-                    en: "To empower women to grow in their faith, pray, intercede, witness, study God's word, support their spouses, and care for their children.", 
-                    vi: 'Trao quyền cho phụ nữ phát triển đức tin, cầu nguyện, cầu thay, làm chứng, học Lời Chúa, hỗ trợ người phối ngẫu và chăm sóc con cái.' 
+                    en: "Through the power of the Holy Spirit, we study God\'s Word, develop faith and love in the Lord, witness to others to God\'s salvation, pray, intercede, help our spouses and care for our children, and serve the Global Gospel Power Church and the community of churches.", 
+                    vi: 'Nhờ cậy quyền phép Đức Thánh Linh học Lời Chúa, phát triển đức tin và tình yêu trong Chúa, làm chứng cho mọi người đến với sự cứu rỗi của Chúa, cầu nguyện, cầu thay, giúp đỡ người phối ngẫu và chăm sóc con cái, phục vụ Giáo Hội Tin Lành Quyền Toàn Cầu và cộng đồng các Hội Thánh.' 
                   })}
                 </p>
               </div>
@@ -82,9 +82,12 @@ export const WomensMinistry: React.FC = () => {
             >
               <div className="aspect-square rounded-[4rem] overflow-hidden shadow-2xl border-8 border-white bg-church-cream p-4 flex items-center justify-center relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                  alt="Women Ministry" 
-                  className="w-full h-full object-cover rounded-[3rem]"
+                  src={t({
+                    en: '/images/4.png', // Replace with your English logo filename
+                    vi: '/images/3.png'  // Replace with your Vietnamese logo filename
+                  })}
+                  alt="Men's Ministry Logo" 
+                  className="w-full h-full object-contain scale-180"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -93,7 +96,7 @@ export const WomensMinistry: React.FC = () => {
           </div>
         </div>
       </section>
-
+      
       {/* Online Meeting Section */}
       <section id="online-meeting" className="px-6 py-32 bg-church-cream rounded-[4rem] mx-4">
         <div className="max-w-7xl mx-auto">
@@ -108,8 +111,8 @@ export const WomensMinistry: React.FC = () => {
               </h2>
               <p className="text-2xl text-slate-600 leading-relaxed mb-10">
                 {t({ 
-                  en: 'Join our online classes for worship, intercession, and Bible study. We gather to seek God\'s presence and grow together in His Word.', 
-                  vi: 'Tham gia các lớp học trực tuyến của chúng tôi để thờ phượng, cầu thay và học Kinh Thánh. Chúng ta cùng nhau tìm kiếm sự hiện diện của Chúa và lớn lên trong Lời Ngài.' 
+                  en: 'Join our online classes to praise and worship God, study the Bible in the Lord\'s presence, and pray and intercede for yourself, your family, your church, and the whole world.', 
+                  vi: 'Tham gia các lớp học trực tuyến của chúng tôi để ngợi khen thờ phượng Chúa, học Kinh Thánh trong sự hiện diện của Chúa và cầu nguyện, cầu thay cho cá nhân, gia đình, Hội Thánh và toàn thế giới.' 
                 })}
               </p>
 
@@ -143,7 +146,7 @@ export const WomensMinistry: React.FC = () => {
                     </div>
                     <div>
                       <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">
-                        {t({ en: 'Time', vi: 'Giờ Giấc' })}
+                        {t({ en: 'Time', vi: 'Thời Gian' })}
                       </p>
                       <p className="text-xl font-bold">5:00 AM to 7:00 AM (California)</p>
                       <TimeRange ptStart="05:00" ptEnd="07:00" className="mt-2" />
@@ -182,15 +185,15 @@ export const WomensMinistry: React.FC = () => {
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-church-red/5 text-church-red text-xs font-bold uppercase tracking-widest mb-8">
             <Heart size={14} />
-            {t({ en: 'Sisterhood In Christ', vi: 'Tình Chị Em Trong Đấng Christ' })}
+            {t({ en: 'Sisterhood In Christ', vi: 'Tình Chị Em Vững Bền Trong Đấng Christ' })}
           </div>
           <h2 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-8">
-            {t({ en: 'A Community of Sisters', vi: 'Cộng Đồng Nữ Giới' })}
+            {t({ en: 'A Community of Sisters', vi: 'Ban Phụ Nữ Tin Lành Quyền Phép Toàn Cầu' })}
           </h2>
           <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">
             {t({ 
-              en: 'We believe that women play a vital role in their families and communities. Join us as we support, challenge, and encourage one another to be the women God created us to be.', 
-              vi: 'Chúng tôi tin rằng phụ nữ đóng một vai trò quan trọng trong gia đình và cộng đồng. Hãy tham gia cùng chúng tôi để được hỗ trợ, khích lệ lẫn nhau trở thành những người nữ mà Chúa đã tạo dựng.' 
+              en: 'We believe that women play a vital role in the family, the church, and the community. Join us to be encouraged and support one another in becoming women filled with God\'s grace, greatly used by God for His glorious purposes.', 
+              vi: 'Chúng tôi tin rằng phụ nữ đóng một vai trò rất quan trọng trong gia đình, Hội Thánh và cộng đồng. Hãy tham gia cùng chúng tôi để được khích lệ, giúp đỡ lẫn nhau trở thành những người phụ nữ đầy dẫy ơn Chúa, được Đức Chúa Trời đại dụng cho mục đích vinh hiển của Ngài.' 
             })}
           </p>
           
@@ -220,7 +223,7 @@ export const WomensMinistry: React.FC = () => {
         </div>
       </section>
       <PageNavigation 
-        prev={{ title: { en: "Men Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
+        prev={{ title: { en: "Men's Ministry", vi: 'Mục Vụ Nam Giới' }, path: '/ministries/mens-ministry' }}
         next={{ title: { en: 'Ministries', vi: 'Mục Vụ' }, path: '/ministries' }}
       />
     </div>

@@ -2,6 +2,7 @@ import { Content, NavItem } from '../types';
 
 export const NAV_ITEMS: NavItem[] = [
   { title: { en: 'Home', vi: 'Trang Chủ' }, href: '/' },
+  { title: { en: 'Lord\'s House', vi: 'Góc Xây Dựng' }, href: '/building-lords-house' },
   { title: { en: 'About', vi: 'Giới Thiệu' }, href: '/about' },
   { title: { en: 'Classes', vi: 'Lớp Học' }, href: '/classes' },
   { title: { en: 'Events', vi: 'Sự Kiện' }, href: '/events' },

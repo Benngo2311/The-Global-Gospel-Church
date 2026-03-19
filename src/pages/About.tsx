@@ -49,7 +49,7 @@ export const About: React.FC = () => {
               <p>
                 {t({
                   en: 'Together we will build a powerful Global Gospel family and proclaim the name of Jesus Christ to all humanity so that they may receive His salvation and eternal life in the glorious kingdom of heaven.',
-                  vi: 'Chúng ta cùng nhau xây dựng một đại gia đình Tin Lành Quyền Phép Toàn Cầu và rao truyền danh Đức Chúa Jêsus Christ cho toàn nhân loại được tiếp nhận sự cứu rỗi của Ngài và được sự sống đời đời trên Vương Quốc Thiên Đàng vinh hiển.'
+                  vi: 'Chúng ta cùng nhau xây dựng một đại gia đình Tin Lành Quyền Phép Toàn Cầu và rao truyền danh Đức Chúa Jêsus Christ cho toàn nhân loại được tiếp nhận sự cứu rỗi của Ngài và được sự sống đời đời trên Vương Quốc Thiên Đàng Vinh Hiển.'
                 })}
               </p>
             </div>
@@ -147,7 +147,7 @@ export const About: React.FC = () => {
               <p className="text-xl text-slate-600 leading-relaxed">
                 {t({ 
                   en: 'Complete faith in the Lord, absolute trust in the Lord, and unconditional love in the Lord—these are the three core values ​​that we are upholding in our mission. (1 Corinthians 13:13)', 
-                  vi: 'Đức tin trọn vẹn trong Chúa, sự tin cậy tuyệt đối trong Chúa, tình yêu thương vô điều kiện trong Chúa đó là ba giá trị cốt lỗi mà chúng tôi đang thực thi sứ mạng. (I Cô-rinh-tô 13:13)' 
+                  vi: 'Đức tin trọn vẹn trong Chúa, sự tin cậy tuyệt đối trong Chúa, tình yêu thương vô điều kiện trong Chúa. Đó là ba giá trị cốt lỗi mà chúng tôi đang thực thi sứ mạng. (I Cô-rinh-tô 13:13)' 
                 })}
               </p>
             </div>
@@ -173,8 +173,8 @@ export const About: React.FC = () => {
               <div className="absolute -top-8 left-0 text-red-400/60 text-8xl font-serif leading-none">"</div>
               <p className="text-2xl md:text-3xl text-white leading-relaxed font-serif italic relative z-10">
                 {t({
-                  en: 'Established by the Holy Trinity in 2020, the Global Gospel Power Church has been fulfilling the Lord’s vision of growing online churches and churches in many countries around the world.',
-                  vi: 'Được Đức Chúa Trời Ba Ngôi thiết lập vào năm 2020, Giáo Hội Tin Lành Quyền Phép Toàn Cầu đã và đang thực hiện khải tượng của Chúa phát triển các Hội Thánh trực tuyến và các Hội Thánh tại nhiều quốc gia trên thế giới.'
+                  en: 'Established by the Holy Trinity in 2020, the Global Gospel Power Church has been fulfilling the Lord\’s vision of holding global spiritual battle prayer conferences, growing online churches and churches in many countries around the world.',
+                  vi: 'Được Đức Chúa Trời Ba Ngôi thiết lập vào năm 2020, Giáo Hội Tin Lành Quyền Phép Toàn Cầu đã và đang thực hiện khải tượng của Chúa, mở các kỳ hội đồng hiệp nguyện chiến trận thuộc linh toàn cầu, phát triển các Hội Thánh trực tuyến và các Hội Thánh tại nhiều quốc gia trên thế giới.'
                 })}
               </p>
               <div className="absolute -bottom-16 right-0 text-red-400/60 text-8xl font-serif leading-none">"</div>

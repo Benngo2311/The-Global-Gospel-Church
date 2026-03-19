@@ -15,9 +15,9 @@ export const HeavenBand: React.FC = () => {
   ];
 
   const galleryImages = [
-    "https://images.unsplash.com/photo-1732465286852-a0b95393a90d?q=80&auto=format&fit=crop&w=800",
-    "https://images.unsplash.com/photo-1732466285965-87c9caa258a0?q=80&auto=format&fit=crop&w=800",
-    "https://images.unsplash.com/photo-1731902062588-4dce45ccc0cb?q=80&auto=format&fit=crop&w=800"
+    "/images/37977241_1077705729043889_4831723863085678592_n.jpg",
+    "/images/465010897_8613206648737146_2267673501920380358_n.jpg",
+    "/images/508178656_3143297165818058_995404651938665636_n.jpg"
   ];
 
   return (
@@ -46,8 +46,8 @@ export const HeavenBand: React.FC = () => {
               </h1>
               <p className="text-2xl text-slate-600 leading-relaxed mb-10 font-medium">
                 {t({ 
-                  en: 'The Music Ministry coordinates several member bands located in the United States, Europe, and Vietnam.', 
-                  vi: 'Mục vụ Âm nhạc điều phối nhiều ban nhạc thành viên tại Hoa Kỳ, Châu Âu và Việt Nam.' 
+                  en: 'The Holy Music Ministry collaborates and partners with Holy music bands in the United States, Europe, and Vietnam.', 
+                  vi: 'Mục vụ Thánh nhạc cộng tác, liên kết với các ban Thánh nhạc tại Hoa Kỳ, Châu Âu và Việt Nam.' 
                 })}
               </p>
               
@@ -56,7 +56,7 @@ export const HeavenBand: React.FC = () => {
                   <p className="text-slate-700 font-medium leading-relaxed">
                     <strong>{t({ en: 'Organizes and produces', vi: 'Tổ chức và sản xuất' })}</strong> {t({ 
                       en: 'worship programs, concerts, livestreams, audio recordings, and the composition of sacred music.', 
-                      vi: 'các chương trình thờ phượng, hòa nhạc, livestream, ghi âm và sáng tác nhạc thánh.' 
+                      vi: 'các chương trình thờ phượng, hòa nhạc, livestream, ghi hình và sáng tác nhạc thánh.' 
                     })}
                   </p>
                 </div>
@@ -64,7 +64,7 @@ export const HeavenBand: React.FC = () => {
                   <p className="text-slate-700 font-medium leading-relaxed">
                     <strong>{t({ en: 'Utilizes media platforms', vi: 'Sử dụng các nền tảng truyền thông' })}</strong> {t({ 
                       en: 'to expand the message of the powerful Gospel.', 
-                      vi: 'để mở rộng thông điệp của Tin Lành đầy quyền năng.' 
+                      vi: 'để mở rộng thông điệp Tin Lành quyền phép.' 
                     })}
                   </p>
                 </div>
@@ -95,14 +95,14 @@ export const HeavenBand: React.FC = () => {
                 <div className="hidden md:block absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                 <div className="hidden md:block absolute bottom-12 left-12 right-12">
                   <div className="glass p-8 rounded-3xl border border-white/20">
-                    <p className="text-white/80 text-sm font-bold uppercase tracking-widest mb-2">
+                    <p className="text-black/80 text-sm font-bold uppercase tracking-widest mb-2">
                       {t({ en: 'Established', vi: 'Thành Lập' })}
                     </p>
-                    <p className="text-white text-4xl font-serif font-bold italic">Since 2020</p>
+                    <p className="text-black text-4xl font-serif font-bold italic">Since 2022</p>
                   </div>
                 </div>
               </div>
-
+              
               {/* Mobile Established Badge */}
               <div className="md:hidden mt-6 bg-church-cream p-6 rounded-3xl border border-church-red/10 text-center shadow-sm">
                 <p className="text-church-red text-xs font-bold uppercase tracking-widest mb-1">
@@ -138,7 +138,7 @@ export const HeavenBand: React.FC = () => {
                 {t({ en: 'Worship & Media Outreach', vi: 'Thờ Phượng & Truyền Thông' })}
               </span>
               <h2 className="text-4xl md:text-6xl font-serif font-bold leading-tight">
-                {t({ en: 'Guiding Beliefs & Purpose', vi: 'Niềm Tin & Mục Đích Dẫn Dắt' })}
+                {t({ en: 'Guiding Beliefs & Purpose', vi: 'Đức Tin & Mục Đích Dẫn Dắt' })}
               </h2>
             </div>
             <div className="w-full lg:w-1/2">

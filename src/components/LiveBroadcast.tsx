@@ -1,84 +1,76 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Video, ExternalLink, Radio } from 'lucide-react';
+import { Play, Radio } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 interface LiveBroadcastProps {
-  facebookPageUrl?: string;
   isLive?: boolean;
 }
 
-export const LiveBroadcast: React.FC<LiveBroadcastProps> = ({ 
-  facebookPageUrl = "https://www.facebook.com/UnitedPrayerSpiritualWarfareGlobalConference",
-  isLive = false 
-}) => {
+export const LiveBroadcast: React.FC<LiveBroadcastProps> = ({ isLive = false }) => {
   const { t } = useLanguage();
 
-  // Encode the URL for the Facebook plugin
-  const encodedUrl = encodeURIComponent(facebookPageUrl);
-  
-  // Using the Page Plugin with timeline is more reliable for showing live streams 
-  // as they appear at the top of the timeline when active.
-  const embedUrl = `https://www.facebook.com/plugins/page.php?href=${encodedUrl}&tabs=timeline&width=500&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=false&appId`;
-
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100">
-        <div className="bg-slate-900 p-6 flex items-center justify-between text-white">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-church-red flex items-center justify-center">
-                <Video size={24} />
-              </div>
-              {isLive && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500"></span>
-                </span>
-              )}
-            </div>
-            <div>
-              <h3 className="font-serif font-bold text-xl">
-                {t({ en: 'Facebook Live & Updates', vi: 'Trực Tiếp & Cập Nhật Facebook' })}
-              </h3>
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/50">
-                <Radio size={12} className={isLive ? "text-red-500" : ""} />
-                {isLive ? t({ en: 'Live Now', vi: 'Đang Trực Tiếp' }) : t({ en: 'Follow our page for live updates', vi: 'Theo dõi trang để cập nhật trực tiếp' })}
-              </div>
-            </div>
-          </div>
-          <a 
-            href={facebookPageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
-          >
-            <ExternalLink size={20} />
-          </a>
-        </div>
+    <div className="relative rounded-[2rem] overflow-hidden bg-slate-900 aspect-video shadow-2xl group">
+      {/* Placeholder Image */}
+      <img 
+        src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
+        alt="Church Service" 
+        className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"
+        referrerPolicy="no-referrer"
+      />
+      
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
 
-        <div className="aspect-square md:aspect-video bg-white relative group flex justify-center">
-          <iframe 
-            src={embedUrl} 
-            width="500" 
-            height="500" 
-            style={{ border: 'none', overflow: 'hidden', maxWidth: '100%' }} 
-            scrolling="no" 
-            frameBorder="0" 
-            allowFullScreen={true} 
-            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-            title="Facebook Feed"
-          ></iframe>
-        </div>
+      {/* Content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+        {isLive ? (
+          <>
+            <motion.div 
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="w-20 h-20 rounded-full bg-red-600/20 flex items-center justify-center mb-6 backdrop-blur-sm"
+            >
+              <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-white shadow-lg shadow-red-600/50">
+                <Radio size={32} className="animate-pulse" />
+              </div>
+            </motion.div>
+            <h3 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">
+              {t({ en: 'Live Now', vi: 'Đang Phát Trực Tiếp' })}
+            </h3>
+            <p className="text-white/80 text-lg max-w-lg">
+              {t({ en: 'Join our Sunday Service broadcast.', vi: 'Tham gia buổi phát sóng Lễ Chúa Nhật của chúng tôi.' })}
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center mb-6 backdrop-blur-md border border-white/20 group-hover:bg-white/20 transition-colors cursor-pointer">
+              <Play size={32} className="text-white ml-2" />
+            </div>
+            <h3 className="text-2xl md:text-4xl font-serif font-bold text-white mb-4">
+              {t({ en: 'Next Broadcast', vi: 'Buổi Phát Tiếp Theo' })}
+            </h3>
+            <p className="text-white/80 text-lg">
+              {t({ en: 'Sunday at 10:00 AM (PT)', vi: 'Chúa Nhật lúc 10:00 Sáng (PT)' })}
+            </p>
+          </>
+        )}
+      </div>
 
-        <div className="p-8 bg-church-cream/30">
-          <p className="text-slate-600 text-center text-sm leading-relaxed">
-            {t({ 
-              en: 'Our live broadcast will appear at the top of the feed above when we are live. You can also click the button in the top right to watch directly on Facebook.', 
-              vi: 'Buổi phát sóng trực tiếp sẽ xuất hiện ở đầu bảng tin phía trên khi chúng tôi bắt đầu. Bạn cũng có thể nhấp vào nút ở góc trên bên phải để xem trực tiếp trên Facebook.' 
-            })}
-          </p>
-        </div>
+      {/* Status Badge */}
+      <div className="absolute top-6 left-6 flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white text-sm font-medium">
+        {isLive ? (
+          <>
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            {t({ en: 'LIVE', vi: 'TRỰC TIẾP' })}
+          </>
+        ) : (
+          <>
+            <span className="w-2 h-2 rounded-full bg-slate-400" />
+            {t({ en: 'OFFLINE', vi: 'NGOẠI TUYẾN' })}
+          </>
+        )}
       </div>
     </div>
   );

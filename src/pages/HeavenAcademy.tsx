@@ -63,8 +63,8 @@ export const HeavenAcademy: React.FC = () => {
               </h1>
               <p className="text-2xl text-slate-600 leading-relaxed mb-10 font-medium">
                 {t({ 
-                  en: 'By the sovereign guidance of the Holy Spirit, teaching in bilingual English-Vietnamese Bible classes for Vietnamese youth.', 
-                  vi: 'Dưới sự dẫn dắt tối cao của Đức Thánh Linh, giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam và Quốc Tế.' 
+                  en: 'Teaching in bilingual English-Vietnamese Bible classes for Vietnamese youth by the sovereign guidance of the Holy Spirit.', 
+                  vi: 'Giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam và Quốc Tế dưới sự dẫn dắt tối cao của Đức Thánh Linh.' 
                 })}
               </p>
               

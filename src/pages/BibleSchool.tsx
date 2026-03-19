@@ -72,8 +72,8 @@ export const GlobalGospelPowerBibleSchool: React.FC = () => {
                 </h3>
                 <p className="text-xl text-slate-600 leading-relaxed font-medium">
                   {t({ 
-                    en: 'By the guidance of the Holy Spirit, teaching, training, and equipping believers in both basic and advanced Biblical studies for Christians whom God has called to become His servants.', 
-                    vi: 'Dưới sự dẫn dắt của Thánh Linh, giảng dạy, đào tạo và trang bị cho các tín hữu, các nghiên cứu Kinh Thánh cơ bản và nâng cao cho những Cơ Đốc nhân được Chúa gọi để trở thành tôi tớ Ngài.' 
+                    en: 'Teaching, training, and equipping believers in both basic and advanced Biblical studies for Christians whom God has called to become His servants by the guidance of the Holy Spirit.', 
+                    vi: 'Giảng dạy, đào tạo và trang bị cho các tín hữu, các nghiên cứu Kinh Thánh cơ bản và nâng cao cho những Cơ Đốc nhân được Chúa gọi để trở thành tôi tớ Ngài dưới sự dẫn dắt của Thánh Linh.' 
                   })}
                 </p>
               </div>

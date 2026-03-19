@@ -41,8 +41,8 @@ export const Events: React.FC = () => {
         en: 'Global Gospel Power Church: Praise, Worship, and Bible Study', 
         vi: 'Toàn thể Giáo Hội Tin Lành Quyền Phép Toàn Cầu ngợi khen, thờ phượng, học Lời Chúa' 
       },
-      startDate: '2026-03-08T07:00:00-05:00', // CDT (DST starts Mar 8)
-      endDate: '2026-03-08T11:00:00-05:00',
+      startDate: '2026-03-15T07:00:00-05:00', // CDT (DST starts Mar 8)
+      endDate: '2026-03-15T11:00:00-05:00',
       location: 'Zoom Online',
       zoomId: '484 700 7000',
       zoomPass: '7777',
@@ -93,7 +93,7 @@ export const Events: React.FC = () => {
     <div className="pt-32 pb-20 px-6 bg-church-cream min-h-screen">
       <SEO 
         title={{ en: 'Upcoming Events', vi: 'Sự Kiện Sắp Tới' }} 
-        description={{ en: 'Stay connected with our global community through these upcoming gatherings and conferences.', vi: 'Luôn kết nối với cộng đồng toàn cầu của chúng tôi thông qua các buổi họp mặt và hội nghị sắp tới này.' }}
+        description={{ en: 'Stay connected with our global community through these upcoming gatherings and conferences.', vi: 'Kết nối với cộng đồng toàn cầu của chúng tôi thông qua các buổi họp mặt và hội nghị sắp tới.' }}
         url="https://tggpc.org/events"
       />
       <div className="max-w-7xl mx-auto">
@@ -121,7 +121,7 @@ export const Events: React.FC = () => {
           >
             {t({ 
               en: 'Stay connected with our global community through these upcoming gatherings and conferences.', 
-              vi: 'Luôn kết nối với cộng đồng toàn cầu của chúng tôi thông qua các buổi họp mặt và hội nghị sắp tới này.' 
+              vi: 'Kết nối với cộng đồng toàn cầu của chúng tôi thông qua các buổi họp mặt và hội nghị sắp tới.' 
             })}
           </motion.p>
           
