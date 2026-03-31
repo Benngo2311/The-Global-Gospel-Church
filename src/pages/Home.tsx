@@ -226,7 +226,14 @@ export const Home: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-serif font-bold mb-4">{t({ en: 'The Journey of Grace', vi: 'Chặng Đường Ân Điển' })}</h2>
-            <div className="w-24 h-1 bg-church-gold mx-auto rounded-full" />
+            <div className="w-24 h-1 bg-church-gold mx-auto rounded-full mb-8" />
+            <Link
+              to="/journey-of-grace"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 text-white rounded-full font-bold hover:bg-church-red transition-all shadow-xl hover:shadow-church-red/20 group"
+            >
+              {t({ en: 'View Full Timeline & Gallery', vi: 'Xem Toàn Bộ Dòng Thời Gian & Thư Viện' })}
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

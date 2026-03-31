@@ -132,22 +132,36 @@ export const HeavenBand: React.FC = () => {
       {/* Services Section */}
       <section className="px-6 py-24 bg-red-50 text-slate-900 rounded-[4rem] mx-4 border border-red-100">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+          <div className="flex flex-col md:flex-row justify-between items-start mb-20 gap-12">
             <div className="max-w-2xl">
               <span className="text-church-red text-xs font-bold uppercase tracking-[0.2em] mb-6 block">
                 {t({ en: 'Worship & Media Outreach', vi: 'Thờ Phượng & Truyền Thông' })}
               </span>
-              <h2 className="text-4xl md:text-6xl font-serif font-bold leading-tight">
+              <h2 className="text-4xl md:text-6xl font-serif font-bold leading-tight mb-8">
                 {t({ en: 'Guiding Beliefs & Purpose', vi: 'Đức Tin & Mục Đích Dẫn Dắt' })}
               </h2>
-            </div>
-            <div className="w-full lg:w-1/2">
-              <p className="text-slate-600 text-xl max-w-md leading-relaxed">
+              <p className="text-slate-600 text-xl leading-relaxed">
                 {t({ 
-                  en: 'Empower your future with exciting challenges and a supportive environment. Join us!', 
-                  vi: 'Trao quyền cho tương lai của bạn với những thử thách thú vị và một môi trường hỗ trợ. Hãy tham gia cùng chúng tôi!' 
+                  en: 'Praise and worship the Triune God. Release the power of exorcism, deliverance, and healing.', 
+                  vi: 'Ngợi khen, thờ phượng Đức Chúa Trời Ba Ngôi. Khai phóng quyền năng trừ quỷ, giải cứu, chữa lành.' 
                 })}
               </p>
+            </div>
+            <div className="w-full lg:w-1/2">
+              <div className="bg-white p-8 rounded-3xl shadow-lg border-l-4 border-church-red relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                  <Music size={120} />
+                </div>
+                <p className="text-lg md:text-xl font-serif italic text-slate-700 leading-relaxed mb-6 relative z-10">
+                  "{t({
+                    en: 'May the praise of God be in their mouths and a double-edged sword in their hands, to inflict vengeance on the nations and punishment on the peoples, to bind their kings with fetters, their nobles with shackles of iron, to carry out the sentence written against them— this is the glory of all his faithful people. Praise the Lord.',
+                    vi: 'Sự ngợi khen Đức Chúa Trời ở trong miệng họ, Thanh gươm hai lưỡi bén ở trong tay họ, Để báo thù các nước, Và hành phạt các dân; Để xiềng các vua chúng nó, Và cùm các tước vị chúng nó bằng sắt; Đặng thi hành cho chúng nó sự án đã chép. Mọi người thánh của Ngài được vinh hiển ấy. Ha-lê-lu-gia!'
+                  })}"
+                </p>
+                <p className="text-church-red font-bold uppercase tracking-widest text-sm relative z-10">
+                  {t({ en: 'Psalm 149:6-9', vi: 'Thi Thiên 149:6-9' })}
+                </p>
+              </div>
             </div>
           </div>
 

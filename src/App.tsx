@@ -19,6 +19,7 @@ import { Giving } from './pages/Giving';
 import { Contact } from './pages/Contact';
 import { Live } from './pages/Live';
 import { BuildingLordsHouse } from './pages/BuildingLordsHouse';
+import { JourneyOfGrace } from './pages/JourneyOfGrace';
 import { ScrollToTop } from './components/ScrollToTop';
 // import { SpiritualAssistant } from './components/SpiritualAssistant';
 
@@ -44,6 +45,7 @@ export default function App() {
             <Route path="ministries/womens-ministry" element={<WomensMinistry />} />
             <Route path="giving" element={<Giving />} />
             <Route path="building-lords-house" element={<BuildingLordsHouse />} />
+            <Route path="journey-of-grace" element={<JourneyOfGrace />} />
             <Route path="contact" element={<Contact />} />
             <Route path="live" element={<Live />} />
           </Route>

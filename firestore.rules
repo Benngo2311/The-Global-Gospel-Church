@@ -73,16 +73,41 @@ service cloud.firestore {
     }
 
     function isValidCreation(data) {
-      return hasOnlyAllowedFields(['category', 'title', 'author', 'content', 'audioUrl', 'imageUrl', 'videoUrl', 'timestamp']) &&
+      return hasOnlyAllowedFields(['category', 'title', 'author', 'content', 'audioUrl', 'imageUrl', 'videoUrl', 'timestamp', 'amenCount']) &&
              isValidString('category', 1, 50) &&
              (data.category == 'testimonies' || data.category == 'poems' || data.category == 'songs' || data.category == 'prophetic') &&
              isValidString('title', 1, 200) &&
              isValidString('author', 1, 100) &&
              isValidString('content', 1, 5000) &&
-             isValidOptionalString('audioUrl', 0, 1000) &&
-             isValidOptionalString('imageUrl', 0, 1000) &&
-             isValidOptionalString('videoUrl', 0, 1000) &&
-             data.timestamp is number;
+             isValidOptionalString('audioUrl', 0, 2000) &&
+             isValidOptionalString('imageUrl', 0, 2000) &&
+             isValidOptionalString('videoUrl', 0, 2000) &&
+             data.timestamp is number &&
+             (!('amenCount' in data) || (data.amenCount is number && data.amenCount >= 0));
+    }
+
+    function isValidCreationIncrement() {
+      let oldAmenCount = 'amenCount' in resource.data ? resource.data.amenCount : 0;
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['amenCount']) &&
+             (request.resource.data.amenCount == oldAmenCount + 1 || 
+              request.resource.data.amenCount == oldAmenCount - 1) &&
+             request.resource.data.amenCount >= 0;
+    }
+
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "khoatruy123@gmail.com" && request.auth.token.email_verified == true;
+    }
+
+    function isValidJourneyMedia(data) {
+      return hasOnlyAllowedFields(['url', 'type', 'description', 'year', 'date', 'isTimeline', 'timestamp', 'author']) &&
+             isValidString('url', 1, 2000) &&
+             (data.type == 'image' || data.type == 'video') &&
+             isValidOptionalString('description', 0, 2000) &&
+             (!('year' in data) || (data.year is number && data.year >= 1900 && data.year <= 2100)) &&
+             isValidOptionalString('date', 0, 20) &&
+             (!('isTimeline' in data) || data.isTimeline is bool) &&
+             data.timestamp is number &&
+             isValidOptionalString('author', 0, 100);
     }
 
     match /prayers/{prayerId} {
@@ -112,10 +137,21 @@ service cloud.firestore {
       allow read: if true;
       
       // Publicly creatable, but strictly validated
-      allow create: if isValidCreation(request.resource.data);
+      allow create: if isValidCreation(request.resource.data) && (!('amenCount' in request.resource.data) || request.resource.data.amenCount == 0);
       
-      // No updates allowed for creations
-      allow update: if false;
+      // Allow incrementing amenCount
+      allow update: if isValidCreationIncrement();
+    }
+
+    match /journeyMedia/{mediaId} {
+      // Publicly readable
+      allow read: if true;
+      
+      // Only admin can create, and strictly validated
+      allow create: if isAdmin() && isValidJourneyMedia(request.resource.data);
+      
+      // Only admin can update/delete
+      allow update, delete: if isAdmin();
     }
   }
 }

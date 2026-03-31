@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Mic, Square, Upload, Image as ImageIcon, Video, Trash2, HeartHandshake } from 'lucide-react';
+import { Mic, Square, Upload, Image as ImageIcon, Video, Trash2, HeartHandshake, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { cn } from '../lib/utils';
-import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, increment } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import imageCompression from 'browser-image-compression';
 import { db, storage, auth } from '../firebase';
@@ -71,7 +71,134 @@ interface Creation {
   imageUrl?: string;
   videoUrl?: string;
   timestamp: Date;
+  amenCount?: number;
 }
+
+const CreationCard = ({ creation, hasAmened, onAmen }: { creation: Creation, hasAmened: boolean, onAmen: (id: string) => void }) => {
+  const { t } = useLanguage();
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  const isLongContent = creation.content.length > 300 || creation.content.split('\n').length > 5;
+  const displayContent = isExpanded 
+    ? creation.content 
+    : (isLongContent ? creation.content.slice(0, 300) + '...' : creation.content);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-50 flex flex-col gap-4 w-[85vw] md:w-[400px] h-full"
+    >
+      <div className="flex-1">
+        <h3 className="text-2xl font-serif font-bold text-slate-900 mb-2">{creation.title}</h3>
+        <p className="text-sm font-bold text-church-red mb-4">
+          {t({ en: 'By', vi: 'Bởi' })} {creation.author} • {creation.timestamp.toLocaleDateString()}
+        </p>
+        <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{displayContent}</p>
+        {isLongContent && (
+          <button 
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="text-church-red font-bold text-sm mt-2 hover:underline"
+          >
+            {isExpanded ? t({ en: 'Show Less', vi: 'Thu gọn' }) : t({ en: 'Read More', vi: 'Xem thêm' })}
+          </button>
+        )}
+      </div>
+
+      {creation.audioUrl && (
+        <div className="mt-4 shrink-0">
+          <audio controls className="w-full">
+            <source src={creation.audioUrl} />
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      )}
+
+      {creation.imageUrl && (
+        <div className="mt-4 shrink-0">
+          <img src={creation.imageUrl} alt={creation.title} className="rounded-xl max-h-96 object-cover w-full" />
+        </div>
+      )}
+
+      {creation.videoUrl && (
+        <div className="mt-4 shrink-0">
+          <video controls className="w-full rounded-xl max-h-96 bg-black">
+            <source src={creation.videoUrl} />
+            Your browser does not support the video element.
+          </video>
+        </div>
+      )}
+
+      <div className="mt-4 pt-4 flex items-center justify-end border-t border-slate-100 shrink-0">
+        <button
+          onClick={() => onAmen(creation.id)}
+          className={cn(
+            "flex items-center gap-2 transition-colors group",
+            hasAmened ? "text-church-red" : "text-slate-500 hover:text-church-red"
+          )}
+        >
+          <Heart className={cn(
+            "w-5 h-5 transition-colors",
+            hasAmened ? "fill-church-red text-church-red" : "group-hover:fill-church-red/20"
+          )} />
+          <span className="font-medium">{creation.amenCount || 0} Amen</span>
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
+const HorizontalSlider = ({ title, items, renderItem, emptyMessage }: { title: string, items: any[], renderItem: (item: any) => React.ReactNode, emptyMessage: string }) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -400, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 400, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section className="relative">
+      <div className="flex items-center justify-between mb-8 pb-4 border-b-2 border-slate-200">
+        <h2 className="text-3xl font-serif font-bold text-slate-900">
+          {title}
+        </h2>
+        {items.length > 0 && (
+          <div className="flex gap-2">
+            <button onClick={scrollLeft} className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
+              <ChevronLeft size={24} />
+            </button>
+            <button onClick={scrollRight} className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        )}
+      </div>
+      
+      {items.length === 0 ? (
+        <p className="text-slate-500 italic">{emptyMessage}</p>
+      ) : (
+        <div 
+          ref={scrollContainerRef}
+          className="flex gap-8 overflow-x-auto pb-8 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        >
+          {items.map(item => (
+            <div key={item.id} className="snap-start shrink-0 flex items-stretch">
+              {renderItem(item)}
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
 
 export const BuildingLordsHouse: React.FC = () => {
   const { t } = useLanguage();
@@ -79,6 +206,18 @@ export const BuildingLordsHouse: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [amenedCreations, setAmenedCreations] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const stored = localStorage.getItem('amenedCreations');
+    if (stored) {
+      try {
+        setAmenedCreations(new Set(JSON.parse(stored)));
+      } catch (e) {
+        console.error('Failed to parse amenedCreations from localStorage', e);
+      }
+    }
+  }, []);
 
   // Form State
   const [category, setCategory] = useState<'testimonies' | 'poems' | 'songs' | 'prophetic'>('testimonies');
@@ -183,11 +322,23 @@ export const BuildingLordsHouse: React.FC = () => {
           setUploadProgress(Math.round(progress));
         }, 
         (error) => {
+          console.error("Upload error:", error);
+          if (error.code === 'storage/unauthorized' || error.code === 'storage/unknown') {
+            alert(t({ 
+              en: 'Upload failed: Unauthorized or Storage not enabled. Please ensure Firebase Storage is enabled and rules are configured to allow public uploads in your Firebase Console.', 
+              vi: 'Tải lên thất bại: Không có quyền hoặc Storage chưa bật. Vui lòng đảm bảo Firebase Storage đã được bật và cấu hình quy tắc cho phép tải lên công khai trong Firebase Console.' 
+            }));
+          }
           reject(error);
         }, 
         async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+          } catch (err) {
+            console.error("Error getting download URL:", err);
+            reject(err);
+          }
         }
       );
     });
@@ -215,7 +366,7 @@ export const BuildingLordsHouse: React.FC = () => {
           const options = {
             maxSizeMB: 1,
             maxWidthOrHeight: 1920,
-            useWebWorker: true
+            useWebWorker: false
           };
           const compressedFile = await imageCompression(imageFile, options);
           imageUrl = await handleFileUpload(compressedFile, `creations/images/${Date.now()}_${compressedFile.name}`);
@@ -233,7 +384,8 @@ export const BuildingLordsHouse: React.FC = () => {
         audioUrl,
         imageUrl,
         videoUrl,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        amenCount: 0
       };
 
       await addDoc(collection(db, 'creations'), creationData);
@@ -254,47 +406,41 @@ export const BuildingLordsHouse: React.FC = () => {
     }
   };
 
-  const renderCreation = (creation: Creation) => (
-    <motion.div
-      key={creation.id}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-50 flex flex-col gap-4"
-    >
-      <div>
-        <h3 className="text-2xl font-serif font-bold text-slate-900 mb-2">{creation.title}</h3>
-        <p className="text-sm font-bold text-church-red mb-4">
-          {t({ en: 'By', vi: 'Bởi' })} {creation.author} • {creation.timestamp.toLocaleDateString()}
-        </p>
-        <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">{creation.content}</p>
-      </div>
+  const handleAmen = async (creationId: string) => {
+    try {
+      const creationRef = doc(db, 'creations', creationId);
+      const hasAmened = amenedCreations.has(creationId);
+      
+      if (hasAmened) {
+        await updateDoc(creationRef, {
+          amenCount: increment(-1)
+        });
+        const newSet = new Set(amenedCreations);
+        newSet.delete(creationId);
+        setAmenedCreations(newSet);
+        localStorage.setItem('amenedCreations', JSON.stringify(Array.from(newSet)));
+      } else {
+        await updateDoc(creationRef, {
+          amenCount: increment(1)
+        });
+        const newSet = new Set(amenedCreations);
+        newSet.add(creationId);
+        setAmenedCreations(newSet);
+        localStorage.setItem('amenedCreations', JSON.stringify(Array.from(newSet)));
+      }
+    } catch (error) {
+      console.error("Error updating amen:", error);
+      handleFirestoreError(error, OperationType.UPDATE, `creations/${creationId}`);
+    }
+  };
 
-      {creation.audioUrl && (
-        <div className="mt-4">
-          <audio controls className="w-full">
-            <source src={creation.audioUrl} type="audio/webm" />
-            <source src={creation.audioUrl} type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-      )}
-
-      {creation.imageUrl && (
-        <div className="mt-4">
-          <img src={creation.imageUrl} alt={creation.title} className="rounded-xl max-h-96 object-cover w-full" />
-        </div>
-      )}
-
-      {creation.videoUrl && (
-        <div className="mt-4">
-          <video controls className="w-full rounded-xl max-h-96 bg-black">
-            <source src={creation.videoUrl} />
-            Your browser does not support the video element.
-          </video>
-        </div>
-      )}
-    </motion.div>
+  const renderCreationItem = (creation: Creation) => (
+    <CreationCard 
+      key={creation.id} 
+      creation={creation} 
+      hasAmened={amenedCreations.has(creation.id)} 
+      onAmen={handleAmen} 
+    />
   );
 
   return (
@@ -309,16 +455,16 @@ export const BuildingLordsHouse: React.FC = () => {
           <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 text-slate-900">
             {t({ en: 'United in Christ', vi: 'Hiệp Nhất Trong Đấng Christ' })}
           </h1>
-          <div className="text-slate-600 text-lg leading-relaxed space-y-4 max-w-2xl mx-auto text-left">
-            <blockquote className="border-l-4 border-church-red/50 pl-4 py-2 italic text-slate-700 bg-slate-50 rounded-r-lg">
+          <div className="max-w-4xl mx-auto text-center mt-10 mb-4">
+            <p className="font-serif text-3xl md:text-4xl italic text-slate-800 leading-relaxed">
               {t({
                 en: '"Let this mind be in you which was also in Christ Jesus,"',
                 vi: '"Hãy có đồng một tâm tình như Đấng Christ Jêsus đã có,"'
               })}
-              <span className="block mt-2 text-sm text-church-red not-italic font-semibold">
-                {t({ en: '— Philippians 2:5 (NKJV)', vi: '— Phi-líp 2:5' })}
-              </span>
-            </blockquote>
+            </p>
+            <span className="block mt-6 text-lg text-church-red font-semibold tracking-wide uppercase">
+              {t({ en: '— Philippians 2:5 (NKJV)', vi: '— Phi-líp 2:5' })}
+            </span>
           </div>
         </div>
       </section>
@@ -535,61 +681,33 @@ export const BuildingLordsHouse: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-16">
-            {/* Testimonies Section */}
-            <section>
-              <h2 className="text-3xl font-serif font-bold text-slate-900 mb-8 pb-4 border-b-2 border-slate-200">
-                {t({ en: 'Testimonies of God\'s Miracles', vi: 'Lời Chứng Về Phép Lạ Của Chúa' })}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {creations.filter(c => c.category === 'testimonies').length === 0 ? (
-                  <p className="text-slate-500 italic">{t({ en: 'No testimonies yet.', vi: 'Chưa có lời chứng nào.' })}</p>
-                ) : (
-                  creations.filter(c => c.category === 'testimonies').map(renderCreation)
-                )}
-              </div>
-            </section>
+            <HorizontalSlider
+              title={t({ en: 'Testimonies of God\'s Miracles', vi: 'Lời Chứng Về Phép Lạ Của Chúa' })}
+              items={creations.filter(c => c.category === 'testimonies')}
+              renderItem={renderCreationItem}
+              emptyMessage={t({ en: 'No testimonies yet.', vi: 'Chưa có lời chứng nào.' })}
+            />
 
-            {/* Poems Section */}
-            <section>
-              <h2 className="text-3xl font-serif font-bold text-slate-900 mb-8 pb-4 border-b-2 border-slate-200">
-                {t({ en: 'New Poems', vi: 'Bài Thơ Mới' })}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {creations.filter(c => c.category === 'poems').length === 0 ? (
-                  <p className="text-slate-500 italic">{t({ en: 'No poems yet.', vi: 'Chưa có bài thơ nào.' })}</p>
-                ) : (
-                  creations.filter(c => c.category === 'poems').map(renderCreation)
-                )}
-              </div>
-            </section>
+            <HorizontalSlider
+              title={t({ en: 'New Poems', vi: 'Bài Thơ Mới' })}
+              items={creations.filter(c => c.category === 'poems')}
+              renderItem={renderCreationItem}
+              emptyMessage={t({ en: 'No poems yet.', vi: 'Chưa có bài thơ nào.' })}
+            />
 
-            {/* Songs Section */}
-            <section>
-              <h2 className="text-3xl font-serif font-bold text-slate-900 mb-8 pb-4 border-b-2 border-slate-200">
-                {t({ en: 'New Songs', vi: 'Bài Hát Mới' })}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {creations.filter(c => c.category === 'songs').length === 0 ? (
-                  <p className="text-slate-500 italic">{t({ en: 'No songs yet.', vi: 'Chưa có bài hát nào.' })}</p>
-                ) : (
-                  creations.filter(c => c.category === 'songs').map(renderCreation)
-                )}
-              </div>
-            </section>
+            <HorizontalSlider
+              title={t({ en: 'New Songs', vi: 'Bài Hát Mới' })}
+              items={creations.filter(c => c.category === 'songs')}
+              renderItem={renderCreationItem}
+              emptyMessage={t({ en: 'No songs yet.', vi: 'Chưa có bài hát nào.' })}
+            />
 
-            {/* Prophetic Revelations Section */}
-            <section>
-              <h2 className="text-3xl font-serif font-bold text-slate-900 mb-8 pb-4 border-b-2 border-slate-200">
-                {t({ en: 'Prophetic Revelations from the Lord', vi: 'Mạc Khải Tiên Tri Chúa Bày Tỏ' })}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {creations.filter(c => c.category === 'prophetic').length === 0 ? (
-                  <p className="text-slate-500 italic">{t({ en: 'No revelations yet.', vi: 'Chưa có mạc khải nào.' })}</p>
-                ) : (
-                  creations.filter(c => c.category === 'prophetic').map(renderCreation)
-                )}
-              </div>
-            </section>
+            <HorizontalSlider
+              title={t({ en: 'Prophetic Revelations from the Lord', vi: 'Mạc Khải Tiên Tri Chúa Bày Tỏ' })}
+              items={creations.filter(c => c.category === 'prophetic')}
+              renderItem={renderCreationItem}
+              emptyMessage={t({ en: 'No revelations yet.', vi: 'Chưa có mạc khải nào.' })}
+            />
           </div>
         )}
         </div>

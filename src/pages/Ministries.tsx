@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Heart, Globe, Users, Shield, Zap, Star, Book } from 'lucide-react';
+import { Heart, Globe, Users, Shield, Zap, Star, Book, Music, Sword, BookOpen } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SEO } from '../components/SEO';
 import { PageNavigation } from '../components/PageNavigation';
@@ -18,7 +18,7 @@ export const Ministries: React.FC = () => {
       external: false
     },
     {
-      icon: <Star size={40} />,
+      icon: <Music size={40} />,
       title: { en: 'Heaven Band', vi: 'Ban Nhạc Thiên Đàng' },
       desc: { en: 'Carrying out Worship Programs, Concerts, Livestreams, Audio Recordings, and the Composition of Sacred Music.', vi: 'Thực hiện các chương trình thờ phượng, hòa nhạc, livestream, ghi âm và sáng tác nhạc thánh.' },
       link: '/ministries/heaven-band',
@@ -32,14 +32,19 @@ export const Ministries: React.FC = () => {
       external: false
     },
     {
-      icon: <Shield size={40} />,
+      icon: <BookOpen size={40} />,
       title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' },
       desc: { en: 'Teaching in bilingual English-Vietnamese Bible classes for Vietnamese youth by the sovereign guidance of the Holy Spirit.', vi: 'Giảng dạy các lớp Kinh Thánh song ngữ Anh-Việt cho thanh thiếu niên Việt Nam và Quốc Tế dưới sự dẫn dắt tối cao của Đức Thánh Linh.' },
       link: '/ministries/heaven-academy',
       external: false
     },
     {
-      icon: <Users size={40} />,
+      icon: (
+        <div className="relative w-10 h-10 flex items-center justify-center">
+          <Shield size={40} className="absolute" strokeWidth={1.5} />
+          <Sword size={20} className="absolute transform -rotate-45" strokeWidth={2} />
+        </div>
+      ),
       title: { en: 'Council Of Prayers For The Global Spiritual Battle', vi: 'Hội Đồng Hiệp Nguyện Chiến Trận Thuộc Linh Toàn Cầu' },
       desc: { en: 'Through the inspired guidance of the Holy Spirit, we are committing ourselves to transformative periods of fasting and prayer, participating in night watches focused on spiritual warfare, and undertaking prayer patrol as led by His presence.', vi: 'Thông qua sự soi dẫn của Đức Thánh Linh, chúng tôi cam kết thực hiện các giai đoạn kiêng ăn và cầu nguyện mang tính biến đổi, tham gia vào các buổi thức canh tập trung vào chiến trận thuộc linh và thực hiện các cuộc tuần hành cầu nguyện theo sự dẫn dắt của Ngài.' },
       link: '/ministries/council-of-prayers',

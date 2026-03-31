@@ -43,6 +43,22 @@
         "timestamp": { "type": "number", "description": "The timestamp when the creation was submitted." }
       },
       "required": ["category", "title", "author", "content", "timestamp"]
+    },
+    "JourneyMedia": {
+      "title": "JourneyMedia",
+      "description": "Media (image or video) uploaded for the Journey of Grace page.",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "description": "The URL of the uploaded media file." },
+        "type": { "type": "string", "enum": ["image", "video"], "description": "The type of media." },
+        "description": { "type": "string", "description": "A description of the media." },
+        "year": { "type": "number", "description": "The year the media was taken." },
+        "date": { "type": "string", "description": "Specific date (YYYY-MM-DD) for timeline events." },
+        "isTimeline": { "type": "boolean", "description": "Flag indicating if the media belongs to the curated timeline." },
+        "timestamp": { "type": "number", "description": "The timestamp when the media was uploaded." },
+        "author": { "type": "string", "description": "The name of the person uploading the media." }
+      },
+      "required": ["url", "type", "timestamp"]
     }
   },
   "firestore": {
@@ -57,6 +73,10 @@
     "/creations/{creationId}": {
       "schema": { "$ref": "Creation" },
       "description": "Collection of creations (testimonies, poems, songs, prophetic revelations)."
+    },
+    "/journeyMedia/{mediaId}": {
+      "schema": { "$ref": "JourneyMedia" },
+      "description": "Collection of media for the Journey of Grace."
     }
   }
 }

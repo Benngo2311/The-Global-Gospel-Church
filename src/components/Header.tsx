@@ -62,8 +62,8 @@ export const Header: React.FC = () => {
             <span className="font-serif font-bold text-xl leading-tight tracking-tight text-church-red">
               TGGPC
             </span>
-            <span className="text-[10px] uppercase tracking-widest font-bold text-slate-900">
-              Global Gospel Power Church
+            <span className="text-[10px] uppercase tracking-widest font-bold text-slate-900 whitespace-pre-line">
+              {t({ en: 'Global Gospel Power Church', vi: 'Giáo Hội Tin Lành\nQuyền Phép Toàn Cầu' })}
             </span>
           </div>
         </Link>
