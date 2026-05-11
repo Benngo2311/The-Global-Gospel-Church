@@ -56,9 +56,38 @@
         "date": { "type": "string", "description": "Specific date (YYYY-MM-DD) for timeline events." },
         "isTimeline": { "type": "boolean", "description": "Flag indicating if the media belongs to the curated timeline." },
         "timestamp": { "type": "number", "description": "The timestamp when the media was uploaded." },
-        "author": { "type": "string", "description": "The name of the person uploading the media." }
+        "author": { "type": "string", "description": "The name of the person uploading the media." },
+        "category": { "type": "string", "description": "Category for the media (e.g., Sunday Service, Youth Retreat)." }
       },
       "required": ["url", "type", "timestamp"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Announcement or event posted by admin.",
+      "type": "object",
+      "properties": {
+        "title": { 
+          "type": "object",
+          "properties": {
+            "en": { "type": "string" },
+            "vi": { "type": "string" }
+          }
+        },
+        "desc": { 
+          "type": "object",
+          "properties": {
+            "en": { "type": "string" },
+            "vi": { "type": "string" }
+          }
+        },
+        "startDate": { "type": "string", "description": "Start date in ISO format." },
+        "endDate": { "type": "string", "description": "End date in ISO format." },
+        "location": { "type": "string", "description": "Location of the event." },
+        "zoomLink": { "type": "string", "description": "Optional Zoom link." },
+        "posterUrl": { "type": "string", "description": "Optional poster URL." },
+        "timestamp": { "type": "number", "description": "Timestamp of creation." }
+      },
+      "required": ["title", "desc", "startDate", "endDate", "location", "timestamp"]
     }
   },
   "firestore": {
@@ -77,6 +106,10 @@
     "/journeyMedia/{mediaId}": {
       "schema": { "$ref": "JourneyMedia" },
       "description": "Collection of media for the Journey of Grace."
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "Event" },
+      "description": "Collection of events and announcements."
     }
   }
 }

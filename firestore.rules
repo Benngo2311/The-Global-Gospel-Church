@@ -99,7 +99,7 @@ service cloud.firestore {
     }
 
     function isValidJourneyMedia(data) {
-      return hasOnlyAllowedFields(['url', 'type', 'description', 'year', 'date', 'isTimeline', 'timestamp', 'author']) &&
+      return hasOnlyAllowedFields(['url', 'type', 'description', 'year', 'date', 'isTimeline', 'timestamp', 'author', 'category']) &&
              isValidString('url', 1, 2000) &&
              (data.type == 'image' || data.type == 'video') &&
              isValidOptionalString('description', 0, 2000) &&
@@ -107,7 +107,22 @@ service cloud.firestore {
              isValidOptionalString('date', 0, 20) &&
              (!('isTimeline' in data) || data.isTimeline is bool) &&
              data.timestamp is number &&
-             isValidOptionalString('author', 0, 100);
+             isValidOptionalString('author', 0, 100) &&
+             isValidOptionalString('category', 0, 100);
+    }
+
+    function isValidEvent(data) {
+      return hasOnlyAllowedFields(['title', 'desc', 'startDate', 'endDate', 'location', 'zoomLink', 'posterUrl', 'timestamp']) &&
+             data.title is map && 'en' in data.title && 'vi' in data.title &&
+             data.title.en is string && data.title.vi is string &&
+             data.desc is map && 'en' in data.desc && 'vi' in data.desc &&
+             data.desc.en is string && data.desc.vi is string &&
+             isValidString('startDate', 1, 50) &&
+             isValidString('endDate', 1, 50) &&
+             isValidString('location', 0, 500) &&
+             (data.zoomLink == null || (data.zoomLink is string && data.zoomLink.size() <= 2000)) &&
+             (data.posterUrl == null || (data.posterUrl is string && data.posterUrl.size() <= 2000)) &&
+             data.timestamp is number;
     }
 
     match /prayers/{prayerId} {
@@ -149,6 +164,17 @@ service cloud.firestore {
       
       // Only admin can create, and strictly validated
       allow create: if isAdmin() && isValidJourneyMedia(request.resource.data);
+      
+      // Only admin can update/delete
+      allow update, delete: if isAdmin();
+    }
+    
+    match /events/{eventId} {
+      // Publicly readable
+      allow read: if true;
+      
+      // Only admin can create, and strictly validated
+      allow create: if isAdmin() && isValidEvent(request.resource.data);
       
       // Only admin can update/delete
       allow update, delete: if isAdmin();

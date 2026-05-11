@@ -64,7 +64,8 @@ export const Giving: React.FC = () => {
             {t({ en: 'Tithes & Offerings', vi: 'Dâng Hiến & Phần Mười' })}
           </div>
           <h1 className="text-5xl md:text-8xl font-serif font-bold text-slate-900 mb-8 leading-tight">
-            Tithes & <span className="text-church-red italic">Offerings</span>
+            {t({ en: 'Tithes & ', vi: 'Phần Mười & ' })}
+            <span className="text-church-red italic">{t({ en: 'Offerings', vi: 'Dâng Hiến' })}</span>
           </h1>
           <div className="max-w-3xl mx-auto space-y-6 text-xl text-slate-600 leading-relaxed">
             <p>

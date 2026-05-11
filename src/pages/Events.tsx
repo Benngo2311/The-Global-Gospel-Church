@@ -1,13 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Calendar as CalendarIcon, Clock, MapPin, ExternalLink, Globe } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, ExternalLink, Globe, Upload, Loader2, LogIn, LogOut, FileImage, Plus } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SEO } from '../components/SEO';
+import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+import { db, storage, auth } from '../firebase';
 
 export const Events: React.FC = () => {
   const { t } = useLanguage();
   const [detectedLocation, setDetectedLocation] = useState<string | null>(null);
   const [userTimezone, setUserTimezone] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+  // Admin Auth State
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [loginError, setLoginError] = useState('');
+
+  // Form State
+  const [showAdminForm, setShowAdminForm] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [error, setError] = useState('');
+  
+  const [formTitle, setFormTitle] = useState('');
+  const [formDesc, setFormDesc] = useState('');
+  const [formStartDate, setFormStartDate] = useState('');
+  const [formEndDate, setFormEndDate] = useState('');
+  const [formLocation, setFormLocation] = useState('');
+  const [formZoomLink, setFormZoomLink] = useState('');
+  const [formFile, setFormFile] = useState<File | null>(null);
+
+  // Dynamic Events State
+  const [dynamicEvents, setDynamicEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Listen for Auth status
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser && currentUser.email === 'khoatruy123@gmail.com') {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    // Listen for events from Firestore
+    const q = query(collection(db, 'events'), orderBy('timestamp', 'desc'));
+    const unsubscribeDb = onSnapshot(q, (snapshot) => {
+      const dbEvents: any[] = [];
+      snapshot.forEach((doc) => {
+        dbEvents.push({ id: doc.id, ...doc.data() });
+      });
+      setDynamicEvents(dbEvents);
+    }, (err) => {
+      console.error("Error fetching events:", err);
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubscribeDb();
+    };
+  }, []);
 
   useEffect(() => {
     const detectLocation = async () => {
@@ -72,6 +127,114 @@ export const Events: React.FC = () => {
       }
     }
   ];
+
+  const handleLogin = async () => {
+    setLoginError('');
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (err: any) {
+      if (err.code !== 'auth/cancelled-popup-request' && err.code !== 'auth/popup-closed-by-user') {
+        console.error("Login error:", err);
+        setLoginError(err.message || "Failed to login. Try opening the app in a new tab.");
+      }
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      if (selectedFile.size > 10 * 1024 * 1024) {
+        setError(t({ en: 'File is too large. Max size is 10MB.', vi: 'Tệp quá lớn. Kích thước tối đa là 10MB.' }));
+        setFormFile(null);
+        return;
+      }
+      setFormFile(selectedFile);
+      setError('');
+    }
+  };
+
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAdmin) return;
+    if (!formTitle || !formStartDate) {
+      setError(t({ en: 'Title and Start Date/Time are required.', vi: 'Tiêu đề và Thời gian bắt đầu là bắt buộc.' }));
+      return;
+    }
+
+    setIsUploading(true);
+    setError('');
+
+    try {
+      let downloadURL = null;
+      
+      // Upload poster if available
+      if (formFile) {
+        const storageRef = ref(storage, `eventPosters/${Date.now()}_${formFile.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, formFile);
+        
+        await new Promise<void>((resolve, reject) => {
+          uploadTask.on(
+            'state_changed',
+            (snapshot) => {
+              const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              setUploadProgress(progress);
+            },
+            (err) => reject(err),
+            async () => {
+              downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              resolve();
+            }
+          );
+        });
+      }
+
+      // Add to firestore
+      const newEvent = {
+        title: { en: formTitle, vi: formTitle },
+        desc: { en: formDesc, vi: formDesc },
+        startDate: new Date(formStartDate).toISOString(),
+        endDate: formEndDate ? new Date(formEndDate).toISOString() : new Date(formStartDate).toISOString(),
+        location: formLocation || 'TBA',
+        zoomLink: formZoomLink || null, // Allow admin to just put zoom link
+        posterUrl: downloadURL,
+        timestamp: Date.now()
+      };
+
+      await addDoc(collection(db, 'events'), newEvent);
+      
+      // Reset form
+      setFormTitle('');
+      setFormDesc('');
+      setFormStartDate('');
+      setFormEndDate('');
+      setFormLocation('');
+      setFormZoomLink('');
+      setFormFile(null);
+      
+      setIsUploading(false);
+      setUploadProgress(0);
+      setShowAdminForm(false);
+      
+      const fileInput = document.getElementById('poster-upload') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+
+    } catch (err) {
+      console.error("Error saving event:", err);
+      setError(t({ en: 'An error occurred. Please try again.', vi: 'Đã xảy ra lỗi. Vui lòng thử lại.' }));
+      setIsUploading(false);
+    }
+  };
+
+  const allEvents = [...dynamicEvents, ...events];
 
   const formatDate = (isoString: string) => {
     return new Date(isoString).toLocaleDateString(undefined, {
@@ -147,10 +310,171 @@ export const Events: React.FC = () => {
           </motion.div>
         </div>
 
+        {/* Admin Controls */}
+        {isAdmin && (
+          <div className="mb-12 max-w-3xl mx-auto">
+            {!showAdminForm ? (
+              <div className="flex justify-center">
+                <button 
+                  onClick={() => setShowAdminForm(true)}
+                  className="px-8 py-4 bg-church-red text-white flex items-center gap-2 rounded-full font-bold shadow-lg hover:-translate-y-1 transition-all"
+                >
+                  <Plus size={20} />
+                  {t({ en: 'Post New Announcement / Event', vi: 'Đăng Thông Báo / Sự Kiện Mới' })}
+                </button>
+              </div>
+            ) : (
+              <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 relative">
+                <button 
+                  onClick={() => setShowAdminForm(false)}
+                  className="absolute top-6 right-6 text-slate-400 hover:text-slate-600"
+                >
+                  ✕
+                </button>
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl font-serif font-bold text-slate-900">
+                    {t({ en: 'Create Event/Announcement', vi: 'Tạo Sự Kiện/Thông Báo' })}
+                  </h2>
+                  <button onClick={handleLogout} className="text-sm text-slate-500 hover:text-church-red flex items-center gap-1">
+                    <LogOut size={16} /> Logout
+                  </button>
+                </div>
+
+                <form onSubmit={handleUpload} className="space-y-6">
+                  {/* Title */}
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formTitle}
+                      onChange={(e) => setFormTitle(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-church-red outline-none"
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={formDesc}
+                      onChange={(e) => setFormDesc(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-church-red outline-none min-h-[120px]"
+                    />
+                  </div>
+
+                  {/* Dates */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">
+                        Start Time
+                      </label>
+                      <input
+                        type="datetime-local"
+                        required
+                        value={formStartDate}
+                        onChange={(e) => setFormStartDate(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-church-red outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">
+                        End Time (Optional)
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={formEndDate}
+                        onChange={(e) => setFormEndDate(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-church-red outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location & Zoom */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">
+                        Location / Address
+                      </label>
+                      <input
+                        type="text"
+                        value={formLocation}
+                        onChange={(e) => setFormLocation(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-church-red outline-none"
+                        placeholder="e.g., 123 Church St / Online"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 mb-2">
+                        Zoom Link (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        value={formZoomLink}
+                        onChange={(e) => setFormZoomLink(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-church-red outline-none"
+                        placeholder="https://zoom.us/j/..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Poster Upload */}
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Picture / Poster (Optional)
+                    </label>
+                    <label htmlFor="poster-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-colors">
+                      <div className="flex flex-col items-center py-4">
+                        <FileImage className="w-8 h-8 mb-2 text-slate-400" />
+                        <p className="text-xs text-slate-500">
+                          {formFile ? formFile.name : t({ en: 'Click to upload image (Max 10MB)', vi: 'Nhấn để tải ảnh lên (Tối đa 10MB)' })}
+                        </p>
+                      </div>
+                      <input 
+                        id="poster-upload" 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        disabled={isUploading}
+                      />
+                    </label>
+                  </div>
+
+                  {error && (
+                    <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm font-medium">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isUploading || !formTitle || !formStartDate}
+                    className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-church-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="animate-spin" size={20} />
+                        Uploading... {Math.round(uploadProgress)}%
+                      </>
+                    ) : (
+                      'Post Event'
+                    )}
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="space-y-12">
-          {events.map((event, i) => (
+          {allEvents.map((event, i) => (
             <motion.div
-              key={i}
+              key={event.id || i}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -165,7 +489,7 @@ export const Events: React.FC = () => {
                     <div className="text-3xl font-serif font-bold mb-1">
                       {formatDate(event.startDate)}
                     </div>
-                    {event.startDate !== event.endDate && !event.endDate.startsWith(event.startDate.split('T')[0]) && (
+                    {event.startDate !== event.endDate && event.endDate && !event.endDate.startsWith(event.startDate.split('T')[0]) && (
                       <>
                         <div className="text-church-red font-bold text-xs uppercase tracking-widest my-2">to</div>
                         <div className="text-3xl font-serif font-bold">
@@ -179,69 +503,95 @@ export const Events: React.FC = () => {
                 {/* Content */}
                 <div className="flex-grow p-8 md:p-12">
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
-                    <div>
+                    <div className="flex-grow">
                       <h3 className="text-3xl md:text-4xl font-serif font-bold mb-4 group-hover:text-church-red transition-colors leading-tight">
                         {t(event.title)}
                       </h3>
                       <div className="flex flex-wrap gap-6 text-sm text-slate-500 font-bold uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <Clock size={18} className="text-church-red" />
-                          {formatTime(event.startDate)} - {formatTime(event.endDate)}
+                          {formatTime(event.startDate)} {event.endDate && event.startDate !== event.endDate && `- ${formatTime(event.endDate)}`}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin size={18} className="text-church-red" />
-                          {event.location}
-                        </div>
+                        {event.location && (
+                          <div className="flex items-center gap-2">
+                            <MapPin size={18} className="text-church-red" />
+                            {event.location}
+                          </div>
+                        )}
                       </div>
                     </div>
                     
-                    <div className="flex flex-col gap-3">
-                      <a 
-                        href={`https://zoom.us/j/${event.zoomId.replace(/\s/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-8 py-4 bg-church-red text-white rounded-2xl font-bold hover:bg-slate-900 transition-all flex items-center justify-center gap-3 shadow-lg hover:-translate-y-1"
-                      >
-                        {t({ en: 'Join Zoom', vi: 'Tham Gia Zoom' })}
-                        <ExternalLink size={18} />
-                      </a>
-                      <div className="text-center text-[px] font-bold text-slate-400 uppercase tracking-widest">
-                        ID: {event.zoomId} | Pass: {event.zoomPass}
-                      </div>
+                    <div className="flex flex-col gap-3 shrink-0">
+                      {(event.zoomLink || event.zoomId) && (
+                        <>
+                          <a 
+                            href={event.zoomLink || `https://zoom.us/j/${event.zoomId?.replace(/\s/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-8 py-4 bg-church-red text-white rounded-2xl font-bold hover:bg-slate-900 transition-all flex items-center justify-center gap-3 shadow-lg hover:-translate-y-1"
+                          >
+                            {t({ en: 'Join Zoom', vi: 'Tham Gia Zoom' })}
+                            <ExternalLink size={18} />
+                          </a>
+                          {event.zoomId && (
+                            <div className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                              ID: {event.zoomId} | Pass: {event.zoomPass}
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-3 gap-10">
                     <div className="md:col-span-2">
-                      <p className="text-slate-600 leading-relaxed text-lg whitespace-pre-line">
-                        {t(event.desc)}
-                      </p>
+                      {event.posterUrl && (
+                        <div className="mb-8">
+                          <img 
+                            src={event.posterUrl} 
+                            alt={t(event.title)} 
+                            className="w-full max-h-[500px] object-cover rounded-2xl shadow-sm"
+                            referrerPolicy="no-referrer"
+                          />
+                        </div>
+                      )}
+                      {event.desc && (
+                        <p className="text-slate-600 leading-relaxed text-lg whitespace-pre-line">
+                          {t(event.desc)}
+                        </p>
+                      )}
                     </div>
                     
                     {event.contact && (
-                      <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100">
+                      <div className="bg-slate-50 rounded-3xl p-6 border border-slate-100 h-fit">
                         <h4 className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">
                           {t({ en: 'Contact Info', vi: 'Thông Tin Liên Hệ' })}
                         </h4>
                         <div className="space-y-4">
-                          <div className="flex items-center gap-3 text-slate-700">
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
-                              <span className="text-church-red text-xs">📞</span>
+                          {event.contact.phone && (
+                            <div className="flex items-center gap-3 text-slate-700">
+                              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
+                                <span className="text-church-red text-xs">📞</span>
+                              </div>
+                              <span className="font-medium">{event.contact.phone}</span>
                             </div>
-                            <span className="font-medium">{event.contact.phone}</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-slate-700">
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
-                              <span className="text-church-red text-xs">✉️</span>
+                          )}
+                          {event.contact.email && (
+                            <div className="flex items-center gap-3 text-slate-700">
+                              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
+                                <span className="text-church-red text-xs">✉️</span>
+                              </div>
+                              <span className="font-medium text-sm break-all">{event.contact.email}</span>
                             </div>
-                            <span className="font-medium text-sm break-all">{event.contact.email}</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-slate-700">
-                            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
-                              <span className="text-church-red text-xs">👤</span>
+                          )}
+                          {event.contact.facebook && (
+                            <div className="flex items-center gap-3 text-slate-700">
+                              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
+                                <span className="text-church-red text-xs">👤</span>
+                              </div>
+                              <span className="font-medium">{event.contact.facebook}</span>
                             </div>
-                            <span className="font-medium">{event.contact.facebook}</span>
-                          </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -251,6 +601,24 @@ export const Events: React.FC = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Admin Login Link (Hidden unless scrolled to bottom or explicit) */}
+        {!isAdmin && (
+          <div className="mt-20 py-8 text-center flex flex-col items-center">
+            {loginError && (
+              <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm max-w-md">
+                {loginError}
+                <p className="mt-1 text-xs">Note: If you are in the preview, try opening the app in a new tab (top right icon) to allow Google Login.</p>
+              </div>
+            )}
+            <button 
+              onClick={handleLogin}
+              className="px-4 py-2 text-sm text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center gap-2 mx-auto"
+            >
+              <LogIn size={16} /> Admin Login
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

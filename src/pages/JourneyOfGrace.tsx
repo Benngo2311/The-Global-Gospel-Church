@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
-import { Upload, Image as ImageIcon, Video, Calendar as CalendarIcon, Loader2, LogIn, LogOut } from 'lucide-react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { Upload, Image as ImageIcon, Video, Calendar as CalendarIcon, Loader2, LogIn, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
@@ -17,9 +17,140 @@ interface JourneyMedia {
   year?: number;
   date?: string;
   isTimeline?: boolean;
+  category?: string;
   timestamp: number;
   author?: string;
 }
+
+const YearCarousel = ({ year, items }: { year: number, items: JourneyMedia[] }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const currentItem = items[currentIndex];
+  const eventDate = currentItem.date ? new Date(currentItem.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) : '';
+
+  const next = () => {
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % items.length);
+  };
+  
+  const prev = () => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+  };
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 50 : -50,
+      opacity: 0
+    })
+  };
+
+  return (
+    <div className="min-w-full h-full snap-center flex flex-col md:flex-row items-center justify-center p-6 md:p-20 gap-8 md:gap-16 relative">
+      {/* Background Year Watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 overflow-hidden">
+        <span className="text-[30vw] font-serif font-bold leading-none">{year}</span>
+      </div>
+
+      {/* Media Side */}
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        className="w-full md:w-1/2 h-[40vh] md:h-[60vh] relative z-10 rounded-lg overflow-hidden shadow-2xl bg-[#111]"
+      >
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          <motion.div
+            key={currentItem.id}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="w-full h-full absolute inset-0 flex items-center justify-center"
+          >
+            {currentItem.type === 'video' ? (
+              <video src={currentItem.url} className="w-full h-full object-contain" controls preload="metadata" />
+            ) : (
+              <img src={currentItem.url} alt={currentItem.description} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        {items.length > 1 && (
+          <>
+            <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white hover:bg-black/80 z-20 transition-colors">
+              <ChevronLeft size={24} />
+            </button>
+            <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full text-white hover:bg-black/80 z-20 transition-colors">
+              <ChevronRight size={24} />
+            </button>
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20 bg-black/30 px-3 py-1.5 rounded-full backdrop-blur-sm">
+              {items.map((_, i) => (
+                <div key={i} className={`w-2 h-2 rounded-full transition-colors ${i === currentIndex ? 'bg-church-red' : 'bg-white/50'}`} />
+              ))}
+            </div>
+          </>
+        )}
+      </motion.div>
+
+      {/* Text Side */}
+      <motion.div 
+        initial={{ opacity: 0, x: 50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="w-full md:w-1/2 flex flex-col justify-center z-10"
+      >
+        <h2 className="text-5xl md:text-7xl font-serif font-bold text-church-red mb-2">
+          {year}
+        </h2>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentItem.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="min-h-[150px]"
+          >
+            {eventDate && (
+              <p className="text-xl md:text-2xl text-slate-400 mb-6 font-medium tracking-wide uppercase">
+                {eventDate}
+              </p>
+            )}
+            {currentItem.description && (
+              <p className="text-lg md:text-2xl leading-relaxed text-slate-200 mb-6">
+                {currentItem.description}
+              </p>
+            )}
+            {currentItem.author && (
+              <p className="text-sm text-slate-500 uppercase tracking-widest">
+                — {currentItem.author}
+              </p>
+            )}
+          </motion.div>
+        </AnimatePresence>
+        
+        {items.length > 1 && (
+          <p className="text-xs text-slate-600 mt-8 uppercase tracking-widest">
+            {currentIndex + 1} / {items.length}
+          </p>
+        )}
+      </motion.div>
+    </div>
+  );
+};
 
 export const JourneyOfGrace: React.FC = () => {
   const { t } = useLanguage();
@@ -27,6 +158,7 @@ export const JourneyOfGrace: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
+  const [loginError, setLoginError] = useState('');
   
   // Auth state
   const [isAdmin, setIsAdmin] = useState(false);
@@ -44,6 +176,7 @@ export const JourneyOfGrace: React.FC = () => {
   const [date, setDate] = useState('');
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [author, setAuthor] = useState('');
+  const [category, setCategory] = useState('');
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -75,12 +208,14 @@ export const JourneyOfGrace: React.FC = () => {
   }, []);
 
   const handleLogin = async () => {
+    setLoginError('');
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
     } catch (err: any) {
       if (err.code !== 'auth/cancelled-popup-request' && err.code !== 'auth/popup-closed-by-user') {
         console.error("Login error:", err);
+        setLoginError(err.message || "Failed to login. Try opening the app in a new tab.");
       }
     }
   };
@@ -153,7 +288,8 @@ export const JourneyOfGrace: React.FC = () => {
             timestamp: Date.now(),
             ...(description ? { description } : {}),
             ...(isTimeline ? { isTimeline: true, date } : { year }),
-            ...(author ? { author } : {})
+            ...(author ? { author } : {}),
+            ...(category ? { category: category.trim() } : {})
           };
 
           await addDoc(collection(db, 'journeyMedia'), newMedia);
@@ -161,6 +297,7 @@ export const JourneyOfGrace: React.FC = () => {
           setFile(null);
           setDescription('');
           setAuthor('');
+          setCategory('');
           setYear(new Date().getFullYear());
           setDate('');
           setIsTimeline(false);
@@ -182,10 +319,21 @@ export const JourneyOfGrace: React.FC = () => {
   const timelineMedia = mediaList.filter(m => m.isTimeline);
   const galleryMedia = mediaList.filter(m => !m.isTimeline);
 
+  // Sort all timeline media first
   const sortedTimelineMedia = [...timelineMedia].sort((a, b) => {
     if (a.date && b.date) return new Date(a.date).getTime() - new Date(b.date).getTime();
     return a.timestamp - b.timestamp;
   });
+
+  // Then group by year
+  const timelineByYear = sortedTimelineMedia.reduce((acc, media) => {
+    const y = media.date ? new Date(media.date).getFullYear() : (media.year || new Date(media.timestamp).getFullYear());
+    if (!acc[y]) acc[y] = [];
+    acc[y].push(media);
+    return acc;
+  }, {} as Record<number, JourneyMedia[]>);
+
+  const sortedTimelineYears = Object.keys(timelineByYear).map(Number).sort((a, b) => a - b);
 
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
@@ -327,6 +475,26 @@ export const JourneyOfGrace: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">
+                  {t({ en: 'Category (Optional)', vi: 'Danh Mục (Tùy chọn)' })}
+                </label>
+                <input
+                  type="text"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  list="categories-list"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-church-red focus:border-transparent outline-none mb-6"
+                  placeholder={t({ en: 'e.g., Sunday Service, Retreat, Youth...', vi: 'VD: Lễ Chúa Nhật, Trại Hè, Giới Trẻ...' })}
+                  disabled={isUploading}
+                />
+                <datalist id="categories-list">
+                  {Array.from(new Set(mediaList.map(m => m.category).filter(Boolean) as string[])).sort().map(cat => (
+                    <option key={cat} value={cat} />
+                  ))}
+                </datalist>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   {t({ en: 'Description (Optional)', vi: 'Mô Tả (Tùy chọn)' })}
                 </label>
                 <textarea
@@ -391,7 +559,7 @@ export const JourneyOfGrace: React.FC = () => {
       {/* Timeline Section */}
       {activeTab === 'timeline' && (
         <section className="relative w-full bg-[#0a0a0a] text-white min-h-[80vh] flex flex-col overflow-hidden">
-          {sortedTimelineMedia.length === 0 ? (
+          {sortedTimelineYears.length === 0 ? (
             <div className="text-center py-20 text-slate-500">
               {t({ en: 'No timeline events yet.', vi: 'Chưa có sự kiện dòng thời gian nào.' })}
             </div>
@@ -404,86 +572,32 @@ export const JourneyOfGrace: React.FC = () => {
                 className="flex-1 flex overflow-x-auto snap-x snap-mandatory hide-scrollbar"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {sortedTimelineMedia.map((media, index) => {
-                  const eventYear = media.date ? new Date(media.date).getFullYear() : media.year;
-                  const eventDate = media.date ? new Date(media.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) : '';
-                  
-                  return (
-                    <div key={media.id} className="min-w-full h-full snap-center flex flex-col md:flex-row items-center justify-center p-6 md:p-20 gap-8 md:gap-16 relative">
-                      {/* Background Year Watermark */}
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 overflow-hidden">
-                        <span className="text-[30vw] font-serif font-bold leading-none">{eventYear}</span>
-                      </div>
-
-                      {/* Media Side */}
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8 }}
-                        className="w-full md:w-1/2 h-[40vh] md:h-[60vh] relative z-10 rounded-lg overflow-hidden shadow-2xl"
-                      >
-                        {media.type === 'video' ? (
-                          <video src={media.url} className="w-full h-full object-cover" controls preload="metadata" />
-                        ) : (
-                          <img src={media.url} alt={media.description} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                        )}
-                      </motion.div>
-
-                      {/* Text Side */}
-                      <motion.div 
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="w-full md:w-1/2 flex flex-col justify-center z-10"
-                      >
-                        <h2 className="text-5xl md:text-7xl font-serif font-bold text-church-red mb-2">
-                          {eventYear}
-                        </h2>
-                        {eventDate && (
-                          <p className="text-xl md:text-2xl text-slate-400 mb-6 font-medium tracking-wide uppercase">
-                            {eventDate}
-                          </p>
-                        )}
-                        {media.description && (
-                          <p className="text-lg md:text-2xl leading-relaxed text-slate-200 mb-6">
-                            {media.description}
-                          </p>
-                        )}
-                        {media.author && (
-                          <p className="text-sm text-slate-500 uppercase tracking-widest">
-                            — {media.author}
-                          </p>
-                        )}
-                      </motion.div>
-                    </div>
-                  );
-                })}
+                {sortedTimelineYears.map((year) => (
+                  <YearCarousel key={year} year={year} items={timelineByYear[year]} />
+                ))}
               </div>
 
               {/* Scrubber */}
               <div className="h-24 bg-black/80 backdrop-blur-md flex items-center px-8 relative border-t border-white/10">
                 <div className="absolute top-1/2 left-0 w-full h-px bg-white/20 -translate-y-1/2" />
                 <div className="flex items-center justify-between w-full max-w-6xl mx-auto relative z-10">
-                  {sortedTimelineMedia.map((media, index) => {
+                  {sortedTimelineYears.map((year, index) => {
                     const isActive = index === activeIndex;
-                    const eventYear = media.date ? new Date(media.date).getFullYear() : media.year;
-                    const isFirstOfYear = index === 0 || (
-                      (media.date ? new Date(media.date).getFullYear() : media.year) !== 
-                      (sortedTimelineMedia[index-1].date ? new Date(sortedTimelineMedia[index-1].date!).getFullYear() : sortedTimelineMedia[index-1].year)
-                    );
 
                     return (
-                      <div key={media.id} className="relative flex flex-col items-center group cursor-pointer" onClick={() => scrollToSlide(index)}>
+                      <div key={year} className="relative flex flex-col items-center group cursor-pointer p-2" onClick={() => scrollToSlide(index)}>
                         {/* Year Label */}
-                        <span className={`absolute -top-8 text-xs font-bold transition-all duration-300 ${isActive ? 'text-church-red opacity-100 scale-110' : isFirstOfYear ? 'text-white/50 opacity-100' : 'opacity-0 group-hover:opacity-100 text-white/50'}`}>
-                          {eventYear}
+                        <span className={`absolute -top-8 text-xs font-bold transition-all duration-300 ${isActive ? 'text-church-red opacity-100 scale-110' : 'opacity-0 group-hover:opacity-100 text-white/50'}`}>
+                          {year}
                         </span>
                         
                         {/* Dot */}
-                        <button
-                          className={`rounded-full transition-all duration-300 ${isActive ? 'w-4 h-4 bg-church-red shadow-[0_0_15px_rgba(220,38,38,0.8)]' : 'w-2 h-2 bg-white/50 hover:bg-white hover:scale-150'}`}
-                          aria-label={`Go to slide ${index + 1}`}
-                        />
+                        <div className="p-2 flex items-center justify-center">
+                          <button
+                            className={`rounded-full transition-all duration-300 ${isActive ? 'w-5 h-5 bg-church-red shadow-[0_0_15px_rgba(220,38,38,0.8)]' : 'w-3 h-3 bg-white/50 group-hover:bg-white group-hover:scale-125'}`}
+                            aria-label={`Go to year ${year}`}
+                          />
+                        </div>
                       </div>
                     );
                   })}
@@ -502,50 +616,72 @@ export const JourneyOfGrace: React.FC = () => {
               {t({ en: 'No pictures uploaded yet.', vi: 'Chưa có hình ảnh nào được tải lên.' })}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {galleryMedia.map((media) => (
-                <motion.div 
-                  key={media.id} 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="bg-white rounded-2xl overflow-hidden shadow-md group border border-slate-100"
-                >
-                  <div className="aspect-square relative bg-slate-100 overflow-hidden">
-                    {media.type === 'video' ? (
-                      <>
-                        <video 
-                          src={media.url} 
-                          className="w-full h-full object-cover"
-                          controls
-                          preload="metadata"
-                        />
-                        <div className="absolute top-3 right-3 bg-black/50 p-1.5 rounded-full text-white backdrop-blur-sm pointer-events-none">
-                          <Video size={14} />
+            <div className="space-y-16">
+              {Object.entries(
+                galleryMedia.reduce((acc, media) => {
+                  const cat = media.category || 'Uncategorized';
+                  if (!acc[cat]) acc[cat] = [];
+                  acc[cat].push(media);
+                  return acc;
+                }, {} as Record<string, JourneyMedia[]>)
+              )
+              .sort(([catA], [catB]) => {
+                if (catA === 'Uncategorized') return 1;
+                if (catB === 'Uncategorized') return -1;
+                return catA.localeCompare(catB);
+              })
+              .map(([cat, items]) => (
+                <div key={cat}>
+                  <h3 className="text-3xl font-serif font-bold text-slate-800 mb-8 border-b border-slate-200 pb-4">
+                    {cat === 'Uncategorized' ? t({ en: 'Other', vi: 'Khác' }) : cat}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {items.map((media) => (
+                      <motion.div 
+                        key={media.id} 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="bg-white rounded-2xl overflow-hidden shadow-md group border border-slate-100"
+                      >
+                        <div className="aspect-square relative bg-slate-100 overflow-hidden">
+                          {media.type === 'video' ? (
+                            <>
+                              <video 
+                                src={media.url} 
+                                className="w-full h-full object-cover"
+                                controls
+                                preload="metadata"
+                              />
+                              <div className="absolute top-3 right-3 bg-black/50 p-1.5 rounded-full text-white backdrop-blur-sm pointer-events-none">
+                                <Video size={14} />
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <img 
+                                src={media.url} 
+                                alt={media.description || 'Gallery image'} 
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                referrerPolicy="no-referrer"
+                              />
+                              <div className="absolute top-3 right-3 bg-black/50 p-1.5 rounded-full text-white backdrop-blur-sm pointer-events-none">
+                                <ImageIcon size={14} />
+                              </div>
+                            </>
+                          )}
                         </div>
-                      </>
-                    ) : (
-                      <>
-                        <img 
-                          src={media.url} 
-                          alt={media.description || 'Gallery image'} 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute top-3 right-3 bg-black/50 p-1.5 rounded-full text-white backdrop-blur-sm pointer-events-none">
-                          <ImageIcon size={14} />
-                        </div>
-                      </>
-                    )}
+                        {(media.description || media.author || media.year) && (
+                          <div className="p-4">
+                            {media.year && <p className="text-xs font-bold text-church-red mb-1">{media.year}</p>}
+                            {media.description && <p className="text-sm text-slate-700 line-clamp-2 mb-2">{media.description}</p>}
+                            {media.author && <p className="text-xs text-slate-400">{media.author}</p>}
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
                   </div>
-                  {(media.description || media.author || media.year) && (
-                    <div className="p-4">
-                      {media.year && <p className="text-xs font-bold text-church-red mb-1">{media.year}</p>}
-                      {media.description && <p className="text-sm text-slate-700 line-clamp-2 mb-2">{media.description}</p>}
-                      {media.author && <p className="text-xs text-slate-400">{media.author}</p>}
-                    </div>
-                  )}
-                </motion.div>
+                </div>
               ))}
             </div>
           )}
@@ -554,12 +690,18 @@ export const JourneyOfGrace: React.FC = () => {
 
       {/* Admin Login Link (Hidden unless scrolled to bottom or explicit) */}
       {!isAdmin && (
-        <div className="py-8 text-center">
+        <div className="py-8 text-center flex flex-col items-center">
+          {loginError && (
+            <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm max-w-md">
+              {loginError}
+              <p className="mt-1 text-xs">Note: If you are in the preview, try opening the app in a new tab (top right icon) to allow Google Login.</p>
+            </div>
+          )}
           <button 
             onClick={handleLogin}
-            className="text-xs text-slate-300 hover:text-slate-500 transition-colors flex items-center justify-center gap-1 mx-auto"
+            className="px-4 py-2 text-sm text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors flex items-center justify-center gap-2 mx-auto"
           >
-            <LogIn size={12} /> Admin Login
+            <LogIn size={16} /> Admin Login
           </button>
         </div>
       )}
