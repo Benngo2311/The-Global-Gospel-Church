@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
-import { Calendar as CalendarIcon, Clock, MapPin, ExternalLink, Globe, Upload, Loader2, LogIn, LogOut, FileImage, Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Calendar as CalendarIcon, Clock, MapPin, ExternalLink, Globe, Upload, Loader2, LogIn, LogOut, FileImage, Plus, Edit, Trash2, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SEO } from '../components/SEO';
-import { collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { db, storage, auth } from '../firebase';
+import { STATIC_EVENTS } from '../constants/events';
 
 export const Events: React.FC = () => {
   const { t } = useLanguage();
@@ -31,9 +32,15 @@ export const Events: React.FC = () => {
   const [formLocation, setFormLocation] = useState('');
   const [formZoomLink, setFormZoomLink] = useState('');
   const [formFile, setFormFile] = useState<File | null>(null);
+  
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   // Dynamic Events State
   const [dynamicEvents, setDynamicEvents] = useState<any[]>([]);
+
+  // UI state
+  const [expandedEvents, setExpandedEvents] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     // Listen for Auth status
@@ -90,43 +97,8 @@ export const Events: React.FC = () => {
     detectLocation();
   }, []);
 
-  const events = [
-    {
-      title: { 
-        en: 'Global Gospel Power Church: Praise, Worship, and Bible Study', 
-        vi: 'Toàn thể Giáo Hội Tin Lành Quyền Phép Toàn Cầu ngợi khen, thờ phượng, học Lời Chúa' 
-      },
-      startDate: '2026-03-15T07:00:00-05:00', // CDT (DST starts Mar 8)
-      endDate: '2026-03-15T11:00:00-05:00',
-      location: 'Zoom Online',
-      zoomId: '484 700 7000',
-      zoomPass: '7777',
-      desc: { 
-        en: 'After the official, our Church will have extra activities like testimonies, prayer, prophetic declaration, healing, and exorcism.', 
-        vi: 'Sau buổi nhóm chính thức, Hội Thánh sẽ có thêm phần làm chứng, cầu nguyện & cầu thay, nói tiên tri, chữa lành, đuổi quỷ.' 
-      }
-    },
-    {
-      title: { 
-        en: 'Prayer Program for America & The World: Revival in the Storm of God\'s Glory', 
-        vi: 'Chương Trình Cầu Nguyện Cho Nước Mỹ & Thế Giới: Phục Hưng Trong Bão Lửa Vinh Hiển Chúa' 
-      },
-      startDate: '2026-03-04T05:00:00-06:00', // CST
-      endDate: '2026-04-13T17:00:00-05:00', // CDT
-      location: 'Global / Washington, D.C.',
-      zoomId: '483 700 7000',
-      zoomPass: '7777',
-      contact: {
-        phone: '(832) 231 2501',
-        email: 'xuanlam.my@hotmail.com',
-        facebook: 'Swanie Lam'
-      },
-      desc: { 
-        en: 'Global Spiritual Warfare Prayer Council. Jesus Christ said: "I have come to bring fire on the earth, and how I wish it were already kindled!" (Luke 12:49). Join us in humbling ourselves, fasting, and uniting in the name of JESUS CHRIST, praying for a 24/7 storm of glory to transform and sanctify Christians and redeem humanity. This 40-day journey includes spiritual warfare missions to Egypt, Israel, Turkey, Greece, Italy, France, Germany, Switzerland, and a special gathering in Washington, D.C. from April 6-13, 2026. On May 17, 2026, we will join the "Rededicate 250: National Jubilee of Prayer, Praise, and Thanksgiving" at the National Mall.', 
-        vi: 'Hội Đồng Hiệp Nguyện Chiến Trận Thuộc Linh Toàn Cầu. Đức Chúa Jêsus Christ phán: "Ta đã đến quăng lửa xuống đất; nếu cháy lên rồi, ta còn ước-ao chi nữa!" (Lu-ca 12:49). Hãy hạ mình xuống, kiêng ăn kiêng uống, hiệp một trong danh ĐỨC CHÚA GIÊ-XU CHRIST, cầu nguyện để Ngài giáng bão lửa vinh hiển 24/7 tiêu diệt tội lỗi và thánh hoá Cơ Đốc Nhân. Hành trình 40 ngày bao gồm các chuyến đi chiến trận thuộc linh đến Ai Cập, Do Thái, Thổ Nhĩ Kỳ, Hy Lạp, Ý, Pháp, Đức, Thụy Sĩ và kỳ hiệp nguyện tại Washington, D.C. từ ngày 6-13 tháng 4, 2026. Ngày 17 tháng 5, 2026, chúng ta sẽ tham gia chương trình "Rededicate 250" tại National Mall.' 
-      }
-    }
-  ];
+  // STATIC_EVENTS imported from constants
+  const allEvents = [...dynamicEvents, ...STATIC_EVENTS];
 
   const handleLogin = async () => {
     setLoginError('');
@@ -146,6 +118,50 @@ export const Events: React.FC = () => {
       await signOut(auth);
     } catch (err) {
       console.error("Logout error:", err);
+    }
+  };
+
+  const resetForm = () => {
+    setFormTitle('');
+    setFormDesc('');
+    setFormStartDate('');
+    setFormEndDate('');
+    setFormLocation('');
+    setFormZoomLink('');
+    setFormFile(null);
+    setEditingId(null);
+    setDeletingId(null);
+    setError('');
+    const fileInput = document.getElementById('poster-upload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
+  const formatForInput = (isoString: string) => {
+    if (!isoString) return '';
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return '';
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  const handleEdit = (ev: any) => {
+    setEditingId(ev.id);
+    setFormTitle(typeof ev.title === 'string' ? ev.title : (ev.title?.en || ''));
+    setFormDesc(typeof ev.desc === 'string' ? ev.desc : (ev.desc?.en || ''));
+    setFormStartDate(formatForInput(ev.startDate));
+    setFormEndDate(formatForInput(ev.endDate));
+    setFormLocation(ev.location || '');
+    setFormZoomLink(ev.zoomLink || '');
+    setShowAdminForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'events', id));
+      setDeletingId(null);
+    } catch (err) {
+      console.error("Error deleting event:", err);
     }
   };
 
@@ -198,34 +214,30 @@ export const Events: React.FC = () => {
       }
 
       // Add to firestore
-      const newEvent = {
+      const eventData: any = {
         title: { en: formTitle, vi: formTitle },
         desc: { en: formDesc, vi: formDesc },
         startDate: new Date(formStartDate).toISOString(),
         endDate: formEndDate ? new Date(formEndDate).toISOString() : new Date(formStartDate).toISOString(),
         location: formLocation || 'TBA',
-        zoomLink: formZoomLink || null, // Allow admin to just put zoom link
-        posterUrl: downloadURL,
-        timestamp: Date.now()
+        zoomLink: formZoomLink || null
       };
 
-      await addDoc(collection(db, 'events'), newEvent);
+      if (downloadURL !== null) {
+        eventData.posterUrl = downloadURL;
+      }
+
+      if (editingId) {
+        await updateDoc(doc(db, 'events', editingId), eventData);
+      } else {
+        await addDoc(collection(db, 'events'), { ...eventData, timestamp: Date.now() });
+      }
       
       // Reset form
-      setFormTitle('');
-      setFormDesc('');
-      setFormStartDate('');
-      setFormEndDate('');
-      setFormLocation('');
-      setFormZoomLink('');
-      setFormFile(null);
-      
+      resetForm();
+      setShowAdminForm(false);
       setIsUploading(false);
       setUploadProgress(0);
-      setShowAdminForm(false);
-      
-      const fileInput = document.getElementById('poster-upload') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
 
     } catch (err) {
       console.error("Error saving event:", err);
@@ -234,7 +246,12 @@ export const Events: React.FC = () => {
     }
   };
 
-  const allEvents = [...dynamicEvents, ...events];
+  const toggleExpand = (id: string) => {
+    setExpandedEvents(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
 
   const formatDate = (isoString: string) => {
     return new Date(isoString).toLocaleDateString(undefined, {
@@ -326,16 +343,19 @@ export const Events: React.FC = () => {
             ) : (
               <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 relative">
                 <button 
-                  onClick={() => setShowAdminForm(false)}
+                  onClick={() => {
+                    setShowAdminForm(false);
+                    resetForm();
+                  }}
                   className="absolute top-6 right-6 text-slate-400 hover:text-slate-600"
                 >
-                  ✕
+                  <X size={24} />
                 </button>
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-2xl font-serif font-bold text-slate-900">
-                    {t({ en: 'Create Event/Announcement', vi: 'Tạo Sự Kiện/Thông Báo' })}
+                    {editingId ? t({ en: 'Edit Event/Announcement', vi: 'Sửa Sự Kiện/Thông Báo' }) : t({ en: 'Create Event/Announcement', vi: 'Tạo Sự Kiện/Thông Báo' })}
                   </h2>
-                  <button onClick={handleLogout} className="text-sm text-slate-500 hover:text-church-red flex items-center gap-1">
+                  <button onClick={handleLogout} className="mr-8 text-sm text-slate-500 hover:text-church-red flex items-center gap-1">
                     <LogOut size={16} /> Logout
                   </button>
                 </div>
@@ -462,7 +482,7 @@ export const Events: React.FC = () => {
                         Uploading... {Math.round(uploadProgress)}%
                       </>
                     ) : (
-                      'Post Event'
+                      editingId ? 'Update Event' : 'Post Event'
                     )}
                   </button>
                 </form>
@@ -479,8 +499,41 @@ export const Events: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="group bg-white rounded-[3rem] overflow-hidden shadow-xl border border-slate-100 hover:shadow-2xl transition-all"
+              className="group bg-white rounded-[3rem] overflow-hidden shadow-xl border border-slate-100 hover:shadow-2xl transition-all relative"
             >
+              {isAdmin && event.id && (
+                <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+                  <button 
+                    onClick={() => handleEdit(event)}
+                    className="w-10 h-10 bg-white shadow-md border border-slate-100 text-slate-600 rounded-full flex items-center justify-center hover:bg-church-red hover:text-white hover:border-church-red transition-colors"
+                  >
+                    <Edit size={16} />
+                  </button>
+                  {deletingId === event.id ? (
+                    <div className="flex bg-white shadow-md border border-slate-100 rounded-full overflow-hidden h-10">
+                      <button 
+                        onClick={() => handleDelete(event.id)}
+                        className="px-4 text-xs font-bold bg-red-500 text-white hover:bg-red-600 transition-colors"
+                      >
+                        Confirm
+                      </button>
+                      <button 
+                        onClick={() => setDeletingId(null)}
+                        className="px-4 text-xs font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => setDeletingId(event.id)}
+                      className="w-10 h-10 bg-white shadow-md border border-slate-100 text-slate-600 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
+                </div>
+              )}
               <div className="flex flex-col lg:flex-row">
                 {/* Date Sidebar */}
                 <div className="lg:w-64 bg-slate-900 p-8 flex flex-col items-center justify-center text-white shrink-0">
@@ -556,9 +609,39 @@ export const Events: React.FC = () => {
                         </div>
                       )}
                       {event.desc && (
-                        <p className="text-slate-600 leading-relaxed text-lg whitespace-pre-line">
-                          {t(event.desc)}
-                        </p>
+                        <div className="relative">
+                          <AnimatePresence initial={false}>
+                            <motion.div
+                              key="content"
+                              initial="collapsed"
+                              animate={expandedEvents[event.id] ? "expanded" : "collapsed"}
+                              exit="collapsed"
+                              variants={{
+                                expanded: { height: "auto", opacity: 1 },
+                                collapsed: { height: 80, opacity: 0.8 }
+                              }}
+                              transition={{ duration: 0.3, ease: "easeInOut" }}
+                              className="overflow-hidden"
+                            >
+                              <p className="text-slate-600 leading-relaxed text-lg whitespace-pre-line">
+                                {t(event.desc)}
+                              </p>
+                            </motion.div>
+                          </AnimatePresence>
+                          {!expandedEvents[event.id] && (
+                            <div className="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                          )}
+                          <button 
+                            onClick={() => toggleExpand(event.id)} 
+                            className="text-church-red mt-2 text-sm font-bold flex items-center gap-1 hover:text-red-800 transition-colors"
+                          >
+                            {expandedEvents[event.id] ? (
+                              <>{t({ en: 'Show Less', vi: 'Thu Gọn' })} <ChevronUp size={16} /></>
+                            ) : (
+                              <>{t({ en: 'Read More', vi: 'Đọc Thêm' })} <ChevronDown size={16} /></>
+                            )}
+                          </button>
+                        </div>
                       )}
                     </div>
                     

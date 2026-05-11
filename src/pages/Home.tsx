@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { ArrowRight, BookOpen, Users, Calendar, Heart, Globe, MessageSquare, Radio } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowRight, BookOpen, Users, Calendar, Heart, Globe, MessageSquare, Radio, MapPin, Clock } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SITE_CONTENT } from '../constants/content';
 import { Link } from 'react-router-dom';
@@ -8,9 +8,60 @@ import { DailyVerse } from '../components/DailyVerse';
 import { LiveBroadcast } from '../components/LiveBroadcast';
 import { SEO } from '../components/SEO';
 import { PageNavigation } from '../components/PageNavigation';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { db } from '../firebase';
+import { STATIC_EVENTS } from '../constants/events';
 
 export const Home: React.FC = () => {
   const { t, language } = useLanguage();
+  const [dynamicEvents, setDynamicEvents] = useState<any[]>([]);
+  const [currentEventIndex, setCurrentEventIndex] = useState(0);
+
+  useEffect(() => {
+    // Listen for events from Firestore
+    const q = query(collection(db, 'events'), orderBy('timestamp', 'desc'));
+    const unsubscribeDb = onSnapshot(q, (snapshot) => {
+      const dbEvents: any[] = [];
+      snapshot.forEach((doc) => {
+        dbEvents.push({ id: doc.id, ...doc.data() });
+      });
+      setDynamicEvents(dbEvents);
+    }, (err) => {
+      console.error("Error fetching events:", err);
+    });
+
+    return () => {
+      unsubscribeDb();
+    };
+  }, []);
+
+  const allEvents = [...dynamicEvents, ...STATIC_EVENTS];
+  
+  useEffect(() => {
+    if (allEvents.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentEventIndex(prev => (prev + 1) % allEvents.length);
+    }, 6000);
+    
+    return () => clearInterval(interval);
+  }, [allEvents.length]);
+
+  const currentEvent = allEvents[currentEventIndex] || {
+    title: { en: 'Upcoming Gatherings', vi: 'Các Buổi Nhóm Sắp Tới' },
+    desc: { 
+      en: 'Join us worldwide via Zoom for upcoming events to inspire, connect, and grow faith in the eternal love of Jesus Christ.', 
+      vi: 'Hãy tham gia cùng chúng tôi với toàn thế giới qua Zoom trong các sự kiện sắp tới để truyền cảm hứng, kết nối và phát triển đức tin trong tình yêu đời đời của Đức Chúa Jêsus Christ.' 
+    },
+    posterUrl: '/images/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg'
+  };
+
+  const formatEventDate = (isoString?: string) => {
+    if (!isoString) return '';
+    return new Date(isoString).toLocaleDateString(undefined, {
+      month: 'short', day: 'numeric'
+    });
+  };
 
   return (
     <div className="overflow-hidden">
@@ -70,38 +121,54 @@ export const Home: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="relative"
           >
-            <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-church-gold/20 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-church-red/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-church-red/10 transition-colors" />
+            <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-church-gold/20 relative overflow-hidden group min-h-[500px] flex flex-col justify-between">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-church-red/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-church-red/10 transition-colors pointer-events-none" />
               
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="px-3 py-1 bg-church-red text-white text-[10px] font-bold uppercase tracking-widest rounded-md">
-                    {t({ en: 'Events', vi: 'Sự Kiện' })}
-                  </span>
-                  <span className="text-xs text-slate-400 font-bold uppercase tracking-widest">
-                    — {t({ en: 'For ALL', vi: 'Dành Cho TẤT CẢ' })}
-                  </span>
-                </div>
-                
-                <h3 className="text-3xl font-serif font-bold mb-4">
-                  {t({ en: 'Upcoming Gatherings', vi: 'Các Buổi Nhóm Sắp Tới' })}
-                </h3>
-                <p className="text-slate-500 mb-8 leading-relaxed">
-                  {t({ 
-                    en: 'Join us worldwide via Zoom for upcoming events to inspire, connect, and grow faith in the eternal love of Jesus Christ.', 
-                    vi: 'Hãy tham gia cùng chúng tôi với toàn thế giới qua Zoom trong các sự kiện sắp tới để truyền cảm hứng, kết nối và phát triển đức tin trong tình yêu đời đời của Đức Chúa Jêsus Christ.' 
-                  })}
-                </p>
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={currentEvent.id || currentEventIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative z-10 flex flex-col h-full"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="px-3 py-1 bg-church-red text-white text-[10px] font-bold uppercase tracking-widest rounded-md">
+                      {t({ en: 'Events', vi: 'Sự Kiện' })}
+                    </span>
+                    {currentEvent.startDate && (
+                      <span className="text-xs text-church-red font-bold uppercase tracking-widest flex items-center gap-1">
+                        <Calendar size={14} /> {formatEventDate(currentEvent.startDate)}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <h3 className="text-2xl md:text-3xl font-serif font-bold mb-4 line-clamp-2">
+                    {t(currentEvent.title)}
+                  </h3>
+                  <p className="text-slate-500 mb-8 leading-relaxed line-clamp-3">
+                    {t(currentEvent.desc)}
+                  </p>
 
-                <div className="aspect-video rounded-2xl overflow-hidden mb-8 bg-slate-100">
-                  <img 
-                    src="/images/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg" 
-                    alt="Event" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
+                  <div className="aspect-video rounded-2xl overflow-hidden mb-8 bg-slate-100 flex-shrink-0 relative">
+                    <img 
+                      src={currentEvent.posterUrl || "/images/5E0DCA19-8208-4D97-846F-ACCE88B80112-1024x768.jpg"} 
+                      alt="Event" 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      referrerPolicy="no-referrer"
+                    />
+                    {currentEvent.location && currentEvent.location.toLowerCase() !== 'tba' && (
+                      <div className="absolute bottom-4 left-4 right-4. bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl text-xs font-bold text-slate-800 flex items-center gap-2 w-max max-w-full truncate shadow-sm">
+                        <MapPin size={14} className="text-church-red shrink-0" />
+                        <span className="truncate">{currentEvent.location}</span>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
 
+              <div className="relative z-10 mt-auto pt-4">
                 <Link
                   to="/events"
                   className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-church-red transition-all flex items-center justify-center gap-2 shadow-lg"
@@ -109,6 +176,19 @@ export const Home: React.FC = () => {
                   {t({ en: 'View More', vi: 'Tìm Hiểu Thêm' })}
                   <ArrowRight size={20} />
                 </Link>
+                
+                {allEvents.length > 1 && (
+                  <div className="flex justify-center gap-2 mt-6">
+                    {allEvents.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentEventIndex(idx)}
+                        className={`w-2 h-2 rounded-full transition-all ${idx === currentEventIndex ? 'bg-church-red w-6' : 'bg-slate-200 hover:bg-slate-300'}`}
+                        aria-label={`Go to event ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
