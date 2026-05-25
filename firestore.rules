@@ -125,6 +125,46 @@ service cloud.firestore {
              data.timestamp is number;
     }
 
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['uid', 'email', 'displayName', 'photoURL', 'role', 'createdAt']) &&
+             isValidString('uid', 1, 200) &&
+             isValidString('email', 1, 200) &&
+             isValidString('displayName', 1, 200) &&
+             isValidOptionalString('photoURL', 0, 2000) &&
+             isValidString('role', 1, 50) &&
+             isValidString('createdAt', 1, 100);
+    }
+
+    function isValidShift(data) {
+      return hasOnlyAllowedFields(['name', 'dayOfWeek', 'startTime', 'durationHours', 'expectedVolunteers']) &&
+             isValidString('name', 1, 100) &&
+             data.dayOfWeek is number && data.dayOfWeek >= 0 && data.dayOfWeek <= 6 &&
+             isValidString('startTime', 1, 20) &&
+             data.durationHours is number && data.durationHours > 0 &&
+             data.expectedVolunteers is number && data.expectedVolunteers >= 0;
+    }
+
+    function isValidShiftRegistration(data) {
+      return hasOnlyAllowedFields(['shiftId', 'userId', 'userName', 'userEmail', 'date', 'status', 'timestamp']) &&
+             isValidString('shiftId', 1, 200) &&
+             isValidString('userId', 1, 200) &&
+             isValidString('userName', 1, 200) &&
+             isValidString('userEmail', 1, 200) &&
+             isValidString('date', 1, 50) &&
+             isValidString('status', 1, 50) && // We can allow Timestamp type or number, let's just bypass timestamp strict type check inside fields for now if it's serverTimestamp.
+             (data.timestamp is number || data.timestamp is timestamp || data.timestamp == null);
+    }
+
+    function isValidWorshipSchedule(data) {
+      return hasOnlyAllowedFields(['userId', 'userName', 'startTimeUTC', 'timezone', 'durationHours', 'timestamp']) &&
+             isValidString('userId', 1, 200) &&
+             isValidString('userName', 1, 200) &&
+             data.startTimeUTC is number &&
+             isValidString('timezone', 1, 100) &&
+             data.durationHours is number && data.durationHours > 0 &&
+             (data.timestamp is number || data.timestamp is timestamp || data.timestamp == null);
+    }
+
     match /prayers/{prayerId} {
       // Publicly readable as this is a public prayer wall
       allow read: if true;
@@ -179,5 +219,32 @@ service cloud.firestore {
       // Only admin can update/delete
       allow update, delete: if isAdmin();
     }
+
+    match /users/{userId} {
+      allow read: if true; // Allows anyone to read profiles (or we could limit to authed)
+      allow create: if request.auth != null && request.auth.uid == userId && isValidUser(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    match /shifts/{shiftId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && (request.method == 'delete' || isValidShift(request.resource.data));
+    }
+
+    match /shiftRegistrations/{registrationId} {
+      allow read: if true;
+      allow create: if request.auth != null && isValidShiftRegistration(request.resource.data);
+      allow update: if isAdmin();
+      allow delete: if request.auth != null && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    match /worshipSchedule/{scheduleId} {
+      allow read: if true;
+      allow create: if request.auth != null && isValidWorshipSchedule(request.resource.data);
+      allow update: if request.auth != null && (isAdmin() || resource.data.userId == request.auth.uid) && isValidWorshipSchedule(request.resource.data);
+      allow delete: if request.auth != null && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
   }
 }
+

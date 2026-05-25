@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, Globe, ChevronDown, MessageSquare } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import { NAV_ITEMS } from '../constants/content';
 import { cn } from '../lib/utils';
 
@@ -11,7 +12,10 @@ export const Header: React.FC = () => {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const { isAdmin } = useAuth();
   const location = useLocation();
+
+  const activeNavItems = NAV_ITEMS;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -70,7 +74,7 @@ export const Header: React.FC = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {NAV_ITEMS.map((item) => (
+          {activeNavItems.map((item) => (
             <div key={item.href} className="relative group">
               <Link
                 to={item.href}
@@ -192,7 +196,7 @@ export const Header: React.FC = () => {
             className="absolute top-full left-0 right-0 bg-white/100 backdrop-blur-md border-t border-white/20 p-6 md:hidden shadow-2xl"
           >
             <div className="flex flex-col gap-4">
-              {NAV_ITEMS.map((item) => (
+              {activeNavItems.map((item) => (
                 <div key={item.href} className="flex flex-col gap-2">
                   <Link
                     to={item.href}

@@ -88,6 +88,48 @@
         "timestamp": { "type": "number", "description": "Timestamp of creation." }
       },
       "required": ["title", "desc", "startDate", "endDate", "location", "timestamp"]
+    },
+    "User": {
+      "title": "User",
+      "description": "A user profile.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "displayName", "photoURL", "role", "createdAt"]
+    },
+    "Shift": {
+      "title": "Shift",
+      "description": "A scheduled shift template.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "dayOfWeek": { "type": "number" },
+        "startTime": { "type": "string" },
+        "durationHours": { "type": "number" },
+        "expectedVolunteers": { "type": "number" }
+      },
+      "required": ["name", "dayOfWeek", "startTime", "durationHours", "expectedVolunteers"]
+    },
+    "ShiftRegistration": {
+      "title": "ShiftRegistration",
+      "description": "A registration for a shift.",
+      "type": "object",
+      "properties": {
+        "shiftId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "date": { "type": "string" },
+        "status": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["shiftId", "userId", "userName", "userEmail", "date", "status"]
     }
   },
   "firestore": {
@@ -110,6 +152,18 @@
     "/events/{eventId}": {
       "schema": { "$ref": "Event" },
       "description": "Collection of events and announcements."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "User" },
+      "description": "Collection of user profiles."
+    },
+    "/shifts/{shiftId}": {
+      "schema": { "$ref": "Shift" },
+      "description": "Collection of scheduled shifts."
+    },
+    "/shiftRegistrations/{registrationId}": {
+      "schema": { "$ref": "ShiftRegistration" },
+      "description": "Collection of shift registrations."
     }
   }
 }
