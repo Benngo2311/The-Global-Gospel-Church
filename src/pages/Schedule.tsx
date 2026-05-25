@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, addDoc, updateDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SEO } from '../components/SEO';
-import { Globe, Clock, ChevronLeft, ChevronRight, LogIn, UserCircle, LogOut, Calendar as CalendarIcon, Trash2, Plus, X, Edit2, Printer } from 'lucide-react';
+import { Globe, ChevronLeft, ChevronRight, LogIn, UserCircle, LogOut, Calendar as CalendarIcon, Trash2, Plus, X, Edit2, Printer } from 'lucide-react';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
 const TIMEZONES = [
@@ -21,30 +21,23 @@ const TIMEZONES = [
   { value: 'Australia/Sydney', label: 'Sydney' }
 ].filter((v, i, a) => a.findIndex(t => t.value === v.value) === i);
 
-// Reliable robust computation of UTC midnight matching the selected timezone's local day boundary
-const getMidnightOfZoneUTC = (date: Date, timeZone: string) => {
-  const dateStr = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' }).format(date);
+const VN_OFFSET_MS = 7 * 3600 * 1000;
+
+// Gets the UTC timestamp corresponding to 00:00 Vietnam time of a given date
+const getVietnamMidnightUTC = (date: Date) => {
+  const dateStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: 'numeric', day: 'numeric' }).format(date);
   const [m, d, y] = dateStr.split('/');
-  
-  const dObj = new Date();
-  dObj.setUTCFullYear(Number(y), Number(m) - 1, Number(d));
-  dObj.setUTCHours(12, 0, 0, 0); // Noon UTC to avoid edge cases
-  
-  // Get timezone offset in hours and minutes
-  const parts = new Intl.DateTimeFormat('en-US', { 
-    timeZone, timeZoneName: 'longOffset' 
-  }).formatToParts(dObj);
-  
-  const offsetPart = parts.find(p => p.type === 'timeZoneName')?.value || 'GMT+00:00';
-  
-  let offsetMs = 0;
-  if (offsetPart.includes('+') || offsetPart.includes('-')) {
-    const isNegative = offsetPart.includes('-');
-    const [hours, mins] = offsetPart.split(/[+-]/)[1].split(':').map(Number);
-    offsetMs = (hours * 3600000 + (mins || 0) * 60000) * (isNegative ? -1 : 1);
-  }
-  
-  return Date.UTC(Number(y), Number(m) - 1, Number(d), 0, 0, 0) - offsetMs;
+  return Date.UTC(Number(y), Number(m) - 1, Number(d)) - VN_OFFSET_MS;
+};
+
+// Gets the UTC timestamp corresponding to Monday 00:00 Vietnam time of the week containing the given date
+const getVietnamMondayZeroUTC = (date: Date) => {
+  const dateStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short' }).format(date);
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayOfWeek = days.indexOf(dateStr);
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const midnightUTC = getVietnamMidnightUTC(date);
+  return midnightUTC + (diffToMonday * 24 * 3600 * 1000);
 };
 
 export const Schedule: React.FC = () => {
@@ -52,45 +45,24 @@ export const Schedule: React.FC = () => {
   const { currentUser, userProfile, isAdmin } = useAuth();
   
   const [schedules, setSchedules] = useState<any[]>([]);
-  const [offsetDays, setOffsetDays] = useState(0);
+  const [offsetWeeks, setOffsetWeeks] = useState(0);
   const [selectedTimezone, setSelectedTimezone] = useState(TIMEZONES[0].value);
   const [use24h, setUse24h] = useState(false);
   
   // Book Form
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newBooking, setNewBooking] = useState({ name: '', hour: 12, minute: 0, ampm: 'PM', durationHours: 1 });
+  const [newBooking, setNewBooking] = useState({ 
+    name: '', 
+    selectedDays: [] as string[], // array of "YYYY-MM-DD" in selected timezone
+    hour: 12, 
+    minute: 0, 
+    ampm: 'PM', 
+    durationHours: 1 
+  });
   const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null);
-
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!scrollContainerRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
-    setScrollLeft(scrollContainerRef.current.scrollLeft);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollContainerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-  };
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Only subscribe to worshipSchedule
     const unsub = onSnapshot(query(collection(db, 'worshipSchedule')), (snap) => {
       setSchedules(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     });
@@ -110,49 +82,55 @@ export const Schedule: React.FC = () => {
     await signOut(auth);
   };
 
-  // 1. Calculate the target day in Selected Timezone
+  // 1. Calculate the current week in Vietnam Time
   const now = new Date();
-  const todayMidnightUTC = getMidnightOfZoneUTC(now, selectedTimezone);
-  const dayStartUTC = todayMidnightUTC + offsetDays * 24 * 3600 * 1000;
-  const dayEndUTC = dayStartUTC + 24 * 3600 * 1000;
-
-  const displayDate = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(new Date(dayStartUTC + 12*3600*1000));
-
-  // 2. Filter schedules for the current day
-  const dailyInstances = schedules.filter(s => {
-    const end = s.startTimeUTC + s.durationHours * 3600 * 1000;
-    return end > dayStartUTC && s.startTimeUTC < dayEndUTC;
+  const currentViewMondayUTC = getVietnamMondayZeroUTC(now) + offsetWeeks * 7 * 24 * 3600 * 1000;
+  
+  const weekDaysUTC = Array.from({length: 7}).map((_, i) => currentViewMondayUTC + i * 24 * 3600 * 1000);
+  
+  const displayDates = weekDaysUTC.map(ts => {
+    return new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(ts));
   });
 
-  // Group by userName
-  const groupedUsers: Record<string, any[]> = {};
-  dailyInstances.forEach(s => {
-    if (!groupedUsers[s.userName]) groupedUsers[s.userName] = [];
-    groupedUsers[s.userName].push({
-      ...s,
-      instanceEnd: s.startTimeUTC + s.durationHours * 3600 * 1000
+  const displayWeekLabel = `${displayDates[0]} - ${displayDates[6]}`;
+
+  // Form helpers
+  // Generate date options for the booking form based on the current week view but localized to the user
+  const formDateOptions = weekDaysUTC.map(ts => {
+    const dt = new Date(ts + 12*3600*1000); // sample midday in VN
+    const localDateStr = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, year: 'numeric', month: 'numeric', day: 'numeric' }).format(dt);
+    const [m, d, y] = localDateStr.split('/');
+    const dateKey = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+    const displayStr = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, weekday: 'long', month: 'short', day: 'numeric' }).format(dt);
+    return { key: dateKey, label: displayStr };
+  });
+
+  const getLocalTimeStr = (ts: number, tz: string) => {
+    return new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: !use24h }).format(new Date(ts)).toLowerCase();
+  };
+
+  const openFormForNewBooking = () => {
+    setEditingScheduleId(null);
+    setNewBooking({
+      name: '',
+      selectedDays: [formDateOptions[0].key],
+      hour: 12,
+      minute: 0,
+      ampm: 'PM',
+      durationHours: 1
     });
-  });
-
-  const sortedUserNames = Object.keys(groupedUsers).sort((a, b) => {
-    const minA = Math.min(...groupedUsers[a].map(s => s.startTimeUTC));
-    const minB = Math.min(...groupedUsers[b].map(s => s.startTimeUTC));
-    return minA - minB;
-  });
-
-  const allSessionsFlat = Object.values(groupedUsers).flat().sort((a, b) => a.startTimeUTC - b.startTimeUTC);
-
-  const getLocalTimeStr = (ts: number) => {
-    return new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, hour: 'numeric', minute: '2-digit', hour12: !use24h }).format(new Date(ts)).toLowerCase();
+    setShowAddForm(true);
   };
 
   const openEditForm = (session: any, e: React.MouseEvent) => {
     e.stopPropagation();
     
-    // Get formatted hour and minute in the currently selected timezone
     const date = new Date(session.startTimeUTC);
-    const hourStr = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, hour: 'numeric', hourCycle: 'h23' }).format(date);
-    const minuteStr = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, minute: 'numeric' }).format(date);
+    const tz = session.timezone || selectedTimezone;
+    
+    // Get formatted hour and minute in their original timezone
+    const hourStr = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hourCycle: 'h23' }).format(date);
+    const minuteStr = new Intl.DateTimeFormat('en-US', { timeZone: tz, minute: 'numeric' }).format(date);
     
     let editHour = Number(hourStr);
     let editMinute = Number(minuteStr) || 0;
@@ -167,8 +145,15 @@ export const Schedule: React.FC = () => {
       }
     }
 
+    const localDateStr = new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: 'numeric', day: 'numeric' }).format(date);
+    const [m, d, y] = localDateStr.split('/');
+    const dateKey = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+
+    setSelectedTimezone(tz);
+
     setNewBooking({
       name: session.userName || '',
+      selectedDays: [dateKey],
       hour: editHour,
       minute: editMinute,
       ampm: ampm,
@@ -178,33 +163,56 @@ export const Schedule: React.FC = () => {
     setShowAddForm(true);
   };
 
-  const deleteSchedule = async (scheduleId: string, event: React.MouseEvent) => {
+  const deleteSchedule = (scheduleId: string, event: React.MouseEvent) => {
     event.stopPropagation();
-    if (confirm("Are you sure you want to cancel this booking?")) {
-      await deleteDoc(doc(db, 'worshipSchedule', scheduleId));
+    setDeletingId(scheduleId);
+  };
+
+  const parseBookingDateKey = (dateKey: string, hour: number, minute: number, ampm: string, use24: boolean, tz: string) => {
+    const [y, m, d] = dateKey.split('-');
+    
+    let hh = hour;
+    if (!use24) {
+      if (ampm === 'PM' && hh !== 12) hh += 12;
+      if (ampm === 'AM' && hh === 12) hh = 0;
     }
+
+    // Getting the timezone offset exactly for this target date in the target timezone
+    const dObj = new Date();
+    dObj.setUTCFullYear(Number(y), Number(m) - 1, Number(d));
+    dObj.setUTCHours(12, 0, 0, 0); // Noon UTC to avoid edge cases
+    
+    const parts = new Intl.DateTimeFormat('en-US', { 
+      timeZone: tz, timeZoneName: 'longOffset' 
+    }).formatToParts(dObj);
+    
+    const offsetPart = parts.find(p => p.type === 'timeZoneName')?.value || 'GMT+00:00';
+    
+    let offsetMs = 0;
+    if (offsetPart.includes('+') || offsetPart.includes('-')) {
+      const isNegative = offsetPart.includes('-');
+      const [hours, mins] = offsetPart.split(/[+-]/)[1].split(':').map(Number);
+      offsetMs = (hours * 3600000 + (mins || 0) * 60000) * (isNegative ? -1 : 1);
+    }
+    
+    return Date.UTC(Number(y), Number(m) - 1, Number(d), hh, minute, 0) - offsetMs;
   };
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser || !userProfile) return;
-    
-    // Calculate startTimeUTC from selected time + current day
-    let hh = newBooking.hour;
-    if (!use24h) {
-      if (newBooking.ampm === 'PM' && hh !== 12) hh += 12;
-      if (newBooking.ampm === 'AM' && hh === 12) hh = 0;
+    if (newBooking.selectedDays.length === 0) {
+      alert("Please select at least one day.");
+      return;
     }
-    const mm = newBooking.minute;
-
-    // This assumes the user is booking for the currently viewed display day!
-    // We already have `dayStartUTC` which is midnight in the selected timezone.
-    // So the timestamp is just `dayStartUTC + hh hours + mm minutes`
-    const startTimeUTC = dayStartUTC + (hh * 3600 * 1000) + (mm * 60 * 1000);
 
     const worshipperName = newBooking.name.trim() !== '' ? newBooking.name : userProfile.displayName;
 
     if (editingScheduleId) {
+      // If editing, we ignore multiple days and only update the first selected one, or we could delete and recreate.
+      // Assuming editing just updates the single document.
+      const startTimeUTC = parseBookingDateKey(newBooking.selectedDays[0], newBooking.hour, newBooking.minute, newBooking.ampm, use24h, selectedTimezone);
+      
       await updateDoc(doc(db, 'worshipSchedule', editingScheduleId), {
         userName: worshipperName,
         startTimeUTC,
@@ -212,17 +220,30 @@ export const Schedule: React.FC = () => {
         timezone: selectedTimezone,
       });
     } else {
-      await addDoc(collection(db, 'worshipSchedule'), {
-        userId: currentUser.uid,
-        userName: worshipperName,
-        startTimeUTC,
-        durationHours: newBooking.durationHours,
-        timezone: selectedTimezone,
-        timestamp: serverTimestamp()
-      });
+      // create multiple entries for each day
+      for (const dateKey of newBooking.selectedDays) {
+        const startTimeUTC = parseBookingDateKey(dateKey, newBooking.hour, newBooking.minute, newBooking.ampm, use24h, selectedTimezone);
+        
+        await addDoc(collection(db, 'worshipSchedule'), {
+          userId: currentUser.uid,
+          userName: worshipperName,
+          startTimeUTC,
+          durationHours: newBooking.durationHours,
+          timezone: selectedTimezone,
+          timestamp: serverTimestamp()
+        });
+      }
     }
     
     setShowAddForm(false);
+  };
+
+  const toggleDaySelection = (key: string) => {
+    if (newBooking.selectedDays.includes(key)) {
+      setNewBooking({...newBooking, selectedDays: newBooking.selectedDays.filter(d => d !== key)});
+    } else {
+      setNewBooking({...newBooking, selectedDays: [...newBooking.selectedDays, key]});
+    }
   };
 
   return (
@@ -242,7 +263,7 @@ export const Schedule: React.FC = () => {
             </h1>
             <p className="text-slate-500 flex items-center gap-2">
               <Globe size={16} /> 
-              View and register your worship sessions.
+              View and register your worship sessions. (Currently showing Vietnam Time)
             </p>
           </div>
           
@@ -268,17 +289,17 @@ export const Schedule: React.FC = () => {
 
         {/* Timeline Controls */}
         <div className="flex flex-wrap items-center gap-4 mb-6 relative z-30">
-          <h2 className="text-xl font-bold text-slate-800 w-auto min-w-[200px]">{displayDate}</h2>
+          <h2 className="text-xl font-bold text-slate-800 w-auto min-w-[250px]">{displayWeekLabel}</h2>
           
           <div className="flex border border-slate-200 bg-white rounded-lg overflow-hidden shadow-sm">
-            <button onClick={() => setOffsetDays(0)} className="px-4 py-2 text-sm font-medium hover:bg-slate-50 border-r border-slate-200">
+            <button onClick={() => setOffsetWeeks(0)} className="px-4 py-2 text-sm font-medium hover:bg-slate-50 border-r border-slate-200">
               <CalendarIcon size={16} className="inline mr-2" />
-              Today
+              This Week
             </button>
-            <button onClick={() => setOffsetDays(o => o - 1)} className="px-3 py-2 hover:bg-slate-50 border-r border-slate-200">
+            <button onClick={() => setOffsetWeeks(o => o - 1)} className="px-3 py-2 hover:bg-slate-50 border-r border-slate-200">
               <ChevronLeft size={18} />
             </button>
-            <button onClick={() => setOffsetDays(o => o + 1)} className="px-3 py-2 hover:bg-slate-50">
+            <button onClick={() => setOffsetWeeks(o => o + 1)} className="px-3 py-2 hover:bg-slate-50">
               <ChevronRight size={18} />
             </button>
           </div>
@@ -288,16 +309,6 @@ export const Schedule: React.FC = () => {
               <button onClick={() => setUse24h(false)} className={`px-2 py-1 text-[10px] font-bold rounded-md ${!use24h ? 'bg-white shadow text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}>12h</button>
               <button onClick={() => setUse24h(true)} className={`px-2 py-1 text-[10px] font-bold rounded-md ${use24h ? 'bg-white shadow text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}>24h</button>
             </div>
-            <label className="text-xs font-bold text-slate-500 uppercase">Timezone</label>
-            <select 
-              value={selectedTimezone} 
-              onChange={e => setSelectedTimezone(e.target.value)}
-              className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 shadow-sm outline-none focus:border-church-red"
-            >
-              {TIMEZONES.map(tz => (
-                <option key={tz.value} value={tz.value}>{tz.label}</option>
-              ))}
-            </select>
           </div>
 
           <div className="flex items-center gap-4 ml-auto text-xs font-bold uppercase tracking-wider text-slate-500">
@@ -309,157 +320,160 @@ export const Schedule: React.FC = () => {
             </button>
             {currentUser && (
               <button 
-                onClick={() => {
-                   setEditingScheduleId(null);
-                   setNewBooking({ name: '', hour: 12, minute: 0, ampm: 'PM', durationHours: 1 });
-                   setShowAddForm(true);
-                }} 
+                onClick={openFormForNewBooking} 
                 className="flex items-center gap-1 bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-church-red transition-colors mr-2"
               >
                 <Plus size={14} /> Book Time
               </button>
             )}
-            <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-green-500 block"></span> Worshipper</span>
-            <span className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-orange-500 block"></span> Your Booking</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-500 block"></span> Booked</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-orange-500 block"></span> Yours</span>
           </div>
         </div>
 
-        {/* Timeline Container */}
-        <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-          <div 
-            ref={scrollContainerRef}
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            className={`overflow-x-auto flex-1 flex flex-col custom-scrollbar ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
-          >
-            <div className={`min-w-[2400px] flex-1 flex flex-col ${isDragging ? 'pointer-events-none' : ''}`}>
+        {/* Weekly Grid */}
+        <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex min-h-[700px]">
+          
+          {/* Time scale column */}
+          <div className="w-20 shrink-0 border-r border-slate-200 bg-slate-50 flex flex-col relative z-20">
+            <div className="h-14 border-b border-slate-200 bg-slate-50 sticky top-0 md:h-12 flex items-center justify-center">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">GMT+7</span>
+            </div>
+            <div className="flex-1 relative">
+              {Array.from({length: 24}).map((_, i) => (
+                <div key={i} className="absolute w-full border-b border-slate-200/50 flex items-start justify-center pr-2 pt-1 z-10" style={{ top: `${(i / 24) * 100}%`, height: `${100/24}%` }}>
+                  <span className="text-[11px] font-bold text-slate-400 relative -top-3">
+                    {use24h ? `${String(i).padStart(2, '0')}:00` : (i === 0 ? '12 AM' : i === 12 ? '12 PM' : i < 12 ? `${i} AM` : `${i-12} PM`)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Days Columns */}
+          <div className="flex-1 flex overflow-x-auto custom-scrollbar relative z-10">
+            {weekDaysUTC.map((dayStartUTC, i) => {
+              const dayEndUTC = dayStartUTC + 24 * 3600 * 1000;
+              const dateName = displayDates[i];
               
-              {/* Header Row */}
-              <div className="flex bg-slate-50 border-b border-slate-200 sticky top-0 z-20">
-                <div className="w-[280px] shrink-0 border-r border-slate-200 p-3 font-bold text-slate-700 font-serif flex items-center bg-slate-50 sticky left-0 z-30">
-                  Worshipper
-                </div>
-                <div className="flex-1 relative h-12">
-                  {Array.from({length: 25}).map((_, i) => (
-                    <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-end pb-2" style={{ left: `${(i / 24) * 100}%` }}>
-                      <div className="absolute top-0 bottom-0 border-l border-slate-200" />
-                      <span className="text-[10px] font-bold text-slate-400 px-1 -translate-x-1/2 relative bg-slate-50 z-10 whitespace-nowrap">
-                        {use24h ? `${String(i % 24).padStart(2, '0')}:00` : (i === 0 || i === 24 ? '12:00am' : i === 12 ? '12:00pm' : i < 12 ? `${i}:00am` : `${i-12}:00pm`)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              // Filter sessions for this day
+              const daySessions = schedules.filter(s => {
+                const sEnd = s.startTimeUTC + s.durationHours * 3600 * 1000;
+                return sEnd > dayStartUTC && s.startTimeUTC < dayEndUTC;
+              });
 
-              {/* Rows */}
-              <div className="flex-1 overflow-y-auto relative pb-12">
-                {sortedUserNames.length === 0 ? (
-                  <div className="p-12 text-center text-slate-400 italic">No worship scheduled for this day yet.</div>
-                ) : (
-                  sortedUserNames.map(userName => {
-                    const userSessions = groupedUsers[userName];
+              return (
+                <div key={dayStartUTC} className="flex-1 min-w-[140px] relative border-r border-slate-200 last:border-r-0 flex flex-col">
+                  {/* Day header */}
+                  <div className="h-14 border-b border-slate-200 bg-slate-50 sticky top-0 flex flex-col items-center justify-center px-2 z-20 md:h-12 md:flex-row md:gap-2">
+                    <span className="font-bold text-slate-700 text-sm whitespace-nowrap">{dateName.split(',')[0]}</span>
+                    <span className="text-xs font-semibold text-slate-500 whitespace-nowrap">{dateName.split(',')[1]}</span>
+                  </div>
+                  
+                  {/* Day grid */}
+                  <div className="flex-1 relative bg-white">
+                    {/* Hour Lines */}
+                    {Array.from({length: 24}).map((_, j) => (
+                      <div key={j} className="absolute w-full border-b border-slate-100 left-0 right-0 pointer-events-none" style={{ top: `${(j / 24) * 100}%`, height: `${100/24}%` }} />
+                    ))}
                     
-                    return (
-                      <div key={userName} className="flex border-b border-slate-100 group hover:bg-slate-50/50 min-h-[60px]">
-                        {/* Worshipper Name */}
-                        <div className="w-[280px] shrink-0 border-r border-slate-200 p-3 bg-white group-hover:bg-slate-50/50 sticky left-0 z-10 flex flex-col justify-center">
-                          <span className="font-bold text-slate-800 text-sm flex items-center gap-2">
-                            {userName}
-                          </span>
-                        </div>
+                    {/* Events */}
+                    {daySessions.map(session => {
+                      const sessionEndUTC = session.startTimeUTC + session.durationHours * 3600 * 1000;
+                      
+                      const visibleStart = Math.max(dayStartUTC, session.startTimeUTC);
+                      const visibleEnd = Math.min(dayEndUTC, sessionEndUTC);
+                      
+                      const startOffset = visibleStart - dayStartUTC;
+                      const duration = visibleEnd - visibleStart;
+                      
+                      const topPercent = (startOffset / (24 * 3600 * 1000)) * 100;
+                      const heightPercent = (duration / (24 * 3600 * 1000)) * 100;
+                      
+                      const isPast = sessionEndUTC < Date.now();
+                      const isMine = session.userId === currentUser?.uid;
+                      const canEdit = isMine || isAdmin;
+                      
+                      let colorClass = "bg-green-100 border-green-200 text-green-800";
+                      if (isPast) {
+                        colorClass = "bg-slate-100 border-slate-200 text-slate-600";
+                      } else if (isMine) {
+                        colorClass = "bg-orange-100 border-orange-300 text-orange-900";
+                      }
 
-                        {/* Timeline Track */}
-                        <div className="flex-1 relative bg-slate-50/30">
-                          {/* Grid Background */}
-                          <div className="absolute inset-0 pointer-events-none">
-                            {Array.from({length: 25}).map((_, i) => (
-                              <div key={i} className="absolute top-0 bottom-0 border-l border-slate-100/80" style={{ left: `${(i / 24) * 100}%` }} />
-                            ))}
+                      const localTimeStrStart = getLocalTimeStr(session.startTimeUTC, session.timezone || TIMEZONES[0].value);
+                      const localTimeStrEnd = getLocalTimeStr(sessionEndUTC, session.timezone || TIMEZONES[0].value);
+
+                      return (
+                        <div 
+                          key={session.id + i}
+                          className={`absolute left-1 right-1 rounded border shadow-sm px-2 py-1.5 overflow-hidden group/block ${colorClass}`}
+                          style={{ top: `${topPercent}%`, height: `calc(${heightPercent}% - 4px)`, minHeight: '36px' }}
+                        >
+                          <div className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 flex gap-1 z-10 bg-white/80 rounded backdrop-blur-sm shadow-sm border border-slate-200/50">
+                            {canEdit && (
+                              <>
+                                <button 
+                                  onClick={(e) => openEditForm(session, e)}
+                                  className="p-1 hover:bg-slate-100 rounded-l cursor-pointer"
+                                  title="Edit"
+                                >
+                                  <Edit2 size={12} className="text-slate-600" />
+                                </button>
+                                <button 
+                                  onClick={(e) => deleteSchedule(session.id, e)}
+                                  className="p-1 hover:bg-slate-100 rounded-r cursor-pointer"
+                                  title="Cancel"
+                                >
+                                  <Trash2 size={12} className="text-red-500" />
+                                </button>
+                              </>
+                            )}
                           </div>
                           
-                          {/* Event Blocks for this User */}
-                          {userSessions.map(session => {
-                            const startHour = (session.startTimeUTC - dayStartUTC) / (3600 * 1000);
-                            const endHour = (session.instanceEnd - dayStartUTC) / (3600 * 1000);
-                            
-                            const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
-                            const cStart = clamp(startHour, 0, 24);
-                            const cEnd = clamp(endHour, 0, 24);
-                            
-                            const leftPercent = (cStart / 24) * 100;
-                            const widthPercent = ((cEnd - cStart) / 24) * 100;
-
-                            const isPast = session.instanceEnd < Date.now();
-                            const isMine = session.userId === currentUser?.uid;
-                            const canEdit = isMine || isAdmin;
-
-                            let colorClass = "bg-green-500 text-white shadow-sm";
-                            if (isPast) {
-                              colorClass = "bg-slate-200 text-slate-500";
-                            } else if (isMine) {
-                              colorClass = "bg-orange-500 text-white shadow-sm";
-                            }
-
-                            if (widthPercent === 0) return null;
-
-                            return (
-                              <div 
-                                key={session.id}
-                                className={`absolute top-1.5 bottom-1.5 rounded-md px-2.5 transition-all flex flex-col justify-center ${colorClass} group/block`}
-                                style={{ left: `${leftPercent}%`, width: `${widthPercent}%`, minWidth: 'max-content' }}
-                                title={`${getLocalTimeStr(session.startTimeUTC)} - ${getLocalTimeStr(session.instanceEnd)}`}
-                              >
-                                <div className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 flex gap-1 bg-black/20 rounded z-10 backdrop-blur-sm">
-                                  {canEdit && (
-                                    <>
-                                      <button 
-                                        onClick={(e) => openEditForm(session, e)}
-                                        className="p-1 hover:bg-black/20 rounded-l text-white"
-                                      >
-                                        <Edit2 size={12} />
-                                      </button>
-                                      <button 
-                                        onClick={(e) => deleteSchedule(session.id, e)}
-                                        className="p-1 hover:bg-black/20 rounded-r text-white"
-                                      >
-                                        <Trash2 size={12} />
-                                      </button>
-                                    </>
-                                  )}
-                                </div>
-                                <div className="text-[10px] font-bold leading-tight whitespace-nowrap overflow-visible z-20 pointer-events-none drop-shadow-md">
-                                  {getLocalTimeStr(session.startTimeUTC)} - {getLocalTimeStr(session.instanceEnd)}
-                                </div>
-                              </div>
-                            );
-                          })}
+                          <div className="text-xs font-bold whitespace-nowrap overflow-hidden text-ellipsis mb-0.5">
+                            {session.userName}
+                          </div>
+                          <div className="text-[10px] opacity-80 font-medium leading-tight">
+                            {localTimeStrStart} - {localTimeStrEnd}
+                            <br />
+                            <span className="uppercase">{TIMEZONES.find(t => t.value === session.timezone)?.label.split(' ')[0] || session.timezone}</span>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Modal form */}
         {showAddForm && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
-              <button onClick={() => setShowAddForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+              <button type="button" onClick={() => setShowAddForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer">
                 <X size={20} />
               </button>
               <h3 className="font-bold text-xl mb-4 text-slate-900">{editingScheduleId ? 'Edit Worship Time' : 'Book Worship Time'}</h3>
-              <p className="text-xs text-slate-500 mb-6 border-b border-slate-100 pb-4">
-                Booking for <strong>{displayDate}</strong>.
-              </p>
               
-              <form onSubmit={handleAddSubmit} className="space-y-4">
+              <form onSubmit={handleAddSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Worshipper Name (Optional)</label>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Your Timezone</label>
+                  <select 
+                    value={selectedTimezone} 
+                    onChange={e => setSelectedTimezone(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 shadow-sm outline-none focus:border-church-red"
+                  >
+                    {TIMEZONES.map(tz => (
+                      <option key={tz.value} value={tz.value}>{tz.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">Worshipper Name</label>
                   <input 
                     type="text" 
                     placeholder={userProfile?.displayName || "Enter your name"}
@@ -468,59 +482,106 @@ export const Schedule: React.FC = () => {
                     className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
                   />
                 </div>
+                
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Start Time ({TIMEZONES.find(t => t.value === selectedTimezone)?.label || 'Selected Time'})</label>
-                  <div className="flex gap-2">
-                    <select 
-                      value={newBooking.hour} 
-                      onChange={e => setNewBooking({...newBooking, hour: Number(e.target.value)})} 
-                      className="px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red flex-1 font-medium"
-                    >
-                      {use24h 
-                        ? Array.from({length: 24}).map((_, i) => <option key={i} value={i}>{String(i).padStart(2, '0')}</option>)
-                        : Array.from({length: 12}).map((_, i) => <option key={i} value={i === 0 ? 12 : i}>{i === 0 ? 12 : i}</option>)
-                      }
-                    </select>
-                    <span className="font-bold text-slate-400 self-center">:</span>
-                    <select 
-                      value={newBooking.minute} 
-                      onChange={e => setNewBooking({...newBooking, minute: Number(e.target.value)})} 
-                      className="px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red flex-1 font-medium"
-                    >
-                      {[0, 15, 30, 45].map(i => <option key={i} value={i}>{String(i).padStart(2, '0')}</option>)}
-                    </select>
-                    {!use24h && (
-                      <select 
-                        value={newBooking.ampm} 
-                        onChange={e => setNewBooking({...newBooking, ampm: e.target.value})} 
-                        className="px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red flex-1 font-medium"
-                      >
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                      </select>
-                    )}
+                  <label className="block text-xs font-bold text-slate-500 mb-2">Days {editingScheduleId && '(Edit applies to current block)'}</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {formDateOptions.map(opt => (
+                      <label key={opt.key} className={`flex flex-col items-center justify-center p-2 rounded-lg border cursor-pointer transition-colors ${newBooking.selectedDays.includes(opt.key) ? 'bg-red-50 border-church-red/50 text-church-red' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'}`}>
+                        <input 
+                          type="checkbox" 
+                          className="hidden" 
+                          checked={newBooking.selectedDays.includes(opt.key)}
+                          onChange={() => toggleDaySelection(opt.key)}
+                        />
+                        <span className="text-xs font-bold">{opt.label.split(',')[0]}</span>
+                        <span className="text-[10px] opacity-80">{opt.label.split(',')[1]}</span>
+                      </label>
+                    ))}
                   </div>
-                  <p className="text-[10px] text-slate-400 mt-1.5 font-medium">
-                    Vietnam Time: {new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short', hour: 'numeric', minute: '2-digit', hour12: !use24h }).format(new Date(dayStartUTC + (use24h ? newBooking.hour : (newBooking.ampm === 'PM' && newBooking.hour !== 12 ? newBooking.hour + 12 : (newBooking.ampm === 'AM' && newBooking.hour === 12 ? 0 : newBooking.hour))) * 3600000 + newBooking.minute * 60000))}
-                  </p>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Duration (Hours)</label>
-                  <input 
-                    type="number" 
-                    min="1" 
-                    max="24" 
-                    value={newBooking.durationHours} 
-                    onChange={e => setNewBooking({...newBooking, durationHours: Number(e.target.value)})} 
-                    className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
-                    required 
-                  />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">Time (Local)</label>
+                    <div className="flex gap-1">
+                      <select 
+                        value={newBooking.hour} 
+                        onChange={e => setNewBooking({...newBooking, hour: Number(e.target.value)})} 
+                        className="px-2 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red flex-1 font-medium text-center"
+                      >
+                        {use24h 
+                          ? Array.from({length: 24}).map((_, i) => <option key={i} value={i}>{String(i).padStart(2, '0')}</option>)
+                          : Array.from({length: 12}).map((_, i) => <option key={i} value={i === 0 ? 12 : i}>{i === 0 ? 12 : i}</option>)
+                        }
+                      </select>
+                      <span className="font-bold text-slate-400 self-center">:</span>
+                      <select 
+                        value={newBooking.minute} 
+                        onChange={e => setNewBooking({...newBooking, minute: Number(e.target.value)})} 
+                        className="px-2 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red flex-1 font-medium text-center"
+                      >
+                        {[0, 15, 30, 45].map(i => <option key={i} value={i}>{String(i).padStart(2, '0')}</option>)}
+                      </select>
+                      {!use24h && (
+                        <select 
+                          value={newBooking.ampm} 
+                          onChange={e => setNewBooking({...newBooking, ampm: e.target.value})} 
+                          className="px-2 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red text-xs font-medium"
+                        >
+                          <option value="AM">AM</option>
+                          <option value="PM">PM</option>
+                        </select>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">Duration (Hours)</label>
+                    <input 
+                      type="number" 
+                      min="1" 
+                      max="24" 
+                      value={newBooking.durationHours} 
+                      onChange={e => setNewBooking({...newBooking, durationHours: Number(e.target.value)})} 
+                      className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red text-center font-medium" 
+                      required 
+                    />
+                  </div>
                 </div>
                 
-                <button type="submit" className="w-full bg-church-red text-white font-bold py-3 pt-4 rounded-xl hover:bg-red-800 transition-colors flex items-center justify-center gap-2 shadow-lg mt-6">
-                  <Plus size={18} /> {editingScheduleId ? 'Save Changes' : 'Confirm Booking'}
+                <button type="submit" className="w-full bg-church-red text-white font-bold py-3 rounded-xl hover:bg-red-800 transition-colors flex items-center justify-center gap-2 shadow-sm mt-2">
+                  <Plus size={18} /> {editingScheduleId ? 'Save Changes' : 'Confirm Bookings'}
                 </button>
               </form>
+            </div>
+          </div>
+        )}
+
+        {deletingId && (
+          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+              <h3 className="font-bold text-lg mb-2">Cancel Booking</h3>
+              <p className="text-slate-600 mb-6 font-medium text-sm">Are you sure you want to cancel this booking?</p>
+              <div className="flex gap-3 justify-end">
+                <button 
+                  onClick={() => setDeletingId(null)} 
+                  className="px-4 py-2 rounded-lg font-bold text-slate-500 hover:bg-slate-100"
+                >
+                  Keep It
+                </button>
+                <button 
+                  onClick={async () => {
+                    if (deletingId) {
+                      await deleteDoc(doc(db, 'worshipSchedule', deletingId));
+                      setDeletingId(null);
+                    }
+                  }} 
+                  className="px-4 py-2 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600"
+                >
+                  Cancel Booking
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -528,49 +589,66 @@ export const Schedule: React.FC = () => {
     </div>
 
     {/* Print Layout */}
-    <div className="hidden print:block bg-white text-black p-8 font-sans w-full max-w-4xl mx-auto">
-      <div className="text-center mb-8 pb-6 border-b-2 border-black">
-        <h1 className="text-3xl font-bold font-serif mb-2">Worship Schedule</h1>
-        <p className="text-lg text-gray-700 font-medium">{displayDate}</p>
-        <p className="text-sm text-gray-500 mt-1">Timezone: {TIMEZONES.find(t => t.value === selectedTimezone)?.label}</p>
+    <div className="hidden print:block bg-white text-black p-4 font-sans max-w-full">
+      <div className="text-center mb-6 pb-4 border-b-2 border-black">
+        <h1 className="text-2xl font-bold font-serif mb-1">Global Worship Schedule</h1>
+        <p className="text-lg font-medium">{displayWeekLabel}</p>
+        <p className="text-xs mt-1">Vietnam Time (UTC+7)</p>
       </div>
       
-      <table className="w-full border-collapse text-left">
+      {/* Printable Grid Table */}
+      <table className="w-full border-collapse border border-slate-300 text-xs text-left table-fixed">
         <thead>
-          <tr className="border-b-2 border-black">
-            <th className="py-3 px-2 font-bold uppercase text-xs tracking-wider">Time</th>
-            <th className="py-3 px-2 font-bold uppercase text-xs tracking-wider">Name</th>
-            <th className="py-3 px-2 font-bold uppercase text-xs tracking-wider text-right">Duration</th>
+          <tr>
+            <th className="border border-slate-300 w-16 p-1 text-center bg-slate-100">Time</th>
+            {displayDates.map(date => (
+              <th key={date} className="border border-slate-300 p-2 font-bold text-center bg-slate-50">
+                <div>{date.split(',')[0]}</div>
+                <div className="font-normal opacity-80">{date.split(',')[1]}</div>
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {allSessionsFlat.length === 0 ? (
-            <tr>
-              <td colSpan={3} className="py-12 text-center text-gray-500 italic">No worship scheduled for this day yet.</td>
+          {Array.from({length: 24}).map((_, i) => (
+            <tr key={i}>
+              <td className="border border-slate-300 p-1 font-bold text-center bg-slate-50 h-10 w-16">
+                {`${String(i).padStart(2, '0')}:00`}
+              </td>
+              {weekDaysUTC.map(dayStartUTC => {
+                const hourStart = dayStartUTC + i * 3600 * 1000;
+                const hourEnd = hourStart + 3600 * 1000;
+                
+                // Find sessions overlapping this hour
+                const overlappingSessions = schedules.filter(s => {
+                  const sEnd = s.startTimeUTC + s.durationHours * 3600 * 1000;
+                  return s.startTimeUTC < hourEnd && sEnd > hourStart;
+                });
+                
+                return (
+                  <td key={dayStartUTC} className="border border-slate-300 p-0 relative align-top">
+                    {overlappingSessions.map(session => (
+                      <div key={session.id} className="p-0.5 mb-0.5 last:mb-0 border-l-2 border-slate-800 bg-slate-50 text-[9px] leading-tight overflow-hidden">
+                        <span className="font-bold">{session.userName}</span>
+                        <div className="opacity-75">
+                         {getLocalTimeStr(session.startTimeUTC, session.timezone || TIMEZONES[0].value)} - {session.durationHours}h
+                        </div>
+                      </div>
+                    ))}
+                  </td>
+                );
+              })}
             </tr>
-          ) : (
-            allSessionsFlat.map((session, i) => (
-              <tr key={session.id} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                <td className="py-4 px-2 font-medium border-b border-gray-100 whitespace-nowrap">
-                  {getLocalTimeStr(session.startTimeUTC)} - {getLocalTimeStr(session.instanceEnd)}
-                </td>
-                <td className="py-4 px-2 font-bold text-lg border-b border-gray-100">
-                  {session.userName}
-                </td>
-                <td className="py-4 px-2 text-gray-600 border-b border-gray-100 text-right">
-                  {session.durationHours} {session.durationHours === 1 ? 'hr' : 'hrs'}
-                </td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </table>
-      <div className="mt-8 text-center text-xs text-gray-400">
-        Exported from Worship Schedule App
+      <div className="mt-4 text-center text-[10px] text-gray-500">
+        Exported from Global Worship Schedule Platform
       </div>
     </div>
     </>
   );
 };
+
 
 
