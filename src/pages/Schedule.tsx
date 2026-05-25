@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, addDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, updateDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SEO } from '../components/SEO';
-import { Globe, Clock, ChevronLeft, ChevronRight, LogIn, UserCircle, LogOut, Calendar as CalendarIcon, Trash2, Plus, X } from 'lucide-react';
+import { Globe, Clock, ChevronLeft, ChevronRight, LogIn, UserCircle, LogOut, Calendar as CalendarIcon, Trash2, Plus, X, Edit2 } from 'lucide-react';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
 const TIMEZONES = [
@@ -21,41 +21,30 @@ const TIMEZONES = [
   { value: 'Australia/Sydney', label: 'Sydney' }
 ].filter((v, i, a) => a.findIndex(t => t.value === v.value) === i);
 
-// Helper function to resolve timezone complexities cleanly using local Date representations 
-// (which replicates date-fns-tz purely natively without needing imports)
+// Reliable robust computation of UTC midnight matching the selected timezone's local day boundary
 const getMidnightOfZoneUTC = (date: Date, timeZone: string) => {
   const dateStr = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' }).format(date);
   const [m, d, y] = dateStr.split('/');
   
-  // Create an arbitrary date at midnight
-  const tzDateLocal = new Date(Number(y), Number(m) - 1, Number(d), 0, 0, 0);
+  const dObj = new Date();
+  dObj.setUTCFullYear(Number(y), Number(m) - 1, Number(d));
+  dObj.setUTCHours(12, 0, 0, 0); // Noon UTC to avoid edge cases
   
-  // Calculate offset to get back to UTC
-  // We approximate the offset for midnight using the browser's knowledge of the timezone
-  // The simplest reliable way in raw JS is formatting the exact hour offset
-  const parts = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', hourCycle: 'h23', timeZoneName: 'longOffset' }).formatToParts(date);
+  // Get timezone offset in hours and minutes
+  const parts = new Intl.DateTimeFormat('en-US', { 
+    timeZone, timeZoneName: 'longOffset' 
+  }).formatToParts(dObj);
+  
   const offsetPart = parts.find(p => p.type === 'timeZoneName')?.value || 'GMT+00:00';
   
-  // parse "GMT+07:00" -> +7
-  let sign = 1;
-  let hours = 0;
-  let mins = 0;
-  if (offsetPart.includes('+')) {
-    const s = offsetPart.split('+')[1].split(':');
-    hours = parseInt(s[0]);
-    mins = parseInt(s[1] || '0');
-  } else if (offsetPart.includes('-')) {
-    sign = -1;
-    const s = offsetPart.split('-')[1].split(':');
-    hours = parseInt(s[0]);
-    mins = parseInt(s[1] || '0');
+  let offsetMs = 0;
+  if (offsetPart.includes('+') || offsetPart.includes('-')) {
+    const isNegative = offsetPart.includes('-');
+    const [hours, mins] = offsetPart.split(/[+-]/)[1].split(':').map(Number);
+    offsetMs = (hours * 3600000 + (mins || 0) * 60000) * (isNegative ? -1 : 1);
   }
-
-  const totalOffsetMs = sign * (hours * 3600 * 1000 + mins * 60 * 1000);
   
-  // Base UTC for 00:00:00
-  const baseUTC = Date.UTC(Number(y), Number(m) - 1, Number(d), 0, 0, 0);
-  return baseUTC - totalOffsetMs;
+  return Date.UTC(Number(y), Number(m) - 1, Number(d), 0, 0, 0) - offsetMs;
 };
 
 export const Schedule: React.FC = () => {
@@ -65,10 +54,12 @@ export const Schedule: React.FC = () => {
   const [schedules, setSchedules] = useState<any[]>([]);
   const [offsetDays, setOffsetDays] = useState(0);
   const [selectedTimezone, setSelectedTimezone] = useState(TIMEZONES[0].value);
+  const [use24h, setUse24h] = useState(false);
   
   // Book Form
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newBooking, setNewBooking] = useState({ name: '', startTime: '12:00', durationHours: 1 });
+  const [newBooking, setNewBooking] = useState({ name: '', hour: 12, minute: 0, ampm: 'PM', durationHours: 1 });
+  const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null);
 
   useEffect(() => {
     // Only subscribe to worshipSchedule
@@ -115,8 +106,46 @@ export const Schedule: React.FC = () => {
     });
   });
 
+  const sortedUserNames = Object.keys(groupedUsers).sort((a, b) => {
+    const minA = Math.min(...groupedUsers[a].map(s => s.startTimeUTC));
+    const minB = Math.min(...groupedUsers[b].map(s => s.startTimeUTC));
+    return minA - minB;
+  });
+
   const getLocalTimeStr = (ts: number) => {
-    return new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(ts)).toLowerCase();
+    return new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, hour: 'numeric', minute: '2-digit', hour12: !use24h }).format(new Date(ts)).toLowerCase();
+  };
+
+  const openEditForm = (session: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Get formatted hour and minute in the currently selected timezone
+    const date = new Date(session.startTimeUTC);
+    const hourStr = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, hour: 'numeric', hourCycle: 'h23' }).format(date);
+    const minuteStr = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, minute: 'numeric' }).format(date);
+    
+    let editHour = Number(hourStr);
+    let editMinute = Number(minuteStr) || 0;
+
+    let ampm = 'AM';
+    if (!use24h) {
+      if (editHour >= 12) {
+        ampm = 'PM';
+        if (editHour > 12) editHour -= 12;
+      } else {
+         if (editHour === 0) editHour = 12;
+      }
+    }
+
+    setNewBooking({
+      name: session.userName || '',
+      hour: editHour,
+      minute: editMinute,
+      ampm: ampm,
+      durationHours: session.durationHours || 1
+    });
+    setEditingScheduleId(session.id);
+    setShowAddForm(true);
   };
 
   const deleteSchedule = async (scheduleId: string, event: React.MouseEvent) => {
@@ -131,7 +160,13 @@ export const Schedule: React.FC = () => {
     if (!currentUser || !userProfile) return;
     
     // Calculate startTimeUTC from selected time + current day
-    const [hh, mm] = newBooking.startTime.split(':').map(Number);
+    let hh = newBooking.hour;
+    if (!use24h) {
+      if (newBooking.ampm === 'PM' && hh !== 12) hh += 12;
+      if (newBooking.ampm === 'AM' && hh === 12) hh = 0;
+    }
+    const mm = newBooking.minute;
+
     // This assumes the user is booking for the currently viewed display day!
     // We already have `dayStartUTC` which is midnight in the selected timezone.
     // So the timestamp is just `dayStartUTC + hh hours + mm minutes`
@@ -139,14 +174,23 @@ export const Schedule: React.FC = () => {
 
     const worshipperName = newBooking.name.trim() !== '' ? newBooking.name : userProfile.displayName;
 
-    await addDoc(collection(db, 'worshipSchedule'), {
-      userId: currentUser.uid,
-      userName: worshipperName,
-      startTimeUTC,
-      durationHours: newBooking.durationHours,
-      timezone: selectedTimezone,
-      timestamp: serverTimestamp()
-    });
+    if (editingScheduleId) {
+      await updateDoc(doc(db, 'worshipSchedule', editingScheduleId), {
+        userName: worshipperName,
+        startTimeUTC,
+        durationHours: newBooking.durationHours,
+        timezone: selectedTimezone,
+      });
+    } else {
+      await addDoc(collection(db, 'worshipSchedule'), {
+        userId: currentUser.uid,
+        userName: worshipperName,
+        startTimeUTC,
+        durationHours: newBooking.durationHours,
+        timezone: selectedTimezone,
+        timestamp: serverTimestamp()
+      });
+    }
     
     setShowAddForm(false);
   };
@@ -209,6 +253,10 @@ export const Schedule: React.FC = () => {
           </div>
 
           <div className="ml-4 flex items-center gap-2">
+            <div className="flex bg-slate-100 rounded-lg p-0.5 border border-slate-200 mr-2">
+              <button onClick={() => setUse24h(false)} className={`px-2 py-1 text-[10px] font-bold rounded-md ${!use24h ? 'bg-white shadow text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}>12h</button>
+              <button onClick={() => setUse24h(true)} className={`px-2 py-1 text-[10px] font-bold rounded-md ${use24h ? 'bg-white shadow text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}>24h</button>
+            </div>
             <label className="text-xs font-bold text-slate-500 uppercase">Timezone</label>
             <select 
               value={selectedTimezone} 
@@ -223,7 +271,14 @@ export const Schedule: React.FC = () => {
 
           <div className="flex items-center gap-4 ml-auto text-xs font-bold uppercase tracking-wider text-slate-500">
             {currentUser && (
-              <button onClick={() => setShowAddForm(true)} className="flex items-center gap-1 bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-church-red transition-colors mr-2">
+              <button 
+                onClick={() => {
+                   setEditingScheduleId(null);
+                   setNewBooking({ name: '', hour: 12, minute: 0, ampm: 'PM', durationHours: 1 });
+                   setShowAddForm(true);
+                }} 
+                className="flex items-center gap-1 bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-church-red transition-colors mr-2"
+              >
                 <Plus size={14} /> Book Time
               </button>
             )}
@@ -235,17 +290,20 @@ export const Schedule: React.FC = () => {
         {/* Timeline Container */}
         <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
           <div className="overflow-x-auto flex-1 flex flex-col">
-            <div className="min-w-[1000px] flex-1 flex flex-col">
+            <div className="min-w-[2400px] flex-1 flex flex-col">
               
               {/* Header Row */}
               <div className="flex bg-slate-50 border-b border-slate-200 sticky top-0 z-20">
                 <div className="w-[280px] shrink-0 border-r border-slate-200 p-3 font-bold text-slate-700 font-serif flex items-center bg-slate-50 sticky left-0 z-30">
                   Worshipper
                 </div>
-                <div className="flex-1 flex relative">
-                  {Array.from({length: 24}).map((_, i) => (
-                    <div key={i} className="flex-1 p-2 text-[10px] font-bold text-slate-400 border-r border-slate-200 flex items-end">
-                      {i === 0 || i === 12 ? (i === 0 ? '12:00am' : '12:00pm') : (i < 12 ? `${i}:00am` : `${i-12}:00pm`)}
+                <div className="flex-1 relative h-12">
+                  {Array.from({length: 25}).map((_, i) => (
+                    <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-end pb-2" style={{ left: `${(i / 24) * 100}%` }}>
+                      <div className="absolute top-0 bottom-0 border-l border-slate-200" />
+                      <span className="text-[10px] font-bold text-slate-400 px-1 -translate-x-1/2 relative bg-slate-50 z-10 whitespace-nowrap">
+                        {use24h ? `${String(i % 24).padStart(2, '0')}:00` : (i === 0 || i === 24 ? '12:00am' : i === 12 ? '12:00pm' : i < 12 ? `${i}:00am` : `${i-12}:00pm`)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -253,10 +311,10 @@ export const Schedule: React.FC = () => {
 
               {/* Rows */}
               <div className="flex-1 overflow-y-auto relative pb-12">
-                {Object.keys(groupedUsers).length === 0 ? (
+                {sortedUserNames.length === 0 ? (
                   <div className="p-12 text-center text-slate-400 italic">No worship scheduled for this day yet.</div>
                 ) : (
-                  Object.keys(groupedUsers).map(userName => {
+                  sortedUserNames.map(userName => {
                     const userSessions = groupedUsers[userName];
                     
                     return (
@@ -271,9 +329,9 @@ export const Schedule: React.FC = () => {
                         {/* Timeline Track */}
                         <div className="flex-1 relative bg-slate-50/30">
                           {/* Grid Background */}
-                          <div className="absolute inset-0 flex pointer-events-none">
-                            {Array.from({length: 24}).map((_, i) => (
-                              <div key={i} className="flex-1 border-r border-slate-100/50" />
+                          <div className="absolute inset-0 pointer-events-none">
+                            {Array.from({length: 25}).map((_, i) => (
+                              <div key={i} className="absolute top-0 bottom-0 border-l border-slate-100/80" style={{ left: `${(i / 24) * 100}%` }} />
                             ))}
                           </div>
                           
@@ -305,20 +363,30 @@ export const Schedule: React.FC = () => {
                             return (
                               <div 
                                 key={session.id}
-                                className={`absolute top-1.5 bottom-1.5 rounded-md px-2 overflow-hidden transition-all flex flex-col justify-center ${colorClass} group/block`}
-                                style={{ left: `${leftPercent}%`, width: `${widthPercent}%`, minWidth: '40px' }}
+                                className={`absolute top-1.5 bottom-1.5 rounded-md px-2.5 transition-all flex flex-col justify-center ${colorClass} group/block`}
+                                style={{ left: `${leftPercent}%`, width: `${widthPercent}%`, minWidth: 'max-content' }}
                                 title={`${getLocalTimeStr(session.startTimeUTC)} - ${getLocalTimeStr(session.instanceEnd)}`}
                               >
-                                {canEdit && (
-                                  <button 
-                                    onClick={(e) => deleteSchedule(session.id, e)}
-                                    className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 p-0.5 hover:bg-black/20 rounded text-white"
-                                  >
-                                    <Trash2 size={10} />
-                                  </button>
-                                )}
-                                <div className="text-[11px] font-bold leading-tight truncate pr-4">
-                                  {getLocalTimeStr(session.startTimeUTC)}
+                                <div className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 flex gap-1 bg-black/20 rounded z-10 backdrop-blur-sm">
+                                  {canEdit && (
+                                    <>
+                                      <button 
+                                        onClick={(e) => openEditForm(session, e)}
+                                        className="p-1 hover:bg-black/20 rounded-l text-white"
+                                      >
+                                        <Edit2 size={12} />
+                                      </button>
+                                      <button 
+                                        onClick={(e) => deleteSchedule(session.id, e)}
+                                        className="p-1 hover:bg-black/20 rounded-r text-white"
+                                      >
+                                        <Trash2 size={12} />
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                                <div className="text-[10px] font-bold leading-tight whitespace-nowrap overflow-visible z-20 pointer-events-none drop-shadow-md">
+                                  {getLocalTimeStr(session.startTimeUTC)} - {getLocalTimeStr(session.instanceEnd)}
                                 </div>
                               </div>
                             );
@@ -340,7 +408,7 @@ export const Schedule: React.FC = () => {
               <button onClick={() => setShowAddForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
                 <X size={20} />
               </button>
-              <h3 className="font-bold text-xl mb-4 text-slate-900">Book Worship Time</h3>
+              <h3 className="font-bold text-xl mb-4 text-slate-900">{editingScheduleId ? 'Edit Worship Time' : 'Book Worship Time'}</h3>
               <p className="text-xs text-slate-500 mb-6 border-b border-slate-100 pb-4">
                 Booking for <strong>{displayDate}</strong>.
               </p>
@@ -358,18 +426,39 @@ export const Schedule: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">Start Time ({TIMEZONES.find(t => t.value === selectedTimezone)?.label || 'Selected Time'})</label>
-                  <input 
-                    type="time" 
-                    value={newBooking.startTime} 
-                    onChange={e => setNewBooking({...newBooking, startTime: e.target.value})} 
-                    className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
-                    required 
-                  />
-                  {newBooking.startTime && (
-                    <p className="text-[10px] text-slate-400 mt-1.5 font-medium">
-                      Vietnam Time: {new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short', hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(dayStartUTC + Number(newBooking.startTime.split(':')[0]) * 3600000 + Number(newBooking.startTime.split(':')[1]) * 60000))}
-                    </p>
-                  )}
+                  <div className="flex gap-2">
+                    <select 
+                      value={newBooking.hour} 
+                      onChange={e => setNewBooking({...newBooking, hour: Number(e.target.value)})} 
+                      className="px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red flex-1 font-medium"
+                    >
+                      {use24h 
+                        ? Array.from({length: 24}).map((_, i) => <option key={i} value={i}>{String(i).padStart(2, '0')}</option>)
+                        : Array.from({length: 12}).map((_, i) => <option key={i} value={i === 0 ? 12 : i}>{i === 0 ? 12 : i}</option>)
+                      }
+                    </select>
+                    <span className="font-bold text-slate-400 self-center">:</span>
+                    <select 
+                      value={newBooking.minute} 
+                      onChange={e => setNewBooking({...newBooking, minute: Number(e.target.value)})} 
+                      className="px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red flex-1 font-medium"
+                    >
+                      {[0, 15, 30, 45].map(i => <option key={i} value={i}>{String(i).padStart(2, '0')}</option>)}
+                    </select>
+                    {!use24h && (
+                      <select 
+                        value={newBooking.ampm} 
+                        onChange={e => setNewBooking({...newBooking, ampm: e.target.value})} 
+                        className="px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red flex-1 font-medium"
+                      >
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                      </select>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-1.5 font-medium">
+                    Vietnam Time: {new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short', hour: 'numeric', minute: '2-digit', hour12: !use24h }).format(new Date(dayStartUTC + (use24h ? newBooking.hour : (newBooking.ampm === 'PM' && newBooking.hour !== 12 ? newBooking.hour + 12 : (newBooking.ampm === 'AM' && newBooking.hour === 12 ? 0 : newBooking.hour))) * 3600000 + newBooking.minute * 60000))}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">Duration (Hours)</label>
@@ -385,7 +474,7 @@ export const Schedule: React.FC = () => {
                 </div>
                 
                 <button type="submit" className="w-full bg-church-red text-white font-bold py-3 pt-4 rounded-xl hover:bg-red-800 transition-colors flex items-center justify-center gap-2 shadow-lg mt-6">
-                  <Plus size={18} /> Confirm Booking
+                  <Plus size={18} /> {editingScheduleId ? 'Save Changes' : 'Confirm Booking'}
                 </button>
               </form>
             </div>
