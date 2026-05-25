@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { collection, query, onSnapshot, addDoc, updateDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { SEO } from '../components/SEO';
-import { Globe, Clock, ChevronLeft, ChevronRight, LogIn, UserCircle, LogOut, Calendar as CalendarIcon, Trash2, Plus, X, Edit2 } from 'lucide-react';
+import { Globe, Clock, ChevronLeft, ChevronRight, LogIn, UserCircle, LogOut, Calendar as CalendarIcon, Trash2, Plus, X, Edit2, Printer } from 'lucide-react';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
 const TIMEZONES = [
@@ -61,6 +61,34 @@ export const Schedule: React.FC = () => {
   const [newBooking, setNewBooking] = useState({ name: '', hour: 12, minute: 0, ampm: 'PM', durationHours: 1 });
   const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+    setScrollLeft(scrollContainerRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   useEffect(() => {
     // Only subscribe to worshipSchedule
     const unsub = onSnapshot(query(collection(db, 'worshipSchedule')), (snap) => {
@@ -111,6 +139,8 @@ export const Schedule: React.FC = () => {
     const minB = Math.min(...groupedUsers[b].map(s => s.startTimeUTC));
     return minA - minB;
   });
+
+  const allSessionsFlat = Object.values(groupedUsers).flat().sort((a, b) => a.startTimeUTC - b.startTimeUTC);
 
   const getLocalTimeStr = (ts: number) => {
     return new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, hour: 'numeric', minute: '2-digit', hour12: !use24h }).format(new Date(ts)).toLowerCase();
@@ -196,7 +226,8 @@ export const Schedule: React.FC = () => {
   };
 
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-slate-50 flex flex-col">
+    <>
+    <div className="pt-32 pb-24 min-h-screen bg-slate-50 flex flex-col print:hidden">
       <SEO 
         title={{ en: 'Global Worship Schedule', vi: 'Lịch Trình Thờ Phượng Toàn Cầu' }} 
         description={{ en: 'Join the global 24/7 continuous worship schedule.', vi: 'Tham gia lịch trình thờ phượng liên tục 24/7 toàn cầu.' }} 
@@ -270,6 +301,12 @@ export const Schedule: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4 ml-auto text-xs font-bold uppercase tracking-wider text-slate-500">
+            <button 
+              onClick={() => window.print()}
+              className="flex items-center gap-1 bg-white border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors mr-2"
+            >
+              <Printer size={14} /> Export PDF
+            </button>
             {currentUser && (
               <button 
                 onClick={() => {
@@ -289,8 +326,15 @@ export const Schedule: React.FC = () => {
 
         {/* Timeline Container */}
         <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[500px]">
-          <div className="overflow-x-auto flex-1 flex flex-col">
-            <div className="min-w-[2400px] flex-1 flex flex-col">
+          <div 
+            ref={scrollContainerRef}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            className={`overflow-x-auto flex-1 flex flex-col custom-scrollbar ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
+          >
+            <div className={`min-w-[2400px] flex-1 flex flex-col ${isDragging ? 'pointer-events-none' : ''}`}>
               
               {/* Header Row */}
               <div className="flex bg-slate-50 border-b border-slate-200 sticky top-0 z-20">
@@ -482,6 +526,50 @@ export const Schedule: React.FC = () => {
         )}
       </div>
     </div>
+
+    {/* Print Layout */}
+    <div className="hidden print:block bg-white text-black p-8 font-sans w-full max-w-4xl mx-auto">
+      <div className="text-center mb-8 pb-6 border-b-2 border-black">
+        <h1 className="text-3xl font-bold font-serif mb-2">Worship Schedule</h1>
+        <p className="text-lg text-gray-700 font-medium">{displayDate}</p>
+        <p className="text-sm text-gray-500 mt-1">Timezone: {TIMEZONES.find(t => t.value === selectedTimezone)?.label}</p>
+      </div>
+      
+      <table className="w-full border-collapse text-left">
+        <thead>
+          <tr className="border-b-2 border-black">
+            <th className="py-3 px-2 font-bold uppercase text-xs tracking-wider">Time</th>
+            <th className="py-3 px-2 font-bold uppercase text-xs tracking-wider">Name</th>
+            <th className="py-3 px-2 font-bold uppercase text-xs tracking-wider text-right">Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          {allSessionsFlat.length === 0 ? (
+            <tr>
+              <td colSpan={3} className="py-12 text-center text-gray-500 italic">No worship scheduled for this day yet.</td>
+            </tr>
+          ) : (
+            allSessionsFlat.map((session, i) => (
+              <tr key={session.id} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                <td className="py-4 px-2 font-medium border-b border-gray-100 whitespace-nowrap">
+                  {getLocalTimeStr(session.startTimeUTC)} - {getLocalTimeStr(session.instanceEnd)}
+                </td>
+                <td className="py-4 px-2 font-bold text-lg border-b border-gray-100">
+                  {session.userName}
+                </td>
+                <td className="py-4 px-2 text-gray-600 border-b border-gray-100 text-right">
+                  {session.durationHours} {session.durationHours === 1 ? 'hr' : 'hrs'}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+      <div className="mt-8 text-center text-xs text-gray-400">
+        Exported from Worship Schedule App
+      </div>
+    </div>
+    </>
   );
 };
 
