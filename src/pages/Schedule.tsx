@@ -24,22 +24,33 @@ const TIMEZONES = [
   { value: 'UTC', label: 'UTC' }
 ].filter((v, i, a) => a.findIndex(t => t.value === v.value) === i);
 
-const VN_OFFSET_MS = 7 * 3600 * 1000;
-
-// Gets the UTC timestamp corresponding to 00:00 Vietnam time of a given date
-const getVietnamMidnightUTC = (date: Date) => {
-  const dateStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: 'numeric', day: 'numeric' }).format(date);
-  const [m, d, y] = dateStr.split('/');
-  return Date.UTC(Number(y), Number(m) - 1, Number(d)) - VN_OFFSET_MS;
+export const getTimeZoneOffsetMs = (timeZone: string, date: Date = new Date()) => {
+  const parts = new Intl.DateTimeFormat('en-US', { 
+    timeZone, timeZoneName: 'shortOffset'
+  }).formatToParts(date);
+  const offsetPart = parts.find(p => p.type === 'timeZoneName')?.value;
+  if (!offsetPart || offsetPart === 'GMT') return 0;
+  const match = offsetPart.match(/GMT([+-])(\d+)(?::(\d+))?/);
+  if (!match) return 0;
+  const sign = match[1] === '-' ? -1 : 1;
+  const hours = parseInt(match[2], 10);
+  const minutes = match[3] ? parseInt(match[3], 10) : 0;
+  return sign * (hours * 3600 * 1000 + minutes * 60 * 1000);
 };
 
-// Gets the UTC timestamp corresponding to Monday 00:00 Vietnam time of the week containing the given date
-const getVietnamMondayZeroUTC = (date: Date) => {
-  const dateStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short' }).format(date);
+const getZoneMidnightUTC = (date: Date, timeZone: string) => {
+  const dateStr = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric' }).format(date);
+  const [m, d, y] = dateStr.split('/');
+  const offsetMs = getTimeZoneOffsetMs(timeZone, date);
+  return Date.UTC(Number(y), Number(m) - 1, Number(d)) - offsetMs;
+};
+
+const getZoneMondayZeroUTC = (date: Date, timeZone: string) => {
+  const dateStr = new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'short' }).format(date);
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const dayOfWeek = days.indexOf(dateStr);
   const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  const midnightUTC = getVietnamMidnightUTC(date);
+  const midnightUTC = getZoneMidnightUTC(date, timeZone);
   return midnightUTC + (diffToMonday * 24 * 3600 * 1000);
 };
 
@@ -68,6 +79,7 @@ export const Schedule: React.FC = () => {
   const [calendars, setCalendars] = useState<any[]>([]);
   const [selectedCalendarId, setSelectedCalendarId] = useState<string>('default');
   const [showAddCalendarForm, setShowAddCalendarForm] = useState(false);
+  const [editingCalendarId, setEditingCalendarId] = useState<string | null>(null);
   const [newCalendar, setNewCalendar] = useState({ name: '', timezone: TIMEZONES[0].value });
 
   useEffect(() => {
@@ -78,16 +90,13 @@ export const Schedule: React.FC = () => {
     const unsubCalendars = onSnapshot(query(collection(db, 'worshipCalendars')), (snap) => {
       const cals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       setCalendars(cals);
-      if (cals.length > 0 && selectedCalendarId === 'default' && !cals.find(c => c.id === 'default')) {
-        setSelectedCalendarId(cals[0].id);
-      }
     });
 
     return () => {
       unsubSchedules();
       unsubCalendars();
     };
-  }, [selectedCalendarId]);
+  }, []);
 
   const handleLogin = async () => {
     try {
@@ -102,6 +111,12 @@ export const Schedule: React.FC = () => {
     await signOut(auth);
   };
 
+  const currentSpaceTz = selectedCalendarId === 'default' 
+    ? 'Asia/Ho_Chi_Minh' 
+    : (calendars.find(c => c.id === selectedCalendarId)?.timezone || 'Asia/Ho_Chi_Minh');
+
+  const currentSpaceTzLabel = TIMEZONES.find(t => t.value === currentSpaceTz)?.label || currentSpaceTz;
+
   const filteredSchedules = schedules.filter(s => {
     if (selectedCalendarId === 'default') {
       return !s.calendarId || s.calendarId === 'default';
@@ -109,26 +124,26 @@ export const Schedule: React.FC = () => {
     return s.calendarId === selectedCalendarId;
   });
 
-  // 1. Calculate the current week in Vietnam Time
+  // 1. Calculate the current week in the Selected Calendar Timezone
   const now = new Date();
-  const currentViewMondayUTC = getVietnamMondayZeroUTC(now) + offsetWeeks * 7 * 24 * 3600 * 1000;
+  const currentViewMondayUTC = getZoneMondayZeroUTC(now, currentSpaceTz) + offsetWeeks * 7 * 24 * 3600 * 1000;
   
   const weekDaysUTC = Array.from({length: 7}).map((_, i) => currentViewMondayUTC + i * 24 * 3600 * 1000);
   
   const displayDates = weekDaysUTC.map(ts => {
-    return new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(ts));
+    return new Intl.DateTimeFormat('en-US', { timeZone: currentSpaceTz, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(ts));
   });
 
   const displayWeekLabel = `${displayDates[0]} - ${displayDates[6]}`;
 
   // Form helpers
-  // Generate date options for the booking form explicitly locked to Vietnam Time for uniform scheduling
+  // Generate date options for the booking form explicitly locked to Timezone for uniform scheduling
   const formDateOptions = weekDaysUTC.map(ts => {
-    const dt = new Date(ts + 12*3600*1000); // sample midday in VN
-    const localDateStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: 'numeric', day: 'numeric' }).format(dt);
+    const dt = new Date(ts + 12*3600*1000); // sample midday
+    const localDateStr = new Intl.DateTimeFormat('en-US', { timeZone: currentSpaceTz, year: 'numeric', month: 'numeric', day: 'numeric' }).format(dt);
     const [m, d, y] = localDateStr.split('/');
     const dateKey = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-    const displayStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'long', month: 'short', day: 'numeric' }).format(dt);
+    const displayStr = new Intl.DateTimeFormat('en-US', { timeZone: currentSpaceTz, weekday: 'long', month: 'short', day: 'numeric' }).format(dt);
     return { key: dateKey, label: displayStr };
   });
 
@@ -195,7 +210,7 @@ export const Schedule: React.FC = () => {
     setDeletingId(scheduleId);
   };
 
-  const parseBookingDateKey = (dateKey: string, hour: number, minute: number, ampm: string, use24: boolean) => {
+  const parseBookingDateKey = (dateKey: string, hour: number, minute: number, ampm: string, use24: boolean, tz: string) => {
     const [y, m, d] = dateKey.split('-');
     
     let hh = hour;
@@ -204,10 +219,10 @@ export const Schedule: React.FC = () => {
       if (ampm === 'AM' && hh === 12) hh = 0;
     }
 
-    // Vietnam is fixed at UTC+7
-    const VN_OFFSET_MS = 7 * 3600 * 1000;
+    const testDate = new Date();
+    const offsetMs = getTimeZoneOffsetMs(tz, testDate);
     
-    return Date.UTC(Number(y), Number(m) - 1, Number(d), hh, minute, 0) - VN_OFFSET_MS;
+    return Date.UTC(Number(y), Number(m) - 1, Number(d), hh, minute, 0) - offsetMs;
   };
 
   const handleAddSubmit = async (e: React.FormEvent) => {
@@ -223,7 +238,7 @@ export const Schedule: React.FC = () => {
     if (editingScheduleId) {
       // If editing, we ignore multiple days and only update the first selected one, or we could delete and recreate.
       // Assuming editing just updates the single document.
-      const startTimeUTC = parseBookingDateKey(newBooking.selectedDays[0], newBooking.hour, newBooking.minute, newBooking.ampm, use24h);
+      const startTimeUTC = parseBookingDateKey(newBooking.selectedDays[0], newBooking.hour, newBooking.minute, newBooking.ampm, use24h, currentSpaceTz);
       
       await updateDoc(doc(db, 'worshipSchedule', editingScheduleId), {
         userName: worshipperName,
@@ -235,7 +250,7 @@ export const Schedule: React.FC = () => {
     } else {
       // create multiple entries for each day
       for (const dateKey of newBooking.selectedDays) {
-        const startTimeUTC = parseBookingDateKey(dateKey, newBooking.hour, newBooking.minute, newBooking.ampm, use24h);
+        const startTimeUTC = parseBookingDateKey(dateKey, newBooking.hour, newBooking.minute, newBooking.ampm, use24h, currentSpaceTz);
         
         await addDoc(collection(db, 'worshipSchedule'), {
           userId: currentUser.uid,
@@ -258,16 +273,49 @@ export const Schedule: React.FC = () => {
     
     const calName = newCalendar.name.trim() !== '' ? newCalendar.name : 'Untitled Space';
     
-    const docRef = await addDoc(collection(db, 'worshipCalendars'), {
-      name: calName,
-      timezone: newCalendar.timezone,
-      createdBy: currentUser.uid,
-      timestamp: serverTimestamp()
-    });
+    if (editingCalendarId) {
+      await updateDoc(doc(db, 'worshipCalendars', editingCalendarId), {
+        name: calName,
+        timezone: newCalendar.timezone,
+      });
+      setSelectedCalendarId(editingCalendarId);
+    } else {
+      const docRef = await addDoc(collection(db, 'worshipCalendars'), {
+        name: calName,
+        timezone: newCalendar.timezone,
+        createdBy: currentUser.uid,
+        timestamp: serverTimestamp()
+      });
+      setSelectedCalendarId(docRef.id);
+    }
     
-    setSelectedCalendarId(docRef.id);
     setShowAddCalendarForm(false);
+    setEditingCalendarId(null);
     setNewCalendar({ name: '', timezone: TIMEZONES[0].value });
+  };
+
+  const deleteCalendar = async (id: string) => {
+    if (confirm(t({ en: 'Are you sure you want to delete this space?', vi: 'Bạn có chắc chắn muốn xóa không gian này?' }))) {
+      await deleteDoc(doc(db, 'worshipCalendars', id));
+      if (selectedCalendarId === id) {
+        setSelectedCalendarId('default');
+      }
+    }
+  };
+
+  const openFormForNewCalendar = () => {
+    setEditingCalendarId(null);
+    setNewCalendar({ name: '', timezone: TIMEZONES[0].value });
+    setShowAddCalendarForm(true);
+  };
+
+  const openFormForEditCalendar = () => {
+    const cal = calendars.find(c => c.id === selectedCalendarId);
+    if (cal) {
+      setEditingCalendarId(cal.id);
+      setNewCalendar({ name: cal.name, timezone: cal.timezone });
+      setShowAddCalendarForm(true);
+    }
   };
 
   const toggleDaySelection = (key: string) => {
@@ -295,7 +343,7 @@ export const Schedule: React.FC = () => {
             </h1>
             <p className="text-slate-500 flex items-center gap-2">
               <Globe size={16} /> 
-              {t({ en: 'View and register your worship sessions. (Currently showing Vietnam Time)', vi: 'Xem và đăng ký lịch thờ phượng. (Hiện đang hiển thị giờ Việt Nam)' })}
+              {t({ en: `View and register your worship sessions. (Currently showing ${currentSpaceTzLabel} Time)`, vi: `Xem và đăng ký lịch thờ phượng. (Hiện đang hiển thị giờ ${currentSpaceTzLabel})` })}
             </p>
           </div>
           
@@ -338,11 +386,21 @@ export const Schedule: React.FC = () => {
           ))}
           {currentUser && (
             <button 
-              onClick={() => setShowAddCalendarForm(true)}
+              onClick={openFormForNewCalendar}
               className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-slate-900 rounded-lg flex items-center gap-1 border border-dashed border-slate-300 hover:border-slate-500 transition-colors"
             >
               <Plus size={14} /> {t({ en: 'Add Space', vi: 'Thêm Không Gian' })}
             </button>
+          )}
+          {currentUser && selectedCalendarId !== 'default' && (
+            <div className="flex gap-2 ml-4 border-l border-slate-200 pl-4 border-dashed">
+              <button onClick={openFormForEditCalendar} className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-slate-900 rounded-lg flex items-center gap-1 transition-colors">
+                <Edit2 size={14} /> {t({ en: 'Edit Space', vi: 'Sửa Không Gian' })}
+              </button>
+              <button onClick={() => deleteCalendar(selectedCalendarId)} className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-red-600 rounded-lg flex items-center gap-1 transition-colors">
+                <Trash2 size={14} /> {t({ en: 'Delete Space', vi: 'Xóa Không Gian' })}
+              </button>
+            </div>
           )}
         </div>
 
@@ -396,7 +454,9 @@ export const Schedule: React.FC = () => {
           {/* Time scale column */}
           <div className="w-20 shrink-0 border-r border-slate-200 bg-slate-50 flex flex-col relative z-20">
             <div className="h-14 border-b border-slate-200 bg-slate-50 sticky top-0 md:h-12 flex items-center justify-center">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">GMT+7</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase text-center leading-tight">
+                {currentSpaceTzLabel}
+              </span>
             </div>
             <div className="flex-1 relative">
               {Array.from({length: 24}).map((_, i) => (
@@ -516,7 +576,7 @@ export const Schedule: React.FC = () => {
               <button type="button" onClick={() => setShowAddCalendarForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer">
                 <X size={20} />
               </button>
-              <h3 className="font-bold text-xl mb-4 text-slate-900">{t({ en: 'Create New Space', vi: 'Tạo Không Gian Mới' })}</h3>
+              <h3 className="font-bold text-xl mb-4 text-slate-900">{editingCalendarId ? t({ en: 'Edit Space', vi: 'Sửa Không Gian' }) : t({ en: 'Create New Space', vi: 'Tạo Không Gian Mới' })}</h3>
               
               <form onSubmit={handleAddCalendarSubmit} className="space-y-4">
                 <div>
@@ -545,7 +605,7 @@ export const Schedule: React.FC = () => {
                 </div>
                 
                 <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 mt-2">
-                  <Plus size={18} /> {t({ en: 'Create Space', vi: 'Tạo Không Gian' })}
+                  {editingCalendarId ? <Edit2 size={18} /> : <Plus size={18} />} {editingCalendarId ? t({ en: 'Save Space', vi: 'Lưu Không Gian' }) : t({ en: 'Create Space', vi: 'Tạo Không Gian' })}
                 </button>
               </form>
             </div>
@@ -606,7 +666,7 @@ export const Schedule: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Time (Vietnam Time / GMT+7)', vi: 'Thời gian (Giờ Việt Nam / GMT+7)' })}</label>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: `Time (${currentSpaceTzLabel})`, vi: `Thời gian (${currentSpaceTzLabel})` })}</label>
                     <div className="flex gap-1">
                       <select 
                         value={newBooking.hour} 
@@ -704,7 +764,7 @@ export const Schedule: React.FC = () => {
         <h1 className="text-2xl font-bold font-serif mb-1">The Global Gospel Power Church</h1>
         <h2 className="text-xl font-bold mt-2">{t({ en: 'Worship Schedule:', vi: 'Lịch Trình Thờ Phượng:' })} {selectedCalendarId === 'default' ? t({ en: 'Main Space', vi: 'Không Gian Chính' }) : calendars.find(c => c.id === selectedCalendarId)?.name}</h2>
         <p className="text-lg font-medium">{displayWeekLabel}</p>
-        <p className="text-xs mt-1">{t({ en: 'Vietnam Time (UTC+7)', vi: 'Giờ Việt Nam (UTC+7)' })}</p>
+        <p className="text-xs mt-1">{t({ en: `${currentSpaceTzLabel} Time`, vi: `Giờ ${currentSpaceTzLabel}` })}</p>
       </div>
       
       {/* Printable Grid Table */}
