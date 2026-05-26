@@ -8,17 +8,20 @@ import { Globe, ChevronLeft, ChevronRight, LogIn, UserCircle, LogOut, Calendar a
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
 const TIMEZONES = [
-  { value: Intl.DateTimeFormat().resolvedOptions().timeZone, label: `Local (${Intl.DateTimeFormat().resolvedOptions().timeZone})` },
-  { value: 'Asia/Ho_Chi_Minh', label: 'Vietnam (UTC+7)' },
-  { value: 'UTC', label: 'UTC' },
-  { value: 'America/New_York', label: 'US Eastern Time' },
-  { value: 'America/Chicago', label: 'US Central Time' },
-  { value: 'America/Denver', label: 'US Mountain Time' },
-  { value: 'America/Los_Angeles', label: 'US Pacific Time' },
-  { value: 'Europe/London', label: 'London' },
+  { value: 'Asia/Ho_Chi_Minh', label: 'Ho Chi Minh' },
+  { value: 'Europe/Paris', label: 'Paris' },
+  { value: 'Asia/Hong_Kong', label: 'Hong Kong' },
+  { value: 'Europe/Prague', label: 'Prague' },
   { value: 'Europe/Berlin', label: 'Berlin' },
+  { value: 'Europe/London', label: 'London' },
+  { value: 'Asia/Tokyo', label: 'Tokyo' },
+  { value: 'America/Chicago', label: 'Texas / Chicago' },
+  { value: 'America/Los_Angeles', label: 'California' },
+  { value: 'America/Phoenix', label: 'Arizona' },
+  { value: 'America/New_York', label: 'Florida / DC' },
   { value: 'Asia/Seoul', label: 'Seoul' },
-  { value: 'Australia/Sydney', label: 'Sydney' }
+  { value: 'Australia/Sydney', label: 'Sydney' },
+  { value: 'UTC', label: 'UTC' }
 ].filter((v, i, a) => a.findIndex(t => t.value === v.value) === i);
 
 const VN_OFFSET_MS = 7 * 3600 * 1000;
@@ -62,12 +65,29 @@ export const Schedule: React.FC = () => {
   const [editingScheduleId, setEditingScheduleId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  const [calendars, setCalendars] = useState<any[]>([]);
+  const [selectedCalendarId, setSelectedCalendarId] = useState<string>('default');
+  const [showAddCalendarForm, setShowAddCalendarForm] = useState(false);
+  const [newCalendar, setNewCalendar] = useState({ name: '', timezone: TIMEZONES[0].value });
+
   useEffect(() => {
-    const unsub = onSnapshot(query(collection(db, 'worshipSchedule')), (snap) => {
+    const unsubSchedules = onSnapshot(query(collection(db, 'worshipSchedule')), (snap) => {
       setSchedules(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     });
-    return () => unsub();
-  }, []);
+    
+    const unsubCalendars = onSnapshot(query(collection(db, 'worshipCalendars')), (snap) => {
+      const cals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setCalendars(cals);
+      if (cals.length > 0 && selectedCalendarId === 'default' && !cals.find(c => c.id === 'default')) {
+        setSelectedCalendarId(cals[0].id);
+      }
+    });
+
+    return () => {
+      unsubSchedules();
+      unsubCalendars();
+    };
+  }, [selectedCalendarId]);
 
   const handleLogin = async () => {
     try {
@@ -82,6 +102,13 @@ export const Schedule: React.FC = () => {
     await signOut(auth);
   };
 
+  const filteredSchedules = schedules.filter(s => {
+    if (selectedCalendarId === 'default') {
+      return !s.calendarId || s.calendarId === 'default';
+    }
+    return s.calendarId === selectedCalendarId;
+  });
+
   // 1. Calculate the current week in Vietnam Time
   const now = new Date();
   const currentViewMondayUTC = getVietnamMondayZeroUTC(now) + offsetWeeks * 7 * 24 * 3600 * 1000;
@@ -95,13 +122,13 @@ export const Schedule: React.FC = () => {
   const displayWeekLabel = `${displayDates[0]} - ${displayDates[6]}`;
 
   // Form helpers
-  // Generate date options for the booking form based on the current week view but localized to the user
+  // Generate date options for the booking form explicitly locked to Vietnam Time for uniform scheduling
   const formDateOptions = weekDaysUTC.map(ts => {
     const dt = new Date(ts + 12*3600*1000); // sample midday in VN
-    const localDateStr = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, year: 'numeric', month: 'numeric', day: 'numeric' }).format(dt);
+    const localDateStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: 'numeric', day: 'numeric' }).format(dt);
     const [m, d, y] = localDateStr.split('/');
     const dateKey = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
-    const displayStr = new Intl.DateTimeFormat('en-US', { timeZone: selectedTimezone, weekday: 'long', month: 'short', day: 'numeric' }).format(dt);
+    const displayStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', weekday: 'long', month: 'short', day: 'numeric' }).format(dt);
     return { key: dateKey, label: displayStr };
   });
 
@@ -128,9 +155,9 @@ export const Schedule: React.FC = () => {
     const date = new Date(session.startTimeUTC);
     const tz = session.timezone || selectedTimezone;
     
-    // Get formatted hour and minute in their original timezone
-    const hourStr = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hourCycle: 'h23' }).format(date);
-    const minuteStr = new Intl.DateTimeFormat('en-US', { timeZone: tz, minute: 'numeric' }).format(date);
+    // Get formatted hour and minute in VIETNAM timezone for the form
+    const hourStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', hour: 'numeric', hourCycle: 'h23' }).format(date);
+    const minuteStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', minute: 'numeric' }).format(date);
     
     let editHour = Number(hourStr);
     let editMinute = Number(minuteStr) || 0;
@@ -145,7 +172,7 @@ export const Schedule: React.FC = () => {
       }
     }
 
-    const localDateStr = new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: 'numeric', day: 'numeric' }).format(date);
+    const localDateStr = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: 'numeric', day: 'numeric' }).format(date);
     const [m, d, y] = localDateStr.split('/');
     const dateKey = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
 
@@ -168,7 +195,7 @@ export const Schedule: React.FC = () => {
     setDeletingId(scheduleId);
   };
 
-  const parseBookingDateKey = (dateKey: string, hour: number, minute: number, ampm: string, use24: boolean, tz: string) => {
+  const parseBookingDateKey = (dateKey: string, hour: number, minute: number, ampm: string, use24: boolean) => {
     const [y, m, d] = dateKey.split('-');
     
     let hh = hour;
@@ -177,32 +204,17 @@ export const Schedule: React.FC = () => {
       if (ampm === 'AM' && hh === 12) hh = 0;
     }
 
-    // Getting the timezone offset exactly for this target date in the target timezone
-    const dObj = new Date();
-    dObj.setUTCFullYear(Number(y), Number(m) - 1, Number(d));
-    dObj.setUTCHours(12, 0, 0, 0); // Noon UTC to avoid edge cases
+    // Vietnam is fixed at UTC+7
+    const VN_OFFSET_MS = 7 * 3600 * 1000;
     
-    const parts = new Intl.DateTimeFormat('en-US', { 
-      timeZone: tz, timeZoneName: 'longOffset' 
-    }).formatToParts(dObj);
-    
-    const offsetPart = parts.find(p => p.type === 'timeZoneName')?.value || 'GMT+00:00';
-    
-    let offsetMs = 0;
-    if (offsetPart.includes('+') || offsetPart.includes('-')) {
-      const isNegative = offsetPart.includes('-');
-      const [hours, mins] = offsetPart.split(/[+-]/)[1].split(':').map(Number);
-      offsetMs = (hours * 3600000 + (mins || 0) * 60000) * (isNegative ? -1 : 1);
-    }
-    
-    return Date.UTC(Number(y), Number(m) - 1, Number(d), hh, minute, 0) - offsetMs;
+    return Date.UTC(Number(y), Number(m) - 1, Number(d), hh, minute, 0) - VN_OFFSET_MS;
   };
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser || !userProfile) return;
     if (newBooking.selectedDays.length === 0) {
-      alert("Please select at least one day.");
+      alert(t({ en: 'Please select at least one day.', vi: 'Vui lòng chọn ít nhất một ngày.' }));
       return;
     }
 
@@ -211,18 +223,19 @@ export const Schedule: React.FC = () => {
     if (editingScheduleId) {
       // If editing, we ignore multiple days and only update the first selected one, or we could delete and recreate.
       // Assuming editing just updates the single document.
-      const startTimeUTC = parseBookingDateKey(newBooking.selectedDays[0], newBooking.hour, newBooking.minute, newBooking.ampm, use24h, selectedTimezone);
+      const startTimeUTC = parseBookingDateKey(newBooking.selectedDays[0], newBooking.hour, newBooking.minute, newBooking.ampm, use24h);
       
       await updateDoc(doc(db, 'worshipSchedule', editingScheduleId), {
         userName: worshipperName,
         startTimeUTC,
         durationHours: newBooking.durationHours,
         timezone: selectedTimezone,
+        calendarId: selectedCalendarId,
       });
     } else {
       // create multiple entries for each day
       for (const dateKey of newBooking.selectedDays) {
-        const startTimeUTC = parseBookingDateKey(dateKey, newBooking.hour, newBooking.minute, newBooking.ampm, use24h, selectedTimezone);
+        const startTimeUTC = parseBookingDateKey(dateKey, newBooking.hour, newBooking.minute, newBooking.ampm, use24h);
         
         await addDoc(collection(db, 'worshipSchedule'), {
           userId: currentUser.uid,
@@ -230,12 +243,31 @@ export const Schedule: React.FC = () => {
           startTimeUTC,
           durationHours: newBooking.durationHours,
           timezone: selectedTimezone,
+          calendarId: selectedCalendarId,
           timestamp: serverTimestamp()
         });
       }
     }
     
     setShowAddForm(false);
+  };
+
+  const handleAddCalendarSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentUser) return;
+    
+    const calName = newCalendar.name.trim() !== '' ? newCalendar.name : 'Untitled Space';
+    
+    const docRef = await addDoc(collection(db, 'worshipCalendars'), {
+      name: calName,
+      timezone: newCalendar.timezone,
+      createdBy: currentUser.uid,
+      timestamp: serverTimestamp()
+    });
+    
+    setSelectedCalendarId(docRef.id);
+    setShowAddCalendarForm(false);
+    setNewCalendar({ name: '', timezone: TIMEZONES[0].value });
   };
 
   const toggleDaySelection = (key: string) => {
@@ -263,7 +295,7 @@ export const Schedule: React.FC = () => {
             </h1>
             <p className="text-slate-500 flex items-center gap-2">
               <Globe size={16} /> 
-              View and register your worship sessions. (Currently showing Vietnam Time)
+              {t({ en: 'View and register your worship sessions. (Currently showing Vietnam Time)', vi: 'Xem và đăng ký lịch thờ phượng. (Hiện đang hiển thị giờ Việt Nam)' })}
             </p>
           </div>
           
@@ -276,15 +308,42 @@ export const Schedule: React.FC = () => {
                   {isAdmin && <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 uppercase">Admin</span>}
                 </div>
                 <button onClick={handleLogout} className="text-xs font-bold text-slate-500 hover:text-church-red flex items-center gap-1">
-                  <LogOut size={14} /> Logout
+                  <LogOut size={14} /> {t({ en: 'Logout', vi: 'Đăng Xuất' })}
                 </button>
               </div>
             ) : (
               <button onClick={handleLogin} className="flex items-center gap-2 text-sm font-bold bg-slate-900 text-white rounded-xl px-6 py-2.5 hover:bg-church-red transition-colors">
-                <LogIn size={16} /> Login to Book
+                <LogIn size={16} /> {t({ en: 'Login to Book', vi: 'Đăng Nhập để Đặt Lịch' })}
               </button>
             )}
           </div>
+        </div>
+
+        {/* Calendar Tabs */}
+        <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-200 pb-2">
+          <button 
+            onClick={() => setSelectedCalendarId('default')}
+            className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${selectedCalendarId === 'default' ? 'bg-slate-900 text-white shadow' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
+          >
+            {t({ en: 'Main Space', vi: 'Không Gian Chính' })}
+          </button>
+          {calendars.map(cal => (
+            <button 
+              key={cal.id}
+              onClick={() => setSelectedCalendarId(cal.id)}
+              className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${selectedCalendarId === cal.id ? 'bg-slate-900 text-white shadow' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
+            >
+              {cal.name}
+            </button>
+          ))}
+          {currentUser && (
+            <button 
+              onClick={() => setShowAddCalendarForm(true)}
+              className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-slate-900 rounded-lg flex items-center gap-1 border border-dashed border-slate-300 hover:border-slate-500 transition-colors"
+            >
+              <Plus size={14} /> {t({ en: 'Add Space', vi: 'Thêm Không Gian' })}
+            </button>
+          )}
         </div>
 
         {/* Timeline Controls */}
@@ -294,7 +353,7 @@ export const Schedule: React.FC = () => {
           <div className="flex border border-slate-200 bg-white rounded-lg overflow-hidden shadow-sm">
             <button onClick={() => setOffsetWeeks(0)} className="px-4 py-2 text-sm font-medium hover:bg-slate-50 border-r border-slate-200">
               <CalendarIcon size={16} className="inline mr-2" />
-              This Week
+              {t({ en: 'This Week', vi: 'Tuần Này' })}
             </button>
             <button onClick={() => setOffsetWeeks(o => o - 1)} className="px-3 py-2 hover:bg-slate-50 border-r border-slate-200">
               <ChevronLeft size={18} />
@@ -316,18 +375,18 @@ export const Schedule: React.FC = () => {
               onClick={() => window.print()}
               className="flex items-center gap-1 bg-white border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors mr-2"
             >
-              <Printer size={14} /> Export PDF
+              <Printer size={14} /> {t({ en: 'Export PDF', vi: 'Xuất PDF' })}
             </button>
             {currentUser && (
               <button 
                 onClick={openFormForNewBooking} 
                 className="flex items-center gap-1 bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-church-red transition-colors mr-2"
               >
-                <Plus size={14} /> Book Time
+                <Plus size={14} /> {t({ en: 'Create Schedule', vi: 'Tạo Lịch' })}
               </button>
             )}
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-500 block"></span> Booked</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-orange-500 block"></span> Yours</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-green-500 block"></span> {t({ en: 'Booked', vi: 'Đã Đặt' })}</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-orange-500 block"></span> {t({ en: 'Yours', vi: 'Của Bạn' })}</span>
           </div>
         </div>
 
@@ -357,7 +416,7 @@ export const Schedule: React.FC = () => {
               const dateName = displayDates[i];
               
               // Filter sessions for this day
-              const daySessions = schedules.filter(s => {
+              const daySessions = filteredSchedules.filter(s => {
                 const sEnd = s.startTimeUTC + s.durationHours * 3600 * 1000;
                 return sEnd > dayStartUTC && s.startTimeUTC < dayEndUTC;
               });
@@ -407,8 +466,8 @@ export const Schedule: React.FC = () => {
                       return (
                         <div 
                           key={session.id + i}
-                          className={`absolute left-1 right-1 rounded border shadow-sm px-2 py-1.5 overflow-hidden group/block ${colorClass}`}
-                          style={{ top: `${topPercent}%`, height: `calc(${heightPercent}% - 4px)`, minHeight: '36px' }}
+                          className={`absolute left-1 right-1 rounded border shadow-sm px-2 py-1.5 group/block z-10 hover:z-20 ${colorClass}`}
+                          style={{ top: `${topPercent}%`, height: `calc(${heightPercent}% - 4px)`, minHeight: 'max-content' }}
                         >
                           <div className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 flex gap-1 z-10 bg-white/80 rounded backdrop-blur-sm shadow-sm border border-slate-200/50">
                             {canEdit && (
@@ -437,7 +496,9 @@ export const Schedule: React.FC = () => {
                           <div className="text-[10px] opacity-80 font-medium leading-tight">
                             {localTimeStrStart} - {localTimeStrEnd}
                             <br />
-                            <span className="uppercase">{TIMEZONES.find(t => t.value === session.timezone)?.label.split(' ')[0] || session.timezone}</span>
+                            <span className="uppercase text-[9px] font-bold mt-0.5 block opacity-75">
+                              {TIMEZONES.find(t => t.value === (session.timezone || TIMEZONES[0].value))?.label || (session.timezone ? session.timezone.split('/').pop()?.replace('_', ' ') : 'Local')}
+                            </span>
                           </div>
                         </div>
                       )
@@ -449,6 +510,48 @@ export const Schedule: React.FC = () => {
           </div>
         </div>
 
+        {showAddCalendarForm && (
+          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 relative">
+              <button type="button" onClick={() => setShowAddCalendarForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer">
+                <X size={20} />
+              </button>
+              <h3 className="font-bold text-xl mb-4 text-slate-900">{t({ en: 'Create New Space', vi: 'Tạo Không Gian Mới' })}</h3>
+              
+              <form onSubmit={handleAddCalendarSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Space Name', vi: 'Tên Không Gian' })}</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Youth Room"
+                    value={newCalendar.name} 
+                    onChange={e => setNewCalendar({...newCalendar, name: e.target.value})} 
+                    className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Primary Timezone', vi: 'Múi Giờ Chính' })}</label>
+                  <select 
+                    value={newCalendar.timezone} 
+                    onChange={e => setNewCalendar({...newCalendar, timezone: e.target.value})}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 outline-none focus:border-church-red"
+                  >
+                    {TIMEZONES.map(tz => (
+                      <option key={tz.value} value={tz.value}>{tz.label}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 mt-2">
+                  <Plus size={18} /> {t({ en: 'Create Space', vi: 'Tạo Không Gian' })}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Modal form */}
         {showAddForm && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -456,11 +559,11 @@ export const Schedule: React.FC = () => {
               <button type="button" onClick={() => setShowAddForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer">
                 <X size={20} />
               </button>
-              <h3 className="font-bold text-xl mb-4 text-slate-900">{editingScheduleId ? 'Edit Worship Time' : 'Book Worship Time'}</h3>
+              <h3 className="font-bold text-xl mb-4 text-slate-900">{editingScheduleId ? t({ en: 'Edit Schedule', vi: 'Chỉnh Sửa Lịch' }) : t({ en: 'Create Schedule', vi: 'Tạo Lịch' })}</h3>
               
               <form onSubmit={handleAddSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Your Timezone</label>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Display Timezone (City on schedule)', vi: 'Múi Giờ Hiển Thị' })}</label>
                   <select 
                     value={selectedTimezone} 
                     onChange={e => setSelectedTimezone(e.target.value)}
@@ -473,10 +576,10 @@ export const Schedule: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Worshipper Name</label>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Schedule Name', vi: 'Tên Lịch' })}</label>
                   <input 
                     type="text" 
-                    placeholder={userProfile?.displayName || "Enter your name"}
+                    placeholder={userProfile?.displayName || "e.g. MS Thu"}
                     value={newBooking.name} 
                     onChange={e => setNewBooking({...newBooking, name: e.target.value})} 
                     className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
@@ -503,7 +606,7 @@ export const Schedule: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1">Time (Local)</label>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Time (Vietnam Time / GMT+7)', vi: 'Thời gian (Giờ Việt Nam / GMT+7)' })}</label>
                     <div className="flex gap-1">
                       <select 
                         value={newBooking.hour} 
@@ -537,7 +640,7 @@ export const Schedule: React.FC = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 mb-1">Duration (Hours)</label>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Duration (Hours)', vi: 'Thời Lượng (Giờ)' })}</label>
                     <input 
                       type="number" 
                       min="1" 
@@ -551,7 +654,7 @@ export const Schedule: React.FC = () => {
                 </div>
                 
                 <button type="submit" className="w-full bg-church-red text-white font-bold py-3 rounded-xl hover:bg-red-800 transition-colors flex items-center justify-center gap-2 shadow-sm mt-2">
-                  <Plus size={18} /> {editingScheduleId ? 'Save Changes' : 'Confirm Bookings'}
+                  <Plus size={18} /> {editingScheduleId ? t({ en: 'Save Changes', vi: 'Lưu Thay Đổi' }) : t({ en: 'Create Schedule', vi: 'Tạo Lịch' })}
                 </button>
               </form>
             </div>
@@ -561,14 +664,14 @@ export const Schedule: React.FC = () => {
         {deletingId && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
-              <h3 className="font-bold text-lg mb-2">Cancel Booking</h3>
-              <p className="text-slate-600 mb-6 font-medium text-sm">Are you sure you want to cancel this booking?</p>
+              <h3 className="font-bold text-lg mb-2">{t({ en: 'Cancel Booking', vi: 'Hủy Lịch Đặt' })}</h3>
+              <p className="text-slate-600 mb-6 font-medium text-sm">{t({ en: 'Are you sure you want to cancel this booking?', vi: 'Bạn có chắc chắn muốn hủy lịch đặt này không?' })}</p>
               <div className="flex gap-3 justify-end">
                 <button 
                   onClick={() => setDeletingId(null)} 
                   className="px-4 py-2 rounded-lg font-bold text-slate-500 hover:bg-slate-100"
                 >
-                  Keep It
+                  {t({ en: 'Keep It', vi: 'Giữ Lại' })}
                 </button>
                 <button 
                   onClick={async () => {
@@ -579,7 +682,7 @@ export const Schedule: React.FC = () => {
                   }} 
                   className="px-4 py-2 rounded-lg font-bold bg-red-500 text-white hover:bg-red-600"
                 >
-                  Cancel Booking
+                  {t({ en: 'Cancel Booking', vi: 'Hủy Lịch Đặt' })}
                 </button>
               </div>
             </div>
@@ -590,21 +693,29 @@ export const Schedule: React.FC = () => {
 
     {/* Print Layout */}
     <div className="hidden print:block bg-white text-black p-4 font-sans max-w-full">
-      <div className="text-center mb-6 pb-4 border-b-2 border-black">
-        <h1 className="text-2xl font-bold font-serif mb-1">Global Worship Schedule</h1>
+      <div className="text-center mb-6 flex flex-col items-center">
+        <div className="w-16 h-16 mb-2">
+          <img 
+            src="/images/logo-edited.jpg" 
+            alt="The Global Gospel Power Church Logo" 
+            className="w-full h-full object-contain"
+          />
+        </div>
+        <h1 className="text-2xl font-bold font-serif mb-1">The Global Gospel Power Church</h1>
+        <h2 className="text-xl font-bold mt-2">{t({ en: 'Worship Schedule:', vi: 'Lịch Trình Thờ Phượng:' })} {selectedCalendarId === 'default' ? t({ en: 'Main Space', vi: 'Không Gian Chính' }) : calendars.find(c => c.id === selectedCalendarId)?.name}</h2>
         <p className="text-lg font-medium">{displayWeekLabel}</p>
-        <p className="text-xs mt-1">Vietnam Time (UTC+7)</p>
+        <p className="text-xs mt-1">{t({ en: 'Vietnam Time (UTC+7)', vi: 'Giờ Việt Nam (UTC+7)' })}</p>
       </div>
       
       {/* Printable Grid Table */}
-      <table className="w-full border-collapse border border-slate-300 text-xs text-left table-fixed">
+      <table className="w-full border-collapse border border-slate-300 text-xs text-left p-[1px]">
         <thead>
           <tr>
-            <th className="border border-slate-300 w-16 p-1 text-center bg-slate-100">Time</th>
+            <th className="border border-slate-300 p-1 text-center bg-slate-100 w-[10%]">Time</th>
             {displayDates.map(date => (
-              <th key={date} className="border border-slate-300 p-2 font-bold text-center bg-slate-50">
-                <div>{date.split(',')[0]}</div>
-                <div className="font-normal opacity-80">{date.split(',')[1]}</div>
+              <th key={date} className="border border-slate-300 p-1 font-bold text-center bg-slate-50 w-[12.8%]">
+                <div className="whitespace-nowrap">{date.split(',')[0]}</div>
+                <div className="font-normal opacity-80 whitespace-nowrap">{date.split(',')[1]}</div>
               </th>
             ))}
           </tr>
@@ -612,7 +723,7 @@ export const Schedule: React.FC = () => {
         <tbody>
           {Array.from({length: 24}).map((_, i) => (
             <tr key={i}>
-              <td className="border border-slate-300 p-1 font-bold text-center bg-slate-50 h-10 w-16">
+              <td className="border border-slate-300 p-1 font-bold text-center bg-slate-100 align-top">
                 {`${String(i).padStart(2, '0')}:00`}
               </td>
               {weekDaysUTC.map(dayStartUTC => {
@@ -620,18 +731,22 @@ export const Schedule: React.FC = () => {
                 const hourEnd = hourStart + 3600 * 1000;
                 
                 // Find sessions overlapping this hour
-                const overlappingSessions = schedules.filter(s => {
+                const overlappingSessions = filteredSchedules.filter(s => {
                   const sEnd = s.startTimeUTC + s.durationHours * 3600 * 1000;
                   return s.startTimeUTC < hourEnd && sEnd > hourStart;
                 });
                 
                 return (
-                  <td key={dayStartUTC} className="border border-slate-300 p-0 relative align-top">
+                  <td key={dayStartUTC} className="border border-slate-300 p-1 align-top text-center text-wrap break-words">
                     {overlappingSessions.map(session => (
-                      <div key={session.id} className="p-0.5 mb-0.5 last:mb-0 border-l-2 border-slate-800 bg-slate-50 text-[9px] leading-tight overflow-hidden">
-                        <span className="font-bold">{session.userName}</span>
-                        <div className="opacity-75">
+                      <div key={session.id} className="mb-1 last:mb-0 border p-0.5 border-slate-800 bg-slate-50 text-[10px] leading-tight w-full box-border rounded">
+                        <div className="font-bold break-words">{session.userName}</div>
+                        <div className="opacity-80">
                          {getLocalTimeStr(session.startTimeUTC, session.timezone || TIMEZONES[0].value)} - {session.durationHours}h
+                         <br />
+                         <span className="uppercase text-[8px] font-bold">
+                           {TIMEZONES.find(t => t.value === (session.timezone || TIMEZONES[0].value))?.label || (session.timezone ? session.timezone.split('/').pop()?.replace('_', ' ') : 'Local')}
+                         </span>
                         </div>
                       </div>
                     ))}
@@ -642,9 +757,6 @@ export const Schedule: React.FC = () => {
           ))}
         </tbody>
       </table>
-      <div className="mt-4 text-center text-[10px] text-gray-500">
-        Exported from Global Worship Schedule Platform
-      </div>
     </div>
     </>
   );

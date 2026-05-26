@@ -156,12 +156,13 @@ service cloud.firestore {
     }
 
     function isValidWorshipSchedule(data) {
-      return hasOnlyAllowedFields(['userId', 'userName', 'startTimeUTC', 'timezone', 'durationHours', 'timestamp']) &&
+      return hasOnlyAllowedFields(['userId', 'userName', 'startTimeUTC', 'timezone', 'durationHours', 'timestamp', 'calendarId']) &&
              isValidString('userId', 1, 200) &&
              isValidString('userName', 1, 200) &&
              data.startTimeUTC is number &&
              isValidString('timezone', 1, 100) &&
              data.durationHours is number && data.durationHours > 0 &&
+             (!('calendarId' in data) || isValidString('calendarId', 1, 200)) &&
              (data.timestamp is number || data.timestamp is timestamp || data.timestamp == null);
     }
 
@@ -237,6 +238,12 @@ service cloud.firestore {
       allow create: if request.auth != null && isValidShiftRegistration(request.resource.data);
       allow update: if isAdmin();
       allow delete: if request.auth != null && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    
+    match /worshipCalendars/{calendarId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (isAdmin() || resource.data.createdBy == request.auth.uid);
     }
     
     match /worshipSchedule/{scheduleId} {
