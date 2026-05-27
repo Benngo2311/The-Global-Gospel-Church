@@ -141,9 +141,9 @@ const SermonForm = ({ sermon, groups, onClose }: any) => {
         await addDoc(collection(db, 'sermons'), payload);
       }
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert(t({ en: 'Failed to save.', vi: 'Lỗi khi lưu.' }));
+      alert(t({ en: 'Failed to save: ', vi: 'Lỗi khi lưu: ' }) + error.message);
     } finally {
       setSaving(false);
     }
@@ -297,9 +297,9 @@ const GroupForm = ({ group, onClose }: any) => {
         await addDoc(collection(db, 'sermonGroups'), payload);
       }
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert(t({ en: 'Failed to save.', vi: 'Lỗi khi lưu.' }));
+      alert(t({ en: 'Failed to save: ', vi: 'Lỗi khi lưu: ' }) + error.message);
     } finally {
       setSaving(false);
     }
