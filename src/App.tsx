@@ -22,6 +22,7 @@ import { Live } from './pages/Live';
 import { BuildingLordsHouse } from './pages/BuildingLordsHouse';
 import { JourneyOfGrace } from './pages/JourneyOfGrace';
 import { ScrollToTop } from './components/ScrollToTop';
+import { Sermons } from './pages/Sermons';
 // import { SpiritualAssistant } from './components/SpiritualAssistant';
 
 import { Schedule } from './pages/Schedule';
@@ -39,6 +40,7 @@ export default function App() {
               <Route path="about" element={<About />} />
               <Route path="classes" element={<Classes />} />
               <Route path="events" element={<Events />} />
+              <Route path="sermons" element={<Sermons />} />
               <Route path="schedule" element={<Schedule />} />
               <Route path="ministries" element={<Ministries />} />
               <Route path="ministries/heaven-band" element={<HeavenBand />} />

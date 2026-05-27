@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, onSnapshot, addDoc, updateDoc, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, updateDoc, serverTimestamp, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -111,9 +111,7 @@ export const Schedule: React.FC = () => {
     await signOut(auth);
   };
 
-  const currentSpaceTz = selectedCalendarId === 'default' 
-    ? 'Asia/Ho_Chi_Minh' 
-    : (calendars.find(c => c.id === selectedCalendarId)?.timezone || 'Asia/Ho_Chi_Minh');
+  const currentSpaceTz = calendars.find(c => c.id === selectedCalendarId)?.timezone || 'Asia/Ho_Chi_Minh';
 
   const currentSpaceTzLabel = TIMEZONES.find(t => t.value === currentSpaceTz)?.label || currentSpaceTz;
 
@@ -274,10 +272,19 @@ export const Schedule: React.FC = () => {
     const calName = newCalendar.name.trim() !== '' ? newCalendar.name : 'Untitled Space';
     
     if (editingCalendarId) {
-      await updateDoc(doc(db, 'worshipCalendars', editingCalendarId), {
-        name: calName,
-        timezone: newCalendar.timezone,
-      });
+      if (editingCalendarId === 'default') {
+        await setDoc(doc(db, 'worshipCalendars', 'default'), {
+          name: calName,
+          timezone: newCalendar.timezone,
+          createdBy: currentUser.uid,
+          timestamp: serverTimestamp()
+        }, { merge: true });
+      } else {
+        await updateDoc(doc(db, 'worshipCalendars', editingCalendarId), {
+          name: calName,
+          timezone: newCalendar.timezone,
+        });
+      }
       setSelectedCalendarId(editingCalendarId);
     } else {
       const docRef = await addDoc(collection(db, 'worshipCalendars'), {
@@ -310,11 +317,21 @@ export const Schedule: React.FC = () => {
   };
 
   const openFormForEditCalendar = () => {
-    const cal = calendars.find(c => c.id === selectedCalendarId);
-    if (cal) {
-      setEditingCalendarId(cal.id);
-      setNewCalendar({ name: cal.name, timezone: cal.timezone });
+    if (selectedCalendarId === 'default') {
+      const cal = calendars.find(c => c.id === 'default');
+      setEditingCalendarId('default');
+      setNewCalendar({ 
+        name: cal?.name || 'Main Space', 
+        timezone: cal?.timezone || 'Asia/Ho_Chi_Minh'
+      });
       setShowAddCalendarForm(true);
+    } else {
+      const cal = calendars.find(c => c.id === selectedCalendarId);
+      if (cal) {
+        setEditingCalendarId(cal.id);
+        setNewCalendar({ name: cal.name, timezone: cal.timezone });
+        setShowAddCalendarForm(true);
+      }
     }
   };
 
@@ -373,9 +390,9 @@ export const Schedule: React.FC = () => {
             onClick={() => setSelectedCalendarId('default')}
             className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${selectedCalendarId === 'default' ? 'bg-slate-900 text-white shadow' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
           >
-            {t({ en: 'Main Space', vi: 'Không Gian Chính' })}
+            {calendars.find(c => c.id === 'default')?.name || t({ en: 'Main Space', vi: 'Không Gian Chính' })}
           </button>
-          {calendars.map(cal => (
+          {calendars.filter(cal => cal.id !== 'default').map(cal => (
             <button 
               key={cal.id}
               onClick={() => setSelectedCalendarId(cal.id)}
@@ -392,14 +409,16 @@ export const Schedule: React.FC = () => {
               <Plus size={14} /> {t({ en: 'Add Space', vi: 'Thêm Không Gian' })}
             </button>
           )}
-          {currentUser && selectedCalendarId !== 'default' && (
+          {currentUser && (
             <div className="flex gap-2 ml-4 border-l border-slate-200 pl-4 border-dashed">
               <button onClick={openFormForEditCalendar} className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-slate-900 rounded-lg flex items-center gap-1 transition-colors">
                 <Edit2 size={14} /> {t({ en: 'Edit Space', vi: 'Sửa Không Gian' })}
               </button>
-              <button onClick={() => deleteCalendar(selectedCalendarId)} className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-red-600 rounded-lg flex items-center gap-1 transition-colors">
-                <Trash2 size={14} /> {t({ en: 'Delete Space', vi: 'Xóa Không Gian' })}
-              </button>
+              {selectedCalendarId !== 'default' && (
+                <button onClick={() => deleteCalendar(selectedCalendarId)} className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-red-600 rounded-lg flex items-center gap-1 transition-colors">
+                  <Trash2 size={14} /> {t({ en: 'Delete Space', vi: 'Xóa Không Gian' })}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -762,7 +781,7 @@ export const Schedule: React.FC = () => {
           />
         </div>
         <h1 className="text-2xl font-bold font-serif mb-1">The Global Gospel Power Church</h1>
-        <h2 className="text-xl font-bold mt-2">{t({ en: 'Worship Schedule:', vi: 'Lịch Trình Thờ Phượng:' })} {selectedCalendarId === 'default' ? t({ en: 'Main Space', vi: 'Không Gian Chính' }) : calendars.find(c => c.id === selectedCalendarId)?.name}</h2>
+        <h2 className="text-xl font-bold mt-2">{t({ en: 'Worship Schedule:', vi: 'Lịch Trình Thờ Phượng:' })} {calendars.find(c => c.id === selectedCalendarId)?.name || (selectedCalendarId === 'default' ? t({ en: 'Main Space', vi: 'Không Gian Chính' }) : '')}</h2>
         <p className="text-lg font-medium">{displayWeekLabel}</p>
         <p className="text-xs mt-1">{t({ en: `${currentSpaceTzLabel} Time`, vi: `Giờ ${currentSpaceTzLabel}` })}</p>
       </div>

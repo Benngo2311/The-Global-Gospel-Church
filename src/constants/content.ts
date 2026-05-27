@@ -12,6 +12,7 @@ export const NAV_ITEMS: NavItem[] = [
     href: '/ministries',
     children: [
       { title: { en: 'The Global Gospel Power Church', vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' }, href: '/ministries/church' },
+      { title: { en: 'Sermon Library', vi: 'Thư Viện Bài Giảng' }, href: '/sermons' },
       { title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' }, href: '/ministries/bible-school' },
       { title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' }, href: '/ministries/heaven-academy' },
       { title: { en: 'Heaven Band', vi: 'Ban Nhạc Thiên Đàng' }, href: '/ministries/heaven-band' },

@@ -130,6 +130,44 @@
         "timestamp": { "type": "number" }
       },
       "required": ["shiftId", "userId", "userName", "userEmail", "date", "status"]
+    },
+    "SermonGroup": {
+      "title": "SermonGroup",
+      "description": "Groups or series for sermons.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "customOrder": { "type": "number" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["name", "customOrder"]
+    },
+    "Sermon": {
+      "title": "Sermon",
+      "description": "A sermon record.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "preacher": { "type": "string" },
+        "sermonDate": { "type": "string" },
+        "biblePassage": { "type": "string" },
+        "groupId": { "type": "string" },
+        "groupName": { "type": "string" },
+        "topics": { "type": "string" },
+        "description": { "type": "string" },
+        "fullInformation": { "type": "string" },
+        "language": { "type": "string" },
+        "documentUrl": { "type": "string" },
+        "downloadUrl": { "type": "string" },
+        "fileType": { "type": "string" },
+        "customOrder": { "type": "number" },
+        "status": { "type": "string", "enum": ["published", "draft", "hidden"] },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["title", "preacher", "sermonDate", "status"]
     }
   },
   "firestore": {
@@ -164,6 +202,14 @@
     "/shiftRegistrations/{registrationId}": {
       "schema": { "$ref": "ShiftRegistration" },
       "description": "Collection of shift registrations."
+    },
+    "/sermonGroups/{groupId}": {
+      "schema": { "$ref": "SermonGroup" },
+      "description": "Collection of sermon groups/series."
+    },
+    "/sermons/{sermonId}": {
+      "schema": { "$ref": "Sermon" },
+      "description": "Collection of sermons."
     }
   }
 }

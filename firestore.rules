@@ -166,6 +166,36 @@ service cloud.firestore {
              (data.timestamp is number || data.timestamp is timestamp || data.timestamp == null);
     }
 
+    function isValidSermonGroup(data) {
+      return hasOnlyAllowedFields(['name', 'description', 'customOrder', 'createdAt', 'updatedAt']) &&
+             isValidString('name', 1, 200) &&
+             isValidOptionalString('description', 0, 2000) &&
+             data.customOrder is number &&
+             (data.createdAt is number || data.createdAt == null || data.createdAt is timestamp) &&
+             (data.updatedAt is number || data.updatedAt == null || data.updatedAt is timestamp);
+    }
+
+    function isValidSermon(data) {
+      return hasOnlyAllowedFields(['title', 'preacher', 'sermonDate', 'biblePassage', 'groupId', 'groupName', 'topics', 'description', 'fullInformation', 'language', 'documentUrl', 'downloadUrl', 'fileType', 'customOrder', 'status', 'createdAt', 'updatedAt']) &&
+             isValidString('title', 1, 500) &&
+             isValidString('preacher', 1, 200) &&
+             isValidString('sermonDate', 1, 50) &&
+             isValidString('status', 1, 20) && (data.status == 'published' || data.status == 'draft' || data.status == 'hidden') &&
+             isValidOptionalString('biblePassage', 0, 500) &&
+             isValidOptionalString('groupId', 0, 200) &&
+             isValidOptionalString('groupName', 0, 200) &&
+             isValidOptionalString('topics', 0, 500) &&
+             isValidOptionalString('description', 0, 2000) &&
+             isValidOptionalString('fullInformation', 0, 20000) &&
+             isValidOptionalString('language', 0, 50) &&
+             isValidOptionalString('documentUrl', 0, 2000) &&
+             isValidOptionalString('downloadUrl', 0, 2000) &&
+             isValidOptionalString('fileType', 0, 50) &&
+             (data.customOrder is number || data.customOrder == null) &&
+             (data.createdAt is number || data.createdAt == null || data.createdAt is timestamp) &&
+             (data.updatedAt is number || data.updatedAt == null || data.updatedAt is timestamp);
+    }
+
     match /prayers/{prayerId} {
       // Publicly readable as this is a public prayer wall
       allow read: if true;
@@ -251,6 +281,15 @@ service cloud.firestore {
       allow create: if request.auth != null && isValidWorshipSchedule(request.resource.data);
       allow update: if request.auth != null && (isAdmin() || resource.data.userId == request.auth.uid) && isValidWorshipSchedule(request.resource.data);
       allow delete: if request.auth != null && (isAdmin() || resource.data.userId == request.auth.uid);
+    }
+    match /sermonGroups/{groupId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && (request.method == 'delete' || isValidSermonGroup(request.resource.data));
+    }
+
+    match /sermons/{sermonId} {
+      allow read: if true; // Public can read, UI filters out drafts/hidden
+      allow create, update, delete: if isAdmin() && (request.method == 'delete' || isValidSermon(request.resource.data));
     }
   }
 }
