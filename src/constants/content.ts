@@ -2,17 +2,22 @@ import { Content, NavItem } from '../types';
 
 export const NAV_ITEMS: NavItem[] = [
   { title: { en: 'Home', vi: 'Trang Chủ' }, href: '/' },
-  { title: { en: 'Schedule', vi: 'Lịch Trình' }, href: '/schedule' },
-  { title: { en: 'Lord\'s House', vi: 'Góc Xây Dựng' }, href: '/building-lords-house' },
   { title: { en: 'About', vi: 'Giới Thiệu' }, href: '/about' },
-  { title: { en: 'Classes', vi: 'Lớp Học' }, href: '/classes' },
-  { title: { en: 'Events', vi: 'Sự Kiện' }, href: '/events' },
+  {
+    title: { en: 'Gatherings', vi: 'Sự Nhóm Lại' },
+    href: '#',
+    children: [
+      { title: { en: 'Schedule', vi: 'Lịch Trình' }, href: '/schedule' },
+      { title: { en: 'Events', vi: 'Sự Kiện' }, href: '/events' },
+      { title: { en: 'Classes', vi: 'Lớp Học' }, href: '/classes' },
+    ]
+  },
   { 
     title: { en: 'Ministries', vi: 'Mục Vụ' }, 
-    href: '/ministries',
+    href: '#',
     children: [
+      { title: { en: 'All Ministries', vi: 'Tất Cả Mục Vụ' }, href: '/ministries' },
       { title: { en: 'The Global Gospel Power Church', vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' }, href: '/ministries/church' },
-      { title: { en: 'Sermon Library', vi: 'Thư Viện Bài Giảng' }, href: '/sermons' },
       { title: { en: 'Global Gospel Power Bible School', vi: 'Trường Kinh Thánh Tin Lành Quyền Phép Toàn Cầu' }, href: '/ministries/bible-school' },
       { title: { en: 'Heaven Academy', vi: 'Học Viện Thiên Đàng' }, href: '/ministries/heaven-academy' },
       { title: { en: 'Heaven Band', vi: 'Ban Nhạc Thiên Đàng' }, href: '/ministries/heaven-band' },
@@ -21,8 +26,18 @@ export const NAV_ITEMS: NavItem[] = [
       { title: { en: 'Council Of Prayers For The Global Spiritual Warfare', vi: 'Hội Đồng Cầu Nguyện Chiến Trận Thuộc Linh Toàn Cầu' }, href: '/ministries/council-of-prayers' }
     ]
   },
-  { title: { en: 'Giving', vi: 'Dâng Hiến' }, href: '/giving' },
-  { title: { en: 'Live', vi: 'Trực Tiếp' }, href: '/live' },
+  { title: { en: 'Lord\'s House', vi: 'Góc Xây Dựng' }, href: '/building-lords-house' },
+  {
+    title: { en: 'Media', vi: 'Truyền Thông' },
+    href: '#',
+    children: [
+      { title: { en: 'Live', vi: 'Trực Tiếp' }, href: '/live' },
+      { title: { en: 'Sermon Library', vi: 'Thư Viện Bài Giảng' }, href: '/sermons' },
+      { title: { en: 'Teaching Library', vi: 'Thư Viện Giảng Dạy' }, href: '/teaching-library' },
+      { title: { en: 'Videos', vi: 'Video' }, href: '/videos' }
+    ]
+  },
+  { title: { en: 'Give', vi: 'Dâng Hiến' }, href: '/giving' },
   { title: { en: 'Contact', vi: 'Liên Hệ' }, href: '/contact' },
 ];
 

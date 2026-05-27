@@ -74,18 +74,21 @@ export const Header: React.FC = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {activeNavItems.map((item) => (
+          {activeNavItems.map((item) => {
+            const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href + '/')) || item.children?.some(child => location.pathname === child.href || location.pathname.startsWith(child.href + '/'));
+            return (
             <div key={item.href} className="relative group">
               <Link
                 to={item.href}
                 className={cn(
                   'text-sm font-medium transition-colors hover:text-church-red relative py-1 flex items-center gap-1',
-                  location.pathname === item.href || location.pathname.startsWith(item.href + '/') ? 'text-church-red' : 'text-slate-900'
+                  isActive ? 'text-church-red' : 'text-slate-900',
+                  item.title.en === 'Give' && 'px-4 py-1.5 bg-church-red/10 text-church-red rounded-full hover:bg-church-red hover:text-white'
                 )}
               >
                 {t(item.title)}
                 {item.children && <ChevronDown size={14} className="group-hover:rotate-180 transition-transform" />}
-                {(location.pathname === item.href || location.pathname.startsWith(item.href + '/')) && (
+                {isActive && item.title.en !== 'Give' && (
                   <motion.div
                     layoutId="nav-underline"
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-church-red"
@@ -112,7 +115,8 @@ export const Header: React.FC = () => {
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-4">
@@ -196,14 +200,17 @@ export const Header: React.FC = () => {
             className="absolute top-full left-0 right-0 bg-white/100 backdrop-blur-md border-t border-white/20 p-6 md:hidden shadow-2xl"
           >
             <div className="flex flex-col gap-4">
-              {activeNavItems.map((item) => (
+              {activeNavItems.map((item) => {
+                const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href + '/')) || item.children?.some(child => location.pathname === child.href || location.pathname.startsWith(child.href + '/'));
+                return (
                 <div key={item.href} className="flex flex-col gap-2">
                   <Link
                     to={item.href}
                     onClick={() => !item.children && setIsOpen(false)}
                     className={cn(
                       'text-lg font-serif font-medium transition-colors flex items-center justify-between',
-                      location.pathname === item.href || location.pathname.startsWith(item.href + '/') ? 'text-church-red' : 'text-slate-900'
+                      isActive ? 'text-church-red' : 'text-slate-900',
+                      item.title.en === 'Give' && 'px-4 py-2 bg-church-red/10 text-church-red rounded-xl hover:bg-church-red hover:text-white'
                     )}
                   >
                     {t(item.title)}
@@ -226,7 +233,8 @@ export const Header: React.FC = () => {
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
               {/* Mobile Language Options */}
               <div className="mt-4 pt-4 border-t border-slate-100">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
