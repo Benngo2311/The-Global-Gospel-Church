@@ -4,7 +4,7 @@ export const NAV_ITEMS: NavItem[] = [
   { title: { en: 'Home', vi: 'Trang Chủ' }, href: '/' },
   { title: { en: 'About', vi: 'Giới Thiệu' }, href: '/about' },
   {
-    title: { en: 'Gatherings', vi: 'Sự Nhóm Lại' },
+    title: { en: 'Gatherings', vi: 'Các Buổi Nhóm' },
     href: '#',
     children: [
       { title: { en: 'Schedule', vi: 'Lịch Trình' }, href: '/schedule' },
