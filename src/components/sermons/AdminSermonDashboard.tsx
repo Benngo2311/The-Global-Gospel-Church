@@ -133,6 +133,7 @@ const SermonForm = ({ sermon, groups, onClose }: any) => {
 
       // Basic cleanup
       Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+      delete payload.id;
 
       if (sermon.id) {
         await updateDoc(doc(db, 'sermons', sermon.id), payload);
@@ -289,6 +290,7 @@ const GroupForm = ({ group, onClose }: any) => {
     setSaving(true);
     try {
       const payload = { ...formData, updatedAt: serverTimestamp() };
+      delete payload.id;
       
       if (group.id) {
         await updateDoc(doc(db, 'sermonGroups', group.id), payload);

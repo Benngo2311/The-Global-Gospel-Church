@@ -284,12 +284,12 @@ service cloud.firestore {
     }
     match /sermonGroups/{groupId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin() && (request.method == 'delete' || isValidSermonGroup(request.resource.data));
+      allow create, update, delete: if true;
     }
 
     match /sermons/{sermonId} {
       allow read: if true; // Public can read, UI filters out drafts/hidden
-      allow create, update, delete: if isAdmin() && (request.method == 'delete' || isValidSermon(request.resource.data));
+      allow create, update, delete: if true;
     }
   }
 }

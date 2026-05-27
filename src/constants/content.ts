@@ -4,8 +4,8 @@ export const NAV_ITEMS: NavItem[] = [
   { title: { en: 'Home', vi: 'Trang Chủ' }, href: '/' },
   { title: { en: 'About', vi: 'Giới Thiệu' }, href: '/about' },
   {
-    title: { en: 'Gatherings', vi: 'Các Buổi Nhóm' },
-    href: '#',
+    title: { en: 'Gatherings', vi: 'Sự Nhóm Lại' },
+    href: '#gatherings',
     children: [
       { title: { en: 'Schedule', vi: 'Lịch Trình' }, href: '/schedule' },
       { title: { en: 'Events', vi: 'Sự Kiện' }, href: '/events' },
@@ -14,7 +14,7 @@ export const NAV_ITEMS: NavItem[] = [
   },
   { 
     title: { en: 'Ministries', vi: 'Mục Vụ' }, 
-    href: '#',
+    href: '#ministries',
     children: [
       { title: { en: 'All Ministries', vi: 'Tất Cả Mục Vụ' }, href: '/ministries' },
       { title: { en: 'The Global Gospel Power Church', vi: 'Hội Thánh Tin Lành Quyền Phép Toàn Cầu' }, href: '/ministries/church' },
@@ -29,7 +29,7 @@ export const NAV_ITEMS: NavItem[] = [
   { title: { en: 'Lord\'s House', vi: 'Góc Xây Dựng' }, href: '/building-lords-house' },
   {
     title: { en: 'Media', vi: 'Truyền Thông' },
-    href: '#',
+    href: '#media',
     children: [
       { title: { en: 'Live', vi: 'Trực Tiếp' }, href: '/live' },
       { title: { en: 'Sermon Library', vi: 'Thư Viện Bài Giảng' }, href: '/sermons' },

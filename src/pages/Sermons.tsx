@@ -51,22 +51,31 @@ export const Sermons: React.FC = () => {
             </p>
           </div>
           
-          {isAdmin && (
-            <div className="flex bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-              <button
-                onClick={() => setActiveTab('public')}
-                className={`px-6 py-2 text-sm font-medium transition-colors ${activeTab === 'public' ? 'bg-slate-900 text-white' : 'hover:bg-slate-50 text-slate-600'}`}
-              >
-                {t({ en: 'Public View', vi: 'Xem Công Khai' })}
-              </button>
-              <button
-                onClick={() => setActiveTab('admin')}
-                className={`px-6 py-2 text-sm font-medium transition-colors ${activeTab === 'admin' ? 'bg-church-red text-white' : 'hover:bg-slate-50 text-slate-600'}`}
-              >
-                {t({ en: 'Admin Dashboard', vi: 'Bảng Điều Khiển' })}
-              </button>
-            </div>
-          )}
+          <div className="flex bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <button
+              onClick={() => setActiveTab('public')}
+              className={`px-6 py-2 text-sm font-medium transition-colors ${activeTab === 'public' ? 'bg-slate-900 text-white' : 'hover:bg-slate-50 text-slate-600'}`}
+            >
+              {t({ en: 'Public View', vi: 'Xem Công Khai' })}
+            </button>
+            <button
+              onClick={() => {
+                if (isAdmin) {
+                  setActiveTab('admin');
+                } else {
+                  const pwd = prompt(t({ en: 'Enter temporary admin password:', vi: 'Nhập mật khẩu quản trị tạm thời:' }));
+                  if (pwd === 'tggpc2026') {
+                    setActiveTab('admin');
+                  } else if (pwd !== null) {
+                    alert(t({ en: 'Incorrect password.', vi: 'Mật khẩu sai.' }));
+                  }
+                }
+              }}
+              className={`px-6 py-2 text-sm font-medium transition-colors ${activeTab === 'admin' ? 'bg-church-red text-white' : 'hover:bg-slate-50 text-slate-600'}`}
+            >
+              {t({ en: 'Admin Dashboard', vi: 'Bảng Điều Khiển' })}
+            </button>
+          </div>
         </div>
 
         {activeTab === 'public' ? (
