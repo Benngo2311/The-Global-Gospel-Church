@@ -62,30 +62,9 @@ export const SermonModal: React.FC<SermonModalProps> = ({ sermon, onClose }) => 
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
-          {sermon.description && (
-            <div className="mb-8 p-4 bg-slate-50 rounded-xl border border-slate-100">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                {t({ en: 'Summary', vi: 'Tóm Tắt' })}
-              </h3>
-              <p className="text-slate-700 leading-relaxed">
-                {sermon.description}
-              </p>
-            </div>
-          )}
-
-          {sermon.fullInformation && (
-            <div className="mb-8">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
-                {t({ en: 'Sermon Notes', vi: 'Ghi Chú Bài Giảng' })}
-              </h3>
-              <div className="prose prose-slate max-w-none text-slate-700 whitespace-pre-wrap">
-                {sermon.fullInformation}
-              </div>
-            </div>
-          )}
 
           {sermon.documentUrl && (
-            <div className="mt-8 border-t border-slate-100 pt-8">
+            <div className="mt-4 border-t border-slate-100 pt-8">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                 <FileText size={14} /> 
                 {t({ en: 'Document', vi: 'Tài Liệu' })}
@@ -117,6 +96,36 @@ export const SermonModal: React.FC<SermonModalProps> = ({ sermon, onClose }) => 
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {!sermon.documentUrl && sermon.downloadUrl && (
+            <div className="mt-4 border-t border-slate-100 pt-8 flex flex-col items-center justify-center p-12 text-center bg-slate-50 rounded-xl">
+              <FileText size={48} className="mb-4 text-church-red opacity-80" />
+              <h3 className="text-lg font-bold text-slate-900 mb-2">
+                {sermon.fileType === 'PDF' ? t({ en: 'PDF Document', vi: 'Tài liệu PDF'}) : t({ en: 'Word Document', vi: 'Tài liệu Word' })}
+              </h3>
+              <p className="mb-6 text-slate-500">
+                {t({ en: 'This sermon has an attached document.', vi: 'Bài giảng này có tệp đính kèm.' })}
+              </p>
+              <a 
+                href={sermon.downloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-2 bg-slate-900 text-white font-medium rounded-lg hover:bg-slate-800 transition-colors inline-flex items-center gap-2"
+              >
+                <Download size={16} />
+                {t({ en: 'Download File', vi: 'Tải Xuống' })}
+              </a>
+            </div>
+          )}
+
+          {!sermon.documentUrl && !sermon.downloadUrl && (
+            <div className="mt-4 border-t border-slate-100 pt-16 pb-8 flex flex-col items-center justify-center text-center">
+              <BookOpen size={48} className="mb-4 text-slate-300" />
+              <p className="text-slate-500">
+                {t({ en: 'No document attached to this sermon.', vi: 'Không có tài liệu đính kèm cho bài giảng này.' })}
+              </p>
             </div>
           )}
         </div>

@@ -102,9 +102,9 @@ export const PublicSermonView: React.FC<PublicSermonViewProps> = ({ sermons, gro
               className="group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col"
             >
               <div className="p-6 flex-1 flex flex-col">
-                <div className="mb-4">
+                <div className="mb-4 mt-auto">
                   <span className="inline-block px-3 py-1 bg-church-red/10 text-church-red text-xs font-bold uppercase tracking-wider rounded-full">
-                    {sermon.groupName || 'Uncategorized'}
+                    {sermon.groupName || t({ en: 'Uncategorized', vi: 'Chưa phân loại' })}
                   </span>
                 </div>
                 
@@ -128,12 +128,6 @@ export const PublicSermonView: React.FC<PublicSermonViewProps> = ({ sermons, gro
                     </div>
                   )}
                 </div>
-
-                {sermon.description && (
-                  <p className="text-slate-600 text-sm line-clamp-3 mb-4 mt-auto">
-                    {sermon.description}
-                  </p>
-                )}
               </div>
               <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 group-hover:bg-church-red transition-colors flex items-center justify-between">
                 <span className="text-sm font-medium text-slate-600 group-hover:text-white transition-colors flex items-center gap-2">
