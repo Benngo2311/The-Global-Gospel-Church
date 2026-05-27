@@ -11,6 +11,7 @@ export const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [expandedTabs, setExpandedTabs] = useState<Record<string, boolean>>({});
   const { language, setLanguage, t } = useLanguage();
   const { isAdmin } = useAuth();
   const location = useLocation();
@@ -76,12 +77,17 @@ export const Header: React.FC = () => {
         <nav className="hidden md:flex items-center gap-8">
           {activeNavItems.map((item) => {
             const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href + '/')) || item.children?.some(child => location.pathname === child.href || location.pathname.startsWith(child.href + '/'));
+            const isHash = item.href.startsWith('#');
+            
+            const ItemWrapper = isHash ? 'button' : Link;
+            const itemProps = isHash ? { onClick: (e: React.MouseEvent) => e.preventDefault() } : { to: item.href };
+
             return (
             <div key={item.href} className="relative group">
-              <Link
-                to={item.href}
+              <ItemWrapper
+                {...(itemProps as any)}
                 className={cn(
-                  'text-sm font-medium transition-colors hover:text-church-red relative py-1 flex items-center gap-1',
+                  'text-sm font-medium transition-colors hover:text-church-red relative py-2 flex items-center gap-1 cursor-pointer',
                   isActive ? 'text-church-red' : 'text-slate-900',
                   item.title.en === 'Give' && 'px-4 py-1.5 bg-church-red/10 text-church-red rounded-full hover:bg-church-red hover:text-white'
                 )}
@@ -94,17 +100,17 @@ export const Header: React.FC = () => {
                     className="absolute bottom-0 left-0 right-0 h-0.5 bg-church-red"
                   />
                 )}
-              </Link>
+              </ItemWrapper>
               
               {item.children && (
-                <div className="absolute left-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                  <div className="w-80 glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                  <div className="w-80 glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden flex flex-col py-2">
                     {item.children.map((child) => (
                       <Link
                         key={child.href}
                         to={child.href}
                         className={cn(
-                          'block px-6 py-4 text-sm font-medium hover:bg-church-red/10 transition-colors',
+                          'px-6 py-3 text-sm font-medium hover:bg-church-red/10 transition-colors',
                           location.pathname === child.href ? 'text-church-red' : 'text-slate-900'
                         )}
                       >
@@ -202,36 +208,55 @@ export const Header: React.FC = () => {
             <div className="flex flex-col gap-4">
               {activeNavItems.map((item) => {
                 const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href + '/')) || item.children?.some(child => location.pathname === child.href || location.pathname.startsWith(child.href + '/'));
+                const isExpanded = expandedTabs[item.href];
+                const isHash = item.href.startsWith('#');
+                
+                const MobileItemWrapper = isHash ? 'button' : Link;
+                const mobileProps = isHash 
+                  ? { onClick: (e: React.MouseEvent) => { e.preventDefault(); setExpandedTabs(prev => ({ ...prev, [item.href]: !prev[item.href] })); } } 
+                  : { to: item.href, onClick: () => { if (!item.children) setIsOpen(false); if (item.children) setExpandedTabs(prev => ({ ...prev, [item.href]: !prev[item.href] })); } };
+
                 return (
                 <div key={item.href} className="flex flex-col gap-2">
-                  <Link
-                    to={item.href}
-                    onClick={() => !item.children && setIsOpen(false)}
+                  <MobileItemWrapper
+                    {...(mobileProps as any)}
                     className={cn(
-                      'text-lg font-serif font-medium transition-colors flex items-center justify-between',
+                      'text-lg font-serif font-medium transition-colors flex items-center justify-between w-full text-left',
                       isActive ? 'text-church-red' : 'text-slate-900',
-                      item.title.en === 'Give' && 'px-4 py-2 bg-church-red/10 text-church-red rounded-xl hover:bg-church-red hover:text-white'
+                      item.title.en === 'Give' && 'px-4 py-2 bg-church-red/10 text-church-red rounded-xl hover:bg-church-red hover:text-white inline-flex w-fit'
                     )}
                   >
                     {t(item.title)}
-                  </Link>
-                  {item.children && (
-                    <div className="pl-4 flex flex-col gap-2 border-l border-church-red/20 ml-2">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          to={child.href}
-                          onClick={() => setIsOpen(false)}
-                          className={cn(
-                            'text-base font-medium transition-colors',
-                            location.pathname === child.href ? 'text-church-red' : 'text-slate-400'
-                          )}
-                        >
-                          {t(child.title)}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
+                    {item.children && (
+                      <ChevronDown size={18} className={cn("transition-transform text-slate-400", isExpanded && "rotate-180")} />
+                    )}
+                  </MobileItemWrapper>
+                  <AnimatePresence>
+                    {item.children && isExpanded && (
+                      <motion.div 
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pl-4 flex flex-col gap-3 border-l border-church-red/20 ml-2 py-2">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              to={child.href}
+                              onClick={() => setIsOpen(false)}
+                              className={cn(
+                                'text-base font-medium transition-colors',
+                                location.pathname === child.href ? 'text-church-red' : 'text-slate-500'
+                              )}
+                            >
+                              {t(child.title)}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
                 );
               })}
