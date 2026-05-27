@@ -100,14 +100,26 @@ export const SermonModal: React.FC<SermonModalProps> = ({ sermon, onClose }) => 
           )}
 
           {!sermon.documentUrl && sermon.downloadUrl && (
-            <div className="mt-4 border-t border-slate-100 pt-8 flex flex-col items-center justify-center p-12 text-center bg-slate-50 rounded-xl">
-              <FileText size={48} className="mb-4 text-church-red opacity-80" />
-              <h3 className="text-lg font-bold text-slate-900 mb-2">
-                {sermon.fileType === 'PDF' ? t({ en: 'PDF Document', vi: 'Tài liệu PDF'}) : t({ en: 'Word Document', vi: 'Tài liệu Word' })}
+            <div className="mt-4 border-t border-slate-100 pt-8 flex flex-col items-center justify-center p-4">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider w-full mb-3 flex items-center gap-2">
+                <FileText size={14} /> 
+                {t({ en: 'Document Preview', vi: 'Xem Trước Tài Liệu' })}
               </h3>
-              <p className="mb-6 text-slate-500">
-                {t({ en: 'This sermon has an attached document.', vi: 'Bài giảng này có tệp đính kèm.' })}
-              </p>
+              <div className="w-full max-w-3xl aspect-[1/1.4] mx-auto rounded-xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50 mb-6">
+                {sermon.fileType === 'PDF' ? (
+                  <iframe 
+                    src={sermon.downloadUrl} 
+                    className="w-full h-[600px] border-0" 
+                    title="PDF Preview" 
+                  />
+                ) : (
+                  <iframe 
+                    src={`https://docs.google.com/gview?url=${encodeURIComponent(sermon.downloadUrl)}&embedded=true`} 
+                    className="w-full h-[600px] border-0" 
+                    title="Document Preview" 
+                  />
+                )}
+              </div>
               <a 
                 href={sermon.downloadUrl}
                 target="_blank"
