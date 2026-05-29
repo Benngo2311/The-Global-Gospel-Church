@@ -196,7 +196,10 @@ export const Header: React.FC = () => {
           {/* Mobile Menu Toggle */}
           <button
             className="lg:hidden text-slate-900 hover:text-church-red transition-colors"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => {
+              setIsOpen(!isOpen);
+              if (isOpen) setExpandedMobileTab(null);
+            }}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -210,7 +213,7 @@ export const Header: React.FC = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 right-0 bg-white/100 backdrop-blur-md border-t border-white/20 p-6 lg:hidden shadow-2xl max-h-[85vh] overflow-y-auto"
+            className="absolute top-full left-0 right-0 bg-white/100 backdrop-blur-md border-t border-white/20 p-6 lg:hidden shadow-2xl max-h-[calc(100dvh-80px)] overflow-y-auto pb-24 overscroll-contain"
           >
             <div className="flex flex-col gap-4">
               {activeNavItems.map((item) => {
@@ -251,7 +254,10 @@ export const Header: React.FC = () => {
                             <Link
                               key={child.href}
                               to={child.href}
-                              onClick={() => setIsOpen(false)}
+                              onClick={() => {
+                                setIsOpen(false);
+                                setExpandedMobileTab(null);
+                              }}
                               className={cn(
                                 'text-base font-medium transition-colors',
                                 location.pathname === child.href ? 'text-church-red' : 'text-slate-500'
@@ -277,6 +283,7 @@ export const Header: React.FC = () => {
                     onClick={() => {
                       setLanguage('en');
                       setIsOpen(false);
+                      setExpandedMobileTab(null);
                     }}
                     className={cn(
                       'px-4 py-2 rounded-xl text-sm font-medium transition-all',
@@ -289,6 +296,7 @@ export const Header: React.FC = () => {
                     onClick={() => {
                       setLanguage('vi');
                       setIsOpen(false);
+                      setExpandedMobileTab(null);
                     }}
                     className={cn(
                       'px-4 py-2 rounded-xl text-sm font-medium transition-all',
