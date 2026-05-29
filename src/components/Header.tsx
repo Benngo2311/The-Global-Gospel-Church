@@ -104,7 +104,7 @@ export const Header: React.FC = () => {
                 )}
               >
                 {t(item.title)}
-                {item.children && <ChevronDown size={14} className={cn("transition-transform", openDesktopDropdown === item.href ? "rotate-180" : "group-hover:rotate-180")} />}
+                {item.children && <ChevronDown size={14} className={cn("transition-transform", openDesktopDropdown === item.href ? "rotate-180" : "")} />}
                 {isActive && item.title.en !== 'Give' && (
                   <motion.div
                     layoutId="nav-underline"
@@ -117,7 +117,7 @@ export const Header: React.FC = () => {
                 <div 
                   className={cn(
                     "absolute left-0 top-full pt-2 transition-all duration-300 z-50",
-                    openDesktopDropdown === item.href ? "opacity-100 visible" : "opacity-0 invisible lg:group-hover:opacity-100 lg:group-hover:visible"
+                    openDesktopDropdown === item.href ? "opacity-100 visible" : "opacity-0 invisible"
                   )}
                 >
                   <div className="w-80 glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden flex flex-col py-2">
@@ -220,7 +220,7 @@ export const Header: React.FC = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 right-0 bg-white/100 backdrop-blur-md border-t border-white/20 p-6 lg:hidden shadow-2xl max-h-[calc(100svh-5rem)] overflow-y-auto"
+            className="absolute top-full left-0 right-0 bg-white/100 backdrop-blur-md border-t border-white/20 p-6 lg:hidden shadow-2xl max-h-[85vh] overflow-y-auto"
           >
             <div className="flex flex-col gap-4">
               {activeNavItems.map((item) => {
