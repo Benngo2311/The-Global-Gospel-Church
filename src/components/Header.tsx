@@ -11,8 +11,7 @@ export const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [expandedTabs, setExpandedTabs] = useState<Record<string, boolean>>({});
-  const [openDesktopDropdown, setOpenDesktopDropdown] = useState<string | null>(null);
+  const [expandedMobileTab, setExpandedMobileTab] = useState<string | null>(null);
   const { language, setLanguage, t } = useLanguage();
   const { isAdmin } = useAuth();
   const location = useLocation();
@@ -82,18 +81,13 @@ export const Header: React.FC = () => {
             
             const ItemWrapper = isHash ? 'button' : Link;
             const itemProps = isHash ? { 
-              onClick: (e: React.MouseEvent) => {
-                e.preventDefault();
-                setOpenDesktopDropdown(openDesktopDropdown === item.href ? null : item.href);
-              } 
+              onClick: (e: React.MouseEvent) => e.preventDefault()
             } : { to: item.href };
 
             return (
             <div 
               key={item.href} 
               className="relative group"
-              onMouseEnter={() => setOpenDesktopDropdown(item.href)}
-              onMouseLeave={() => setOpenDesktopDropdown(null)}
             >
               <ItemWrapper
                 {...(itemProps as any)}
@@ -104,7 +98,7 @@ export const Header: React.FC = () => {
                 )}
               >
                 {t(item.title)}
-                {item.children && <ChevronDown size={14} className={cn("transition-transform", openDesktopDropdown === item.href ? "rotate-180" : "")} />}
+                {item.children && <ChevronDown size={14} className="transition-transform lg:group-hover:rotate-180" />}
                 {isActive && item.title.en !== 'Give' && (
                   <motion.div
                     layoutId="nav-underline"
@@ -115,17 +109,13 @@ export const Header: React.FC = () => {
               
               {item.children && (
                 <div 
-                  className={cn(
-                    "absolute left-0 top-full pt-2 transition-all duration-300 z-50",
-                    openDesktopDropdown === item.href ? "opacity-100 visible" : "opacity-0 invisible"
-                  )}
+                  className="absolute left-0 top-full pt-2 transition-all duration-300 z-50 opacity-0 invisible lg:group-hover:opacity-100 lg:group-hover:visible pointer-events-none lg:group-hover:pointer-events-auto"
                 >
                   <div className="w-80 glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden flex flex-col py-2">
                     {item.children.map((child) => (
                       <Link
                         key={child.href}
                         to={child.href}
-                        onClick={() => setOpenDesktopDropdown(null)}
                         className={cn(
                           'px-6 py-3 text-sm font-medium hover:bg-church-red/10 transition-colors',
                           location.pathname === child.href ? 'text-church-red' : 'text-slate-900'
@@ -225,13 +215,13 @@ export const Header: React.FC = () => {
             <div className="flex flex-col gap-4">
               {activeNavItems.map((item) => {
                 const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href + '/')) || item.children?.some(child => location.pathname === child.href || location.pathname.startsWith(child.href + '/'));
-                const isExpanded = expandedTabs[item.href];
+                const isExpanded = expandedMobileTab === item.href;
                 const isHash = item.href.startsWith('#');
                 
                 const MobileItemWrapper = isHash ? 'button' : Link;
                 const mobileProps = isHash 
-                  ? { onClick: (e: React.MouseEvent) => { e.preventDefault(); setExpandedTabs(prev => prev[item.href] ? {} : { [item.href]: true }); } } 
-                  : { to: item.href, onClick: () => { if (!item.children) setIsOpen(false); if (item.children) setExpandedTabs(prev => prev[item.href] ? {} : { [item.href]: true }); } };
+                  ? { onClick: (e: React.MouseEvent) => { e.preventDefault(); setExpandedMobileTab(isExpanded ? null : item.href); } } 
+                  : { to: item.href, onClick: (e: React.MouseEvent) => { if (!item.children) setIsOpen(false); if (item.children) { e.preventDefault(); setExpandedMobileTab(isExpanded ? null : item.href); } } };
 
                 return (
                 <div key={item.href} className="flex flex-col gap-2">
