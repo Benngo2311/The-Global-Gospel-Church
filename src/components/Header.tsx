@@ -220,7 +220,7 @@ export const Header: React.FC = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 right-0 bg-white/100 backdrop-blur-md border-t border-white/20 p-6 lg:hidden shadow-2xl"
+            className="absolute top-full left-0 right-0 bg-white/100 backdrop-blur-md border-t border-white/20 p-6 lg:hidden shadow-2xl max-h-[calc(100svh-5rem)] overflow-y-auto"
           >
             <div className="flex flex-col gap-4">
               {activeNavItems.map((item) => {
