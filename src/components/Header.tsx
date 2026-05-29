@@ -11,7 +11,7 @@ export const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [expandedMobileTab, setExpandedMobileTab] = useState<string | null>(null);
+  const [expandedTabs, setExpandedTabs] = useState<Record<string, boolean>>({});
   const { language, setLanguage, t } = useLanguage();
   const { isAdmin } = useAuth();
   const location = useLocation();
@@ -198,7 +198,7 @@ export const Header: React.FC = () => {
             className="lg:hidden text-slate-900 hover:text-church-red transition-colors"
             onClick={() => {
               setIsOpen(!isOpen);
-              if (isOpen) setExpandedMobileTab(null);
+              if (isOpen) setExpandedTabs({});
             }}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -218,13 +218,22 @@ export const Header: React.FC = () => {
             <div className="flex flex-col gap-4">
               {activeNavItems.map((item) => {
                 const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href + '/')) || item.children?.some(child => location.pathname === child.href || location.pathname.startsWith(child.href + '/'));
-                const isExpanded = expandedMobileTab === item.href;
+                const isExpanded = expandedTabs[item.href];
                 const isHash = item.href.startsWith('#');
                 
                 const MobileItemWrapper = isHash ? 'button' : Link;
+                const toggleExpand = (e: React.MouseEvent) => {
+                  e.preventDefault();
+                  // Close all other tabs and toggle this one
+                  setExpandedTabs((prev) => {
+                     // If it's currently expanded, close it. Otherwise, open this one ONLY.
+                     return prev[item.href] ? {} : { [item.href]: true };
+                  });
+                };
+
                 const mobileProps = isHash 
-                  ? { onClick: (e: React.MouseEvent) => { e.preventDefault(); setExpandedMobileTab(isExpanded ? null : item.href); } } 
-                  : { to: item.href, onClick: (e: React.MouseEvent) => { if (!item.children) setIsOpen(false); if (item.children) { e.preventDefault(); setExpandedMobileTab(isExpanded ? null : item.href); } } };
+                  ? { onClick: toggleExpand } 
+                  : { to: item.href, onClick: (e: React.MouseEvent) => { if (!item.children) setIsOpen(false); if (item.children) { toggleExpand(e); } } };
 
                 return (
                 <div key={item.href} className="flex flex-col gap-2">
@@ -256,7 +265,7 @@ export const Header: React.FC = () => {
                               to={child.href}
                               onClick={() => {
                                 setIsOpen(false);
-                                setExpandedMobileTab(null);
+                                setExpandedTabs({});
                               }}
                               className={cn(
                                 'text-base font-medium transition-colors',
@@ -283,7 +292,7 @@ export const Header: React.FC = () => {
                     onClick={() => {
                       setLanguage('en');
                       setIsOpen(false);
-                      setExpandedMobileTab(null);
+                      setExpandedTabs({});
                     }}
                     className={cn(
                       'px-4 py-2 rounded-xl text-sm font-medium transition-all',
@@ -296,7 +305,7 @@ export const Header: React.FC = () => {
                     onClick={() => {
                       setLanguage('vi');
                       setIsOpen(false);
-                      setExpandedMobileTab(null);
+                      setExpandedTabs({});
                     }}
                     className={cn(
                       'px-4 py-2 rounded-xl text-sm font-medium transition-all',
