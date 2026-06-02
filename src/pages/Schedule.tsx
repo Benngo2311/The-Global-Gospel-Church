@@ -80,7 +80,13 @@ export const Schedule: React.FC = () => {
   const [selectedCalendarId, setSelectedCalendarId] = useState<string>('default');
   const [showAddCalendarForm, setShowAddCalendarForm] = useState(false);
   const [editingCalendarId, setEditingCalendarId] = useState<string | null>(null);
-  const [newCalendar, setNewCalendar] = useState({ name: '', timezone: TIMEZONES[0].value });
+  const [newCalendar, setNewCalendar] = useState({ 
+    name: '', 
+    timezone: TIMEZONES[0].value,
+    description: '',
+    zoomId: '',
+    zoomPassword: ''
+  });
 
   useEffect(() => {
     const unsubSchedules = onSnapshot(query(collection(db, 'worshipSchedule')), (snap) => {
@@ -276,6 +282,9 @@ export const Schedule: React.FC = () => {
         await setDoc(doc(db, 'worshipCalendars', 'default'), {
           name: calName,
           timezone: newCalendar.timezone,
+          description: newCalendar.description,
+          zoomId: newCalendar.zoomId,
+          zoomPassword: newCalendar.zoomPassword,
           createdBy: currentUser.uid,
           timestamp: serverTimestamp()
         }, { merge: true });
@@ -283,6 +292,9 @@ export const Schedule: React.FC = () => {
         await updateDoc(doc(db, 'worshipCalendars', editingCalendarId), {
           name: calName,
           timezone: newCalendar.timezone,
+          description: newCalendar.description,
+          zoomId: newCalendar.zoomId,
+          zoomPassword: newCalendar.zoomPassword,
         });
       }
       setSelectedCalendarId(editingCalendarId);
@@ -290,6 +302,9 @@ export const Schedule: React.FC = () => {
       const docRef = await addDoc(collection(db, 'worshipCalendars'), {
         name: calName,
         timezone: newCalendar.timezone,
+        description: newCalendar.description,
+        zoomId: newCalendar.zoomId,
+        zoomPassword: newCalendar.zoomPassword,
         createdBy: currentUser.uid,
         timestamp: serverTimestamp()
       });
@@ -298,11 +313,11 @@ export const Schedule: React.FC = () => {
     
     setShowAddCalendarForm(false);
     setEditingCalendarId(null);
-    setNewCalendar({ name: '', timezone: TIMEZONES[0].value });
+    setNewCalendar({ name: '', timezone: TIMEZONES[0].value, description: '', zoomId: '', zoomPassword: '' });
   };
 
   const deleteCalendar = async (id: string) => {
-    if (confirm(t({ en: 'Are you sure you want to delete this space?', vi: 'Bạn có chắc chắn muốn xóa không gian này?' }))) {
+    if (confirm(t({ en: 'Are you sure you want to delete this schedule?', vi: 'Bạn có chắc chắn muốn xóa lịch này?' }))) {
       await deleteDoc(doc(db, 'worshipCalendars', id));
       if (selectedCalendarId === id) {
         setSelectedCalendarId('default');
@@ -312,7 +327,7 @@ export const Schedule: React.FC = () => {
 
   const openFormForNewCalendar = () => {
     setEditingCalendarId(null);
-    setNewCalendar({ name: '', timezone: TIMEZONES[0].value });
+    setNewCalendar({ name: '', timezone: TIMEZONES[0].value, description: '', zoomId: '', zoomPassword: '' });
     setShowAddCalendarForm(true);
   };
 
@@ -322,14 +337,23 @@ export const Schedule: React.FC = () => {
       setEditingCalendarId('default');
       setNewCalendar({ 
         name: cal?.name || 'Main Space', 
-        timezone: cal?.timezone || 'Asia/Ho_Chi_Minh'
+        timezone: cal?.timezone || 'Asia/Ho_Chi_Minh',
+        description: cal?.description || '',
+        zoomId: cal?.zoomId || '',
+        zoomPassword: cal?.zoomPassword || ''
       });
       setShowAddCalendarForm(true);
     } else {
       const cal = calendars.find(c => c.id === selectedCalendarId);
       if (cal) {
         setEditingCalendarId(cal.id);
-        setNewCalendar({ name: cal.name, timezone: cal.timezone });
+        setNewCalendar({ 
+          name: cal.name, 
+          timezone: cal.timezone,
+          description: cal.description || '',
+          zoomId: cal.zoomId || '',
+          zoomPassword: cal.zoomPassword || ''
+        });
         setShowAddCalendarForm(true);
       }
     }
@@ -623,8 +647,41 @@ export const Schedule: React.FC = () => {
                   </select>
                 </div>
                 
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Description (Optional)', vi: 'Mô Tả (Tùy Chọn)' })}</label>
+                  <textarea 
+                    placeholder="e.g. For weekly gatherings"
+                    value={newCalendar.description} 
+                    onChange={e => setNewCalendar({...newCalendar, description: e.target.value})} 
+                    className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red min-h-[80px]" 
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Zoom ID (Optional)', vi: 'ID Zoom (Tùy Chọn)' })}</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. 123 456 7890"
+                      value={newCalendar.zoomId} 
+                      onChange={e => setNewCalendar({...newCalendar, zoomId: e.target.value})} 
+                      className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Zoom Password (Optional)', vi: 'Mật Khẩu Zoom (Tùy Chọn)' })}</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. password123"
+                      value={newCalendar.zoomPassword} 
+                      onChange={e => setNewCalendar({...newCalendar, zoomPassword: e.target.value})} 
+                      className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
+                    />
+                  </div>
+                </div>
+                
                 <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 mt-2">
-                  {editingCalendarId ? <Edit2 size={18} /> : <Plus size={18} />} {editingCalendarId ? t({ en: 'Save Space', vi: 'Lưu Không Gian' }) : t({ en: 'Create Space', vi: 'Tạo Không Gian' })}
+                  {editingCalendarId ? <Edit2 size={18} /> : <Plus size={18} />} {editingCalendarId ? t({ en: 'Save Schedule', vi: 'Lưu Lịch' }) : t({ en: 'Create Schedule', vi: 'Tạo Lịch' })}
                 </button>
               </form>
             </div>
@@ -655,7 +712,7 @@ export const Schedule: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Schedule Name', vi: 'Tên Lịch' })}</label>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Worshipper Name', vi: 'Tên Người Thờ Phượng' })}</label>
                   <input 
                     type="text" 
                     placeholder={userProfile?.displayName || "e.g. MS Thu"}

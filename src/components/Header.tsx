@@ -12,6 +12,7 @@ export const Header: React.FC = () => {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [expandedTabs, setExpandedTabs] = useState<Record<string, boolean>>({});
+  const [openDesktopDropdown, setOpenDesktopDropdown] = useState<string | null>(null);
   const { language, setLanguage, t } = useLanguage();
   const { isAdmin } = useAuth();
   const location = useLocation();
@@ -27,6 +28,9 @@ export const Header: React.FC = () => {
       const target = e.target as HTMLElement;
       if (!target.closest('.lang-switcher')) {
         setIsLangOpen(false);
+      }
+      if (!target.closest('.desktop-nav-item')) {
+        setOpenDesktopDropdown(null);
       }
     };
     window.addEventListener('click', handleClickOutside);
@@ -81,13 +85,28 @@ export const Header: React.FC = () => {
             
             const ItemWrapper = isHash ? 'button' : Link;
             const itemProps = isHash ? { 
-              onClick: (e: React.MouseEvent) => e.preventDefault()
-            } : { to: item.href };
+              onClick: (e: React.MouseEvent) => {
+                e.preventDefault();
+                if (item.children) {
+                    setOpenDesktopDropdown(openDesktopDropdown === item.href ? null : item.href);
+                }
+              }
+            } : { 
+              to: item.href,
+              onClick: (e: React.MouseEvent) => {
+                if (item.children) {
+                   e.preventDefault();
+                   setOpenDesktopDropdown(openDesktopDropdown === item.href ? null : item.href);
+                }
+              }
+            };
 
             return (
             <div 
               key={item.href} 
-              className="relative group"
+              className="relative group desktop-nav-item"
+              onMouseEnter={() => setOpenDesktopDropdown(item.href)}
+              onMouseLeave={() => setOpenDesktopDropdown(null)}
             >
               <ItemWrapper
                 {...(itemProps as any)}
@@ -98,7 +117,7 @@ export const Header: React.FC = () => {
                 )}
               >
                 {t(item.title)}
-                {item.children && <ChevronDown size={14} className="transition-transform lg:group-hover:rotate-180" />}
+                {item.children && <ChevronDown size={14} className={cn("transition-transform", openDesktopDropdown === item.href ? "rotate-180" : "")} />}
                 {isActive && item.title.en !== 'Give' && (
                   <motion.div
                     layoutId="nav-underline"
@@ -109,13 +128,17 @@ export const Header: React.FC = () => {
               
               {item.children && (
                 <div 
-                  className="absolute left-0 top-full pt-2 transition-all duration-300 z-50 opacity-0 invisible lg:group-hover:opacity-100 lg:group-hover:visible pointer-events-none lg:group-hover:pointer-events-auto"
+                  className={cn(
+                    "absolute left-0 top-full pt-2 transition-all duration-300 z-50",
+                    openDesktopDropdown === item.href ? "opacity-100 visible pointer-events-auto" : "opacity-0 invisible pointer-events-none"
+                  )}
                 >
                   <div className="w-80 glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden flex flex-col py-2">
                     {item.children.map((child) => (
                       <Link
                         key={child.href}
                         to={child.href}
+                        onClick={() => setOpenDesktopDropdown(null)}
                         className={cn(
                           'px-6 py-3 text-sm font-medium hover:bg-church-red/10 transition-colors',
                           location.pathname === child.href ? 'text-church-red' : 'text-slate-900'
