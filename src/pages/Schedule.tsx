@@ -409,7 +409,7 @@ export const Schedule: React.FC = () => {
         </div>
 
         {/* Calendar Tabs */}
-        <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-200 pb-2">
+        <div className="flex flex-wrap items-center gap-2 mb-2 border-b border-slate-200 pb-2">
           <button 
             onClick={() => setSelectedCalendarId('default')}
             className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${selectedCalendarId === 'default' ? 'bg-slate-900 text-white shadow' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}`}
@@ -446,6 +446,28 @@ export const Schedule: React.FC = () => {
             </div>
           )}
         </div>
+
+        {(() => {
+          const activeCal = calendars.find(c => c.id === (selectedCalendarId === 'default' ? 'default' : selectedCalendarId));
+          if (activeCal && (activeCal.description || activeCal.zoomId)) {
+            return (
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 text-sm">
+                {activeCal.description && (
+                  <p className="text-slate-700 mb-2">{activeCal.description}</p>
+                )}
+                {activeCal.zoomId && (
+                  <div className="flex flex-wrap gap-4 text-slate-600">
+                    <p><span className="font-bold">{t({ en: 'Zoom ID:', vi: 'Phòng Zoom ID:' })}</span> {activeCal.zoomId}</p>
+                    {activeCal.zoomPassword && (
+                      <p><span className="font-bold">{t({ en: 'Password:', vi: 'Mật Khẩu:' })}</span> {activeCal.zoomPassword}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          }
+          return <div className="mb-6"></div>;
+        })()}
 
         {/* Timeline Controls */}
         <div className="flex flex-wrap items-center gap-4 mb-6 relative z-30">
@@ -619,11 +641,11 @@ export const Schedule: React.FC = () => {
               <button type="button" onClick={() => setShowAddCalendarForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer">
                 <X size={20} />
               </button>
-              <h3 className="font-bold text-xl mb-4 text-slate-900">{editingCalendarId ? t({ en: 'Edit Space', vi: 'Sửa Không Gian' }) : t({ en: 'Create New Space', vi: 'Tạo Không Gian Mới' })}</h3>
+              <h3 className="font-bold text-xl mb-4 text-slate-900">{editingCalendarId ? t({ en: 'Edit SSchedule', vi: 'Sửa Lịch' }) : t({ en: 'Create New SpSchedule', vi: 'Tạo Lịch Mới' })}</h3>
               
               <form onSubmit={handleAddCalendarSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Space Name', vi: 'Tên Không Gian' })}</label>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Schedule Name', vi: 'Tên Lịch' })}</label>
                   <input 
                     type="text" 
                     placeholder="e.g. Youth Room"
@@ -662,7 +684,7 @@ export const Schedule: React.FC = () => {
                     <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Zoom ID (Optional)', vi: 'ID Zoom (Tùy Chọn)' })}</label>
                     <input 
                       type="text" 
-                      placeholder="e.g. 123 456 7890"
+                      placeholder="e.g. 484 700 7000"
                       value={newCalendar.zoomId} 
                       onChange={e => setNewCalendar({...newCalendar, zoomId: e.target.value})} 
                       className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
@@ -672,7 +694,7 @@ export const Schedule: React.FC = () => {
                     <label className="block text-xs font-bold text-slate-500 mb-1">{t({ en: 'Zoom Password (Optional)', vi: 'Mật Khẩu Zoom (Tùy Chọn)' })}</label>
                     <input 
                       type="text" 
-                      placeholder="e.g. password123"
+                      placeholder="e.g. 7777"
                       value={newCalendar.zoomPassword} 
                       onChange={e => setNewCalendar({...newCalendar, zoomPassword: e.target.value})} 
                       className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 outline-none focus:border-church-red" 
@@ -695,7 +717,7 @@ export const Schedule: React.FC = () => {
               <button type="button" onClick={() => setShowAddForm(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer">
                 <X size={20} />
               </button>
-              <h3 className="font-bold text-xl mb-4 text-slate-900">{editingScheduleId ? t({ en: 'Edit Schedule', vi: 'Chỉnh Sửa Lịch' }) : t({ en: 'Create Schedule', vi: 'Tạo Lịch' })}</h3>
+              <h3 className="font-bold text-xl mb-4 text-slate-900">{editingScheduleId ? t({ en: 'Edit Schedule', vi: 'Chỉnh Sửa Lịch' }) : t({ en: 'Worship Sign Up', vi: 'Đăng Ký Thờ Phượng' })}</h3>
               
               <form onSubmit={handleAddSubmit} className="space-y-5">
                 <div>

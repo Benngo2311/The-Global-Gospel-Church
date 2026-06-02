@@ -97,6 +97,8 @@ export const Header: React.FC = () => {
                 if (item.children) {
                    e.preventDefault();
                    setOpenDesktopDropdown(openDesktopDropdown === item.href ? null : item.href);
+                } else {
+                   setOpenDesktopDropdown(null);
                 }
               }
             };
@@ -105,8 +107,12 @@ export const Header: React.FC = () => {
             <div 
               key={item.href} 
               className="relative group desktop-nav-item"
-              onMouseEnter={() => setOpenDesktopDropdown(item.href)}
-              onMouseLeave={() => setOpenDesktopDropdown(null)}
+              onPointerEnter={(e) => {
+                if (e.pointerType === 'mouse') setOpenDesktopDropdown(item.href);
+              }}
+              onPointerLeave={(e) => {
+                if (e.pointerType === 'mouse') setOpenDesktopDropdown(null);
+              }}
             >
               <ItemWrapper
                 {...(itemProps as any)}
@@ -126,14 +132,14 @@ export const Header: React.FC = () => {
                 )}
               </ItemWrapper>
               
-              {item.children && (
-                <div 
-                  className={cn(
-                    "absolute left-0 top-full pt-2 transition-all duration-300 z-50",
-                    openDesktopDropdown === item.href ? "opacity-100 visible pointer-events-auto" : "opacity-0 invisible pointer-events-none"
-                  )}
+              {item.children && openDesktopDropdown === item.href && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute left-0 top-full pt-2 z-[100] pointer-events-auto"
                 >
-                  <div className="w-80 glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden flex flex-col py-2">
+                  <div className="w-[300px] glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden flex flex-col py-2">
                     {item.children.map((child) => (
                       <Link
                         key={child.href}
@@ -148,7 +154,7 @@ export const Header: React.FC = () => {
                       </Link>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               )}
             </div>
             );
