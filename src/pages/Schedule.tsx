@@ -514,7 +514,7 @@ export const Schedule: React.FC = () => {
         </div>
 
         {/* Weekly Grid */}
-        <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex min-h-[700px]">
+        <div className="flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex min-h-[1440px] md:min-h-[1800px]">
           
           {/* Time scale column */}
           <div className="w-20 shrink-0 border-r border-slate-200 bg-slate-50 flex flex-col relative z-20">
@@ -562,39 +562,104 @@ export const Schedule: React.FC = () => {
                     ))}
                     
                     {/* Events */}
-                    {daySessions.map(session => {
-                      const sessionEndUTC = session.startTimeUTC + session.durationHours * 3600 * 1000;
+                    {(() => {
+                      const sortedSessions = [...daySessions].sort((a, b) => a.startTimeUTC - b.startTimeUTC);
                       
-                      const visibleStart = Math.max(dayStartUTC, session.startTimeUTC);
-                      const visibleEnd = Math.min(dayEndUTC, sessionEndUTC);
+                      const groups: typeof sortedSessions[] = [];
+                      let currentGroup: typeof sortedSessions = [];
+                      let groupEnd = 0;
                       
-                      const startOffset = visibleStart - dayStartUTC;
-                      const duration = visibleEnd - visibleStart;
-                      
-                      const topPercent = (startOffset / (24 * 3600 * 1000)) * 100;
-                      const heightPercent = (duration / (24 * 3600 * 1000)) * 100;
-                      
-                      const isPast = sessionEndUTC < Date.now();
-                      const isMine = session.userId === currentUser?.uid;
-                      const canEdit = isMine || isAdmin;
-                      
-                      let colorClass = "bg-green-100 border-green-200 text-green-800";
-                      if (isPast) {
-                        colorClass = "bg-slate-100 border-slate-200 text-slate-600";
-                      } else if (isMine) {
-                        colorClass = "bg-orange-100 border-orange-300 text-orange-900";
+                      sortedSessions.forEach(session => {
+                        const start = session.startTimeUTC;
+                        const end = session.startTimeUTC + session.durationHours * 3600 * 1000;
+                        if (currentGroup.length === 0) {
+                          currentGroup.push(session);
+                          groupEnd = end;
+                        } else if (start < groupEnd) {
+                          currentGroup.push(session);
+                          groupEnd = Math.max(groupEnd, end);
+                        } else {
+                          groups.push(currentGroup);
+                          currentGroup = [session];
+                          groupEnd = end;
+                        }
+                      });
+                      if (currentGroup.length > 0) {
+                        groups.push(currentGroup);
                       }
 
-                      const localTimeStrStart = getLocalTimeStr(session.startTimeUTC, session.timezone || TIMEZONES[0].value);
-                      const localTimeStrEnd = getLocalTimeStr(sessionEndUTC, session.timezone || TIMEZONES[0].value);
-
-                      return (
-                        <div 
-                          key={session.id + i}
-                          className={`absolute left-1 right-1 rounded border shadow-sm px-2 py-1.5 group/block z-10 hover:z-20 ${colorClass}`}
-                          style={{ top: `${topPercent}%`, height: `calc(${heightPercent}% - 4px)`, minHeight: 'max-content' }}
-                        >
-                          <div className="absolute top-1 right-1 opacity-0 group-hover/block:opacity-100 flex gap-1 z-10 bg-white/80 rounded backdrop-blur-sm shadow-sm border border-slate-200/50">
+                      return groups.flatMap(group => {
+                        const columns: typeof sortedSessions[] = [];
+                        const sessionPos = new Map<string, {col: number, totalCols: number}>();
+                        
+                        group.forEach(session => {
+                          const start = session.startTimeUTC;
+                          let placed = false;
+                          for (let k = 0; k < columns.length; k++) {
+                            const col = columns[k];
+                            const lastSession = col[col.length - 1];
+                            const lastSessionEnd = lastSession.startTimeUTC + lastSession.durationHours * 3600 * 1000;
+                            // Add a small buffer (e.g. 1ms) so events ending EXACTLY at the same hour start don't get misplaced. 
+                            // Actually, if it ends at 9:00 and next starts at 9:00, they shouldn't overlap.
+                            if (lastSessionEnd <= start) {
+                              col.push(session);
+                              sessionPos.set(session.id, { col: k, totalCols: 0 });
+                              placed = true;
+                              break;
+                            }
+                          }
+                          if (!placed) {
+                            columns.push([session]);
+                            sessionPos.set(session.id, { col: columns.length - 1, totalCols: 0 });
+                          }
+                        });
+                        
+                        const totalCols = columns.length;
+                        
+                        return group.map(session => {
+                          const sessionEndUTC = session.startTimeUTC + session.durationHours * 3600 * 1000;
+                          
+                          const visibleStart = Math.max(dayStartUTC, session.startTimeUTC);
+                          const visibleEnd = Math.min(dayEndUTC, sessionEndUTC);
+                          
+                          const startOffset = visibleStart - dayStartUTC;
+                          const duration = visibleEnd - visibleStart;
+                          
+                          const topPercent = (startOffset / (24 * 3600 * 1000)) * 100;
+                          const heightPercent = (duration / (24 * 3600 * 1000)) * 100;
+                          
+                          const pos = sessionPos.get(session.id);
+                          const col = pos?.col || 0;
+                          
+                          const leftPercent = (col / totalCols) * 100;
+                          const widthPercent = (1 / totalCols) * 100;
+                          
+                          const isPast = sessionEndUTC < Date.now();
+                          const isMine = session.userId === currentUser?.uid;
+                          const canEdit = isMine || isAdmin;
+                          
+                          let colorClass = "bg-green-100 border-green-200 text-green-800";
+                          if (isPast) {
+                            colorClass = "bg-slate-100 border-slate-200 text-slate-600";
+                          } else if (isMine) {
+                            colorClass = "bg-orange-100 border-orange-300 text-orange-900";
+                          }
+                          
+                          const localTimeStrStart = getLocalTimeStr(session.startTimeUTC, session.timezone || TIMEZONES[0].value);
+                          const localTimeStrEnd = getLocalTimeStr(sessionEndUTC, session.timezone || TIMEZONES[0].value);
+                          
+                          return (
+                            <div 
+                              key={session.id + i}
+                              className={`absolute rounded border shadow-sm px-2 py-1.5 group/block z-10 hover:!z-50 hover:!h-auto hover:!min-h-max-content hover:shadow-lg transition-all duration-200 ${colorClass} overflow-hidden`}
+                              style={{ 
+                                top: `${topPercent}%`, 
+                                height: `calc(${heightPercent}% - 4px)`, 
+                                left: `calc(${leftPercent}% + 4px)`,
+                                width: `calc(${widthPercent}% - 8px)`
+                              }}
+                            >
+                          <div className="absolute top-1 right-1 opacity-100 lg:opacity-0 lg:group-hover/block:opacity-100 flex gap-1 z-10 bg-white/80 rounded backdrop-blur-sm shadow-sm border border-slate-200/50">
                             {canEdit && (
                               <>
                                 <button 
@@ -627,7 +692,9 @@ export const Schedule: React.FC = () => {
                           </div>
                         </div>
                       )
-                    })}
+                    });
+                  });
+                })()}
                   </div>
                 </div>
               );
