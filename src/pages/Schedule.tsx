@@ -111,8 +111,10 @@ export const Schedule: React.FC = () => {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error(error);
+    } catch (err: any) {
+      if (err.code !== 'auth/cancelled-popup-request' && err.code !== 'auth/popup-closed-by-user') {
+        console.error("Login error:", err);
+      }
     }
   };
 
@@ -401,7 +403,7 @@ export const Schedule: React.FC = () => {
                     <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 uppercase">Admin</span>
                   ) : (
                     <button 
-                      onClick={() => {
+                      onClick={async () => {
                         const pwd = prompt(t({ en: 'Enter admin password:', vi: 'Nhập mật khẩu quản trị:' }));
                         if (pwd === import.meta.env.VITE_ADMIN_PASSWORD || pwd === 'tggpc2026') {
                           setIsTempAdmin(true);
