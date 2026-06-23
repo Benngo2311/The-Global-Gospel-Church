@@ -8,6 +8,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { db, storage, auth } from '../firebase';
 import { STATIC_EVENTS } from '../constants/events';
+import { ADMIN_EMAILS } from '../constants/admin';
 
 export const Events: React.FC = () => {
   const { t } = useLanguage();
@@ -46,7 +47,7 @@ export const Events: React.FC = () => {
     // Listen for Auth status
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      if (currentUser && currentUser.email === 'khoatruy123@gmail.com') {
+      if (currentUser && ADMIN_EMAILS.includes(currentUser.email || '')) {
         setIsAdmin(true);
       } else {
         setIsAdmin(false);
@@ -247,10 +248,10 @@ export const Events: React.FC = () => {
   };
 
   const toggleExpand = (id: string) => {
-    setExpandedEvents(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+    setExpandedEvents(prev => {
+      // If it's already expanded, collapse it. Otherwise, exclusively expand this one.
+      return prev[id] ? {} : { [id]: true };
+    });
   };
 
   const formatDate = (isoString: string) => {

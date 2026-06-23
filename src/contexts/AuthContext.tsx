@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { ADMIN_EMAILS } from '../constants/admin';
 
 export type UserRole = 'admin' | 'approved' | 'pending';
 
@@ -48,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUserProfile(userSnap.data() as UserProfile);
         } else {
           // New user
-          const isOwner = user.email === 'khoatruy123@gmail.com';
+          const isOwner = ADMIN_EMAILS.includes(user.email || '');
           const newProfile: UserProfile = {
             uid: user.uid,
             email: user.email || '',

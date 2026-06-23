@@ -12,7 +12,6 @@ export const Header: React.FC = () => {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [expandedTabs, setExpandedTabs] = useState<Record<string, boolean>>({});
-  const [openDesktopDropdown, setOpenDesktopDropdown] = useState<string | null>(null);
   const { language, setLanguage, t } = useLanguage();
   const { isAdmin } = useAuth();
   const location = useLocation();
@@ -28,9 +27,6 @@ export const Header: React.FC = () => {
       const target = e.target as HTMLElement;
       if (!target.closest('.lang-switcher')) {
         setIsLangOpen(false);
-      }
-      if (!target.closest('.desktop-nav-item')) {
-        setOpenDesktopDropdown(null);
       }
     };
     window.addEventListener('click', handleClickOutside);
@@ -86,20 +82,12 @@ export const Header: React.FC = () => {
             const ItemWrapper = isHash ? 'button' : Link;
             const itemProps = isHash ? { 
               onClick: (e: React.MouseEvent) => {
-                e.preventDefault();
-                if (item.children) {
-                    setOpenDesktopDropdown(openDesktopDropdown === item.href ? null : item.href);
-                }
+                // Let native hover interaction handle it
               }
             } : { 
               to: item.href,
               onClick: (e: React.MouseEvent) => {
-                if (item.children) {
-                   e.preventDefault();
-                   setOpenDesktopDropdown(openDesktopDropdown === item.href ? null : item.href);
-                } else {
-                   setOpenDesktopDropdown(null);
-                }
+                // Native Link behavior
               }
             };
 
@@ -107,23 +95,17 @@ export const Header: React.FC = () => {
             <div 
               key={item.href} 
               className="relative group desktop-nav-item"
-              onPointerEnter={(e) => {
-                if (e.pointerType === 'mouse') setOpenDesktopDropdown(item.href);
-              }}
-              onPointerLeave={(e) => {
-                if (e.pointerType === 'mouse') setOpenDesktopDropdown(null);
-              }}
             >
               <ItemWrapper
                 {...(itemProps as any)}
                 className={cn(
-                  'text-sm font-medium transition-colors hover:text-church-red relative py-2 flex items-center gap-1 cursor-pointer',
+                  'text-sm font-medium transition-colors group-hover:text-church-red relative py-2 flex items-center gap-1 cursor-pointer',
                   isActive ? 'text-church-red' : 'text-slate-900',
-                  item.title.en === 'Give' && 'px-4 py-1.5 bg-church-red/10 text-church-red rounded-full hover:bg-church-red hover:text-white'
+                  item.title.en === 'Give' && 'px-4 py-1.5 bg-church-red/10 text-church-red rounded-full group-hover:bg-church-red group-hover:text-white'
                 )}
               >
                 {t(item.title)}
-                {item.children && <ChevronDown size={14} className={cn("transition-transform", openDesktopDropdown === item.href ? "rotate-180" : "")} />}
+                {item.children && <ChevronDown size={14} className="transition-transform group-hover:rotate-180" />}
                 {isActive && item.title.en !== 'Give' && (
                   <motion.div
                     layoutId="nav-underline"
@@ -132,19 +114,15 @@ export const Header: React.FC = () => {
                 )}
               </ItemWrapper>
               
-              {item.children && openDesktopDropdown === item.href && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute left-0 top-full pt-2 z-[100] pointer-events-auto"
+              {item.children && (
+                <div 
+                  className="absolute left-0 top-full pt-2 z-[100] pointer-events-auto opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0"
                 >
                   <div className="w-[300px] glass rounded-2xl shadow-2xl border border-white/20 overflow-hidden flex flex-col py-2">
                     {item.children.map((child) => (
                       <Link
                         key={child.href}
                         to={child.href}
-                        onClick={() => setOpenDesktopDropdown(null)}
                         className={cn(
                           'px-6 py-3 text-sm font-medium hover:bg-church-red/10 transition-colors',
                           location.pathname === child.href ? 'text-church-red' : 'text-slate-900'
@@ -154,7 +132,7 @@ export const Header: React.FC = () => {
                       </Link>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               )}
             </div>
             );

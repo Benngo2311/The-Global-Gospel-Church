@@ -8,6 +8,7 @@ import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from
 import { db, storage, auth } from '../firebase';
 import { SEO } from '../components/SEO';
 import { PageNavigation } from '../components/PageNavigation';
+import { ADMIN_EMAILS } from '../constants/admin';
 
 interface JourneyMedia {
   id: string;
@@ -183,7 +184,7 @@ export const JourneyOfGrace: React.FC = () => {
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      if (currentUser && currentUser.email === 'khoatruy123@gmail.com') {
+      if (currentUser && ADMIN_EMAILS.includes(currentUser.email || '')) {
         setIsAdmin(true);
       } else {
         setIsAdmin(false);

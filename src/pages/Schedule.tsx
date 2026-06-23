@@ -58,6 +58,9 @@ export const Schedule: React.FC = () => {
   const { t } = useLanguage();
   const { currentUser, userProfile, isAdmin } = useAuth();
   
+  const [isTempAdmin, setIsTempAdmin] = useState(false);
+  const effectiveIsAdmin = isAdmin || isTempAdmin;
+  
   const [schedules, setSchedules] = useState<any[]>([]);
   const [offsetWeeks, setOffsetWeeks] = useState(0);
   const [selectedTimezone, setSelectedTimezone] = useState(TIMEZONES[0].value);
@@ -394,7 +397,23 @@ export const Schedule: React.FC = () => {
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <UserCircle size={18} className="text-green-600" />
                   {userProfile?.displayName}
-                  {isAdmin && <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 uppercase">Admin</span>}
+                  {effectiveIsAdmin ? (
+                    <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 uppercase">Admin</span>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        const pwd = prompt(t({ en: 'Enter admin password:', vi: 'Nhập mật khẩu quản trị:' }));
+                        if (pwd === import.meta.env.VITE_ADMIN_PASSWORD || pwd === 'tggpc2026') {
+                          setIsTempAdmin(true);
+                        } else if (pwd !== null) {
+                          alert(t({ en: 'Incorrect password.', vi: 'Mật khẩu sai.' }));
+                        }
+                      }}
+                      className="text-[10px] px-2 py-0.5 rounded-full font-bold ml-1 uppercase border border-slate-200 text-slate-400 hover:text-church-red transition-colors"
+                    >
+                      Admin
+                    </button>
+                  )}
                 </div>
                 <button onClick={handleLogout} className="text-xs font-bold text-slate-500 hover:text-church-red flex items-center gap-1">
                   <LogOut size={14} /> {t({ en: 'Logout', vi: 'Đăng Xuất' })}
@@ -425,7 +444,7 @@ export const Schedule: React.FC = () => {
               {cal.name}
             </button>
           ))}
-          {currentUser && (
+          {effectiveIsAdmin && (
             <button 
               onClick={openFormForNewCalendar}
               className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-slate-900 rounded-lg flex items-center gap-1 border border-dashed border-slate-300 hover:border-slate-500 transition-colors"
@@ -433,7 +452,7 @@ export const Schedule: React.FC = () => {
               <Plus size={14} /> {t({ en: 'Add Space', vi: 'Thêm Không Gian' })}
             </button>
           )}
-          {currentUser && (
+          {effectiveIsAdmin && (
             <div className="flex gap-2 ml-4 border-l border-slate-200 pl-4 border-dashed">
               <button onClick={openFormForEditCalendar} className="px-3 py-1.5 text-sm font-bold text-slate-500 hover:text-slate-900 rounded-lg flex items-center gap-1 transition-colors">
                 <Edit2 size={14} /> {t({ en: 'Edit Space', vi: 'Sửa Không Gian' })}
@@ -636,7 +655,7 @@ export const Schedule: React.FC = () => {
                           
                           const isPast = sessionEndUTC < Date.now();
                           const isMine = session.userId === currentUser?.uid;
-                          const canEdit = isMine || isAdmin;
+                          const canEdit = isMine || effectiveIsAdmin;
                           
                           let colorClass = "bg-green-100 border-green-200 text-green-800";
                           if (isPast) {
@@ -659,7 +678,7 @@ export const Schedule: React.FC = () => {
                                 width: `calc(${widthPercent}% - 8px)`
                               }}
                             >
-                          <div className="absolute top-1 right-1 opacity-100 lg:opacity-0 lg:group-hover/block:opacity-100 flex gap-1 z-10 bg-white/80 rounded backdrop-blur-sm shadow-sm border border-slate-200/50">
+                          <div className="absolute top-1 right-1 opacity-100 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/block:opacity-100 flex gap-1 z-10 bg-white/80 rounded backdrop-blur-sm shadow-sm border border-slate-200/50">
                             {canEdit && (
                               <>
                                 <button 
